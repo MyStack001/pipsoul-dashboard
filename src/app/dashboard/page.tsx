@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import EquityChart from "@/components/charts/EquityChart";
 import TradesTable from "@/components/table/TradesTable";
 import KPI from "@/components/KPI";
@@ -8,6 +8,9 @@ import { ChevronDown } from "lucide-react";
 
 export default function DashboardPage() {
   const [pair, setPair] = useState("ALL");
+  const [open, setOpen] = useState(false);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [stats, setStats] = useState({
     totalProfit: 0,
@@ -15,6 +18,23 @@ export default function DashboardPage() {
     totalTrades: 0,
     maxDrawdown: 0,
   });
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const pairs = ["ALL", "GBPJPY", "EURUSD", "XAUUSD"];
 
   return (
     <div className="p-6 space-y-6">
@@ -32,36 +52,61 @@ export default function DashboardPage() {
       {/* KPI */}
       <KPI stats={stats} />
 
-      {/* FILTER */}
-      <div className="relative w-fit">
+      {/* FILTER DROPDOWN */}
+      <div ref={dropdownRef} className="relative w-fit">
 
-        <select
-          value={pair}
-          onChange={(e) => setPair(e.target.value)}
+        {/* Button */}
+        <button
+          onClick={() => setOpen(!open)}
           className="
-            appearance-none
-            px-4 py-2 pr-10
-            rounded-lg
+            flex items-center gap-2 px-4 py-2 rounded-lg
             bg-white dark:bg-gray-900
             border border-gray-200/70 dark:border-white/10
             text-black dark:text-white
-            backdrop-blur-md
-            focus:outline-none focus:ring-2 focus:ring-cyan-400
+            hover:shadow-sm transition-all
           "
         >
-          <option value="ALL">All Pairs</option>
-          <option value="GBPJPY">GBPJPY</option>
-          <option value="EURUSD">EURUSD</option>
-          <option value="XAUUSD">XAUUSD</option>
-        </select>
+          {pair === "ALL" ? "All Pairs" : pair}
 
-        {/* Dropdown Icon */}
-        <ChevronDown className="
-          w-4 h-4
-          absolute right-3 top-1/2 -translate-y-1/2
-          pointer-events-none
-          text-gray-500 dark:text-gray-300
-        " />
+          <ChevronDown
+            className={`w-4 h-4 transition-transform duration-300 ${
+              open ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+
+        {/* Dropdown */}
+        <div
+          className={`
+            absolute mt-2 w-full z-50
+            bg-white dark:bg-gray-900
+            border border-gray-200/70 dark:border-white/10
+            rounded-lg shadow-lg overflow-hidden
+            transition-all duration-200 origin-top
+            ${
+              open
+                ? "opacity-100 scale-100"
+                : "opacity-0 scale-95 pointer-events-none"
+            }
+          `}
+        >
+          {pairs.map((p) => (
+            <div
+              key={p}
+              onClick={() => {
+                setPair(p);
+                setOpen(false);
+              }}
+              className="
+                px-4 py-2 cursor-pointer
+                hover:bg-cyan-50 dark:hover:bg-white/10
+                transition
+              "
+            >
+              {p === "ALL" ? "All Pairs" : p}
+            </div>
+          ))}
+        </div>
 
       </div>
 

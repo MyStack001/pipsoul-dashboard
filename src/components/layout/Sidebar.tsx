@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Sun, Moon } from "lucide-react";
+import {
+  Sun,
+  Moon,
+  LayoutDashboard,
+  BarChart3,
+  LineChart,
+  Users,
+  BookOpen,
+} from "lucide-react";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -38,17 +46,20 @@ export default function Sidebar() {
   };
 
   const navItems = [
-    { name: "Dashboard", href: "/dashboard" },
-    { name: "Trades", href: "/trades" },
-    { name: "Analytics", href: "/analytics" },
-    { name: "Users", href: "/users" },
-    { name: "Journal", href: "/journal" },
+    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+    { name: "Trades", href: "/trades", icon: BarChart3 },
+    { name: "Analytics", href: "/analytics", icon: LineChart },
+    { name: "Users", href: "/users", icon: Users },
+    { name: "Journal", href: "/journal", icon: BookOpen },
   ];
 
   return (
     <div className="w-60 h-screen backdrop-blur-xl bg-white/40 dark:bg-white/5 border-r border-gray-200/70 dark:border-white/10 p-4 flex flex-col text-black dark:text-white shadow-sm">
+
+      {/* Logo */}
       <h2 className="text-xl font-bold mb-6">Pipsoul</h2>
 
+      {/* Navigation */}
       <nav className="flex flex-col gap-2 mb-6">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
@@ -58,7 +69,7 @@ export default function Sidebar() {
               key={item.name}
               href={item.href}
               className={`
-                px-3 py-2 rounded-lg transition-all duration-200
+                flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200
 
                 ${
                   isActive
@@ -69,6 +80,7 @@ export default function Sidebar() {
                 dark:hover:bg-white/10 dark:hover:text-white
               `}
             >
+              <item.icon className="w-5 h-5" />
               {item.name}
             </a>
           );
@@ -78,7 +90,7 @@ export default function Sidebar() {
       {/* Theme Toggle */}
       <button
         onClick={toggleTheme}
-        className="mt-2 flex items-center justify-between w-full px-3 py-2 rounded-lg bg-white/60 dark:bg-white/10 border border-gray-200/70 dark:border-white/10 shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md active:scale-95"
+        className="mt-auto flex items-center justify-between w-full px-3 py-2 rounded-lg bg-white/60 dark:bg-white/10 border border-gray-200/70 dark:border-white/10 shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md active:scale-95"
       >
         <span className="font-medium">
           {isDark ? "Light Mode" : "Dark Mode"}
@@ -88,6 +100,7 @@ export default function Sidebar() {
           {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
         </span>
       </button>
+
     </div>
   );
 }

@@ -2,8 +2,18 @@
 
 import { useState } from "react";
 
+type Trade = {
+  pair: string;
+  entry: string;
+  exit: string;
+  lot: string;
+  profit: string;
+  date: string;
+};
+
 export default function TradesPage() {
-  const [form, setForm] = useState({
+
+  const [form, setForm] = useState<Trade>({
     pair: "",
     entry: "",
     exit: "",
@@ -12,12 +22,54 @@ export default function TradesPage() {
     date: "",
   });
 
+  // ✅ Dynamic trades state
+  const [trades, setTrades] = useState<Trade[]>([
+    {
+      pair: "GBPJPY",
+      entry: "198.200",
+      exit: "199.100",
+      lot: "0.10",
+      profit: "+120",
+      date: "2026-05-09",
+    },
+  ]);
+
+  // ✅ Input handler
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value,
+    });
+  };
+
+  // ✅ Add Trade Logic
+  const handleAddTrade = () => {
+
+    // Prevent empty fields
+    if (
+      !form.pair ||
+      !form.entry ||
+      !form.exit ||
+      !form.lot ||
+      !form.profit ||
+      !form.date
+    ) {
+      return;
+    }
+
+    // Add trade to table
+    setTrades([form, ...trades]);
+
+    // Reset form
+    setForm({
+      pair: "",
+      entry: "",
+      exit: "",
+      lot: "",
+      profit: "",
+      date: "",
     });
   };
 
@@ -106,19 +158,21 @@ export default function TradesPage() {
           />
 
           <input
-  type="date"
-  name="date"
-  value={form.date}
-  onChange={handleChange}
-  className={`
-    ${inputStyles}
-    dark:[color-scheme:dark]
-  `}
-/>
+            type="date"
+            name="date"
+            value={form.date}
+            onChange={handleChange}
+            className={`
+              ${inputStyles}
+              dark:[color-scheme:dark]
+            `}
+          />
+
         </div>
 
         {/* BUTTON */}
         <button
+          onClick={handleAddTrade}
           className="
             mt-6 px-5 py-3 rounded-lg
             bg-cyan-500 hover:bg-cyan-600
@@ -177,33 +231,40 @@ export default function TradesPage() {
           </thead>
 
           <tbody>
-            <tr className="border-t border-gray-200/50 dark:border-white/10">
 
-              <td className="px-6 py-4 text-black dark:text-white">
-                GBPJPY
-              </td>
+            {trades.map((trade, index) => (
+              <tr
+                key={index}
+                className="border-t border-gray-200/50 dark:border-white/10"
+              >
 
-              <td className="px-6 py-4 text-black dark:text-white">
-                198.200
-              </td>
+                <td className="px-6 py-4 text-black dark:text-white">
+                  {trade.pair}
+                </td>
 
-              <td className="px-6 py-4 text-black dark:text-white">
-                199.100
-              </td>
+                <td className="px-6 py-4 text-black dark:text-white">
+                  {trade.entry}
+                </td>
 
-              <td className="px-6 py-4 text-black dark:text-white">
-                0.10
-              </td>
+                <td className="px-6 py-4 text-black dark:text-white">
+                  {trade.exit}
+                </td>
 
-              <td className="px-6 py-4 text-green-500">
-                +$120
-              </td>
+                <td className="px-6 py-4 text-black dark:text-white">
+                  {trade.lot}
+                </td>
 
-              <td className="px-6 py-4 text-black dark:text-white">
-                2026-05-09
-              </td>
+                <td className="px-6 py-4 text-green-500">
+                  ${trade.profit}
+                </td>
 
-            </tr>
+                <td className="px-6 py-4 text-black dark:text-white">
+                  {trade.date}
+                </td>
+
+              </tr>
+            ))}
+
           </tbody>
 
         </table>

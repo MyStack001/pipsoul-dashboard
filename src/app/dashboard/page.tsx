@@ -99,7 +99,9 @@ export default function DashboardPage() {
               }}
               className="
                 px-4 py-2 cursor-pointer
+                text-black dark:text-white
                 hover:bg-cyan-50 dark:hover:bg-white/10
+                hover:text-black dark:hover:text-white
                 transition
               "
             >

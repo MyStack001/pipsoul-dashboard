@@ -84,11 +84,13 @@ export default function KPI({ stats }: KPIProps) {
   };
 
   const hoverEffect = {
-    scale: 1.05,
-    y: -5,
-    transition: { type: "spring", stiffness: 300 },
-  };
-
+  scale: 1.05,
+  y: -5,
+  transition: {
+    type: "spring",
+    stiffness: 300,
+  } as const,
+};
   return (
     <motion.div
       variants={container}

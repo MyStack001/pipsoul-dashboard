@@ -9,6 +9,7 @@ type Trade = {
   lot: string;
   profit: string;
   date: string;
+  bias: "BUY" | "SELL"; // ✅ NEW
 };
 
 export default function TradesPage() {
@@ -20,6 +21,7 @@ export default function TradesPage() {
     lot: "",
     profit: "",
     date: "",
+    bias: "BUY", // default value
   });
 
   // ✅ Dynamic trades state
@@ -31,12 +33,13 @@ export default function TradesPage() {
       lot: "0.10",
       profit: "+120",
       date: "2026-05-09",
+      bias: "BUY",
     },
   ]);
 
   // ✅ Input handler
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setForm({
       ...form,
@@ -47,7 +50,6 @@ export default function TradesPage() {
   // ✅ Add Trade Logic
   const handleAddTrade = () => {
 
-    // Prevent empty fields
     if (
       !form.pair ||
       !form.entry ||
@@ -59,10 +61,8 @@ export default function TradesPage() {
       return;
     }
 
-    // Add trade to table
     setTrades([form, ...trades]);
 
-    // Reset form
     setForm({
       pair: "",
       entry: "",
@@ -70,6 +70,7 @@ export default function TradesPage() {
       lot: "",
       profit: "",
       date: "",
+      bias: "BUY",
     });
   };
 
@@ -97,15 +98,14 @@ export default function TradesPage() {
       </div>
 
       {/* ADD TRADE CARD */}
-      <div
-        className="
-          p-6 rounded-2xl
-          bg-white/60 dark:bg-white/5
-          backdrop-blur-xl
-          border border-gray-200/70 dark:border-white/10
-          shadow-sm
-        "
-      >
+      <div className="
+        p-6 rounded-2xl
+        bg-white/60 dark:bg-white/5
+        backdrop-blur-xl
+        border border-gray-200/70 dark:border-white/10
+        shadow-sm
+      ">
+
         <h2 className="text-lg font-medium mb-4 text-black dark:text-white">
           Add New Trade
         </h2>
@@ -157,16 +157,25 @@ export default function TradesPage() {
             className={inputStyles}
           />
 
+          {/* DATE */}
           <input
             type="date"
             name="date"
             value={form.date}
             onChange={handleChange}
-            className={`
-              ${inputStyles}
-              dark:[color-scheme:dark]
-            `}
+            className={`${inputStyles} dark:[color-scheme:dark]`}
           />
+
+          {/* ✅ NEW: BUY / SELL SELECT */}
+          <select
+            name="bias"
+            value={form.bias}
+            onChange={handleChange}
+            className={inputStyles}
+          >
+            <option value="BUY">BUY</option>
+            <option value="SELL">SELL</option>
+          </select>
 
         </div>
 
@@ -183,51 +192,32 @@ export default function TradesPage() {
         >
           Add Trade
         </button>
+
       </div>
 
       {/* TABLE */}
-      <div
-        className="
-          rounded-2xl overflow-hidden
-          bg-white/60 dark:bg-white/5
-          backdrop-blur-xl
-          border border-gray-200/70 dark:border-white/10
-          shadow-sm
-        "
-      >
+      <div className="
+        rounded-2xl overflow-hidden
+        bg-white/60 dark:bg-white/5
+        backdrop-blur-xl
+        border border-gray-200/70 dark:border-white/10
+        shadow-sm
+      ">
+
         <table className="w-full">
 
-          <thead
-            className="
-              bg-gray-100/70 dark:bg-white/10
-              text-left
-            "
-          >
+          <thead className="bg-gray-100/70 dark:bg-white/10 text-left">
+
             <tr>
-              <th className="px-6 py-4 text-black dark:text-white">
-                Pair
-              </th>
-
-              <th className="px-6 py-4 text-black dark:text-white">
-                Entry
-              </th>
-
-              <th className="px-6 py-4 text-black dark:text-white">
-                Exit
-              </th>
-
-              <th className="px-6 py-4 text-black dark:text-white">
-                Lot
-              </th>
-
-              <th className="px-6 py-4 text-black dark:text-white">
-                Profit
-              </th>
-
-              <th className="px-6 py-4 text-black dark:text-white">
-                Date
-              </th>
+              <th className="px-6 py-4 text-black dark:text-white">Pair</th>
+              <th className="px-6 py-4 text-black dark:text-white">Bias</th>
+              <th className="px-6 py-4 text-black dark:text-white">Entry</th>
+              <th className="px-6 py-4 text-black dark:text-white">Exit</th>
+              <th className="px-6 py-4 text-black dark:text-white">Lot</th>
+              <th className="px-6 py-4 text-black dark:text-white">Profit</th>
+              <th className="px-6 py-4 text-black dark:text-white">Date</th>
             </tr>
+
           </thead>
 
           <tbody>
@@ -240,6 +230,14 @@ export default function TradesPage() {
 
                 <td className="px-6 py-4 text-black dark:text-white">
                   {trade.pair}
+                </td>
+
+                <td className={`px-6 py-4 font-semibold ${
+                  trade.bias === "BUY"
+                    ? "text-green-500"
+                    : "text-red-500"
+                }`}>
+                  {trade.bias}
                 </td>
 
                 <td className="px-6 py-4 text-black dark:text-white">
@@ -268,6 +266,7 @@ export default function TradesPage() {
           </tbody>
 
         </table>
+
       </div>
 
     </div>

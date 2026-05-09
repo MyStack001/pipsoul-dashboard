@@ -58,11 +58,14 @@ export default function TradesTable({ pair }: { pair: string }) {
       <table className="w-full text-sm">
         <thead>
           <tr className="text-left border-b border-gray-300/70 dark:border-white/10">
+
             <th>Pair</th>
-            <th>Date</th> {/* ✅ NEW */}
+            <th>Date</th>
+            <th>Bias</th> {/* ✅ NEW */}
             <th>Entry</th>
             <th>Exit</th>
             <th>Lot</th>
+
             <th
               className="cursor-pointer"
               onClick={() =>
@@ -71,6 +74,7 @@ export default function TradesTable({ pair }: { pair: string }) {
             >
               Profit {sortOrder === "asc" ? "↑" : "↓"}
             </th>
+
           </tr>
         </thead>
 
@@ -80,14 +84,31 @@ export default function TradesTable({ pair }: { pair: string }) {
               key={trade.id}
               className="border-b border-gray-200/80 dark:border-white/10 hover:bg-cyan-50/70 dark:hover:bg-white/10"
             >
+
               <td>{trade.pair}</td>
-              <td>{trade.date}</td> {/* ✅ NEW */}
+              <td>{trade.date}</td>
+
+              {/* ✅ Bias column */}
+              <td>
+                <span
+                  className={
+                    trade.bias === "BUY"
+                      ? "text-green-500 font-semibold"
+                      : "text-red-500 font-semibold"
+                  }
+                >
+                  {trade.bias}
+                </span>
+              </td>
+
               <td>{trade.entry}</td>
               <td>{trade.exit}</td>
               <td>{trade.lot}</td>
+
               <td className={trade.profit > 0 ? "text-green-500" : "text-red-500"}>
                 {trade.profit}
               </td>
+
             </tr>
           ))}
         </tbody>

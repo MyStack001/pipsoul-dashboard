@@ -19,6 +19,34 @@ export default function DashboardPage() {
     maxDrawdown: 0,
   });
 
+  // ✅ LOAD TRADES FROM LOCALSTORAGE (NEW)
+  useEffect(() => {
+    const stored = localStorage.getItem("trades");
+
+    if (stored) {
+      const parsed = JSON.parse(stored);
+
+      const totalProfit = parsed.reduce(
+        (sum: number, t: any) => sum + Number(t.profit),
+        0
+      );
+
+      const wins = parsed.filter(
+        (t: any) => Number(t.profit) > 0
+      ).length;
+
+      setStats({
+        totalProfit,
+        winRate: parsed.length
+          ? (wins / parsed.length) * 100
+          : 0,
+        totalTrades: parsed.length,
+        maxDrawdown: 0,
+      });
+    }
+  }, []);
+
+  // ✅ CLOSE DROPDOWN OUTSIDE CLICK
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -55,7 +83,6 @@ export default function DashboardPage() {
       {/* FILTER DROPDOWN */}
       <div ref={dropdownRef} className="relative w-fit">
 
-        {/* Button */}
         <button
           onClick={() => setOpen(!open)}
           className="
@@ -75,7 +102,6 @@ export default function DashboardPage() {
           />
         </button>
 
-        {/* Dropdown */}
         <div
           className={`
             absolute mt-2 w-full z-50

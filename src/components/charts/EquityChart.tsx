@@ -12,7 +12,12 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import { trades } from "@/data/trades";
+const getTrades = () => {
+  if (typeof window === "undefined") return [];
+
+  const stored = localStorage.getItem("trades");
+  return stored ? JSON.parse(stored) : [];
+};
 
 type EquityChartProps = {
   pair: string;
@@ -27,11 +32,12 @@ type EquityChartProps = {
 export default function EquityChart({ pair, onStats }: EquityChartProps) {
   // ✅ FILTERED DATA (memoized for stability)
   const filteredTrades = useMemo(() => {
-    return pair === "ALL"
-      ? trades
-      : trades.filter((t) => t.pair === pair);
-  }, [pair]);
+  const trades = getTrades();
 
+  return pair === "ALL"
+    ? trades
+    : trades.filter((t) => t.pair === pair);
+}, [pair]);
   // ✅ EQUITY CURVE
   const equityData = useMemo(() => {
     let running = 1000;

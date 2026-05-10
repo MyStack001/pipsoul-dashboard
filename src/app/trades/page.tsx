@@ -2,45 +2,52 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
-
-type Trade = {
-  pair: string;
-  entry: string;
-  exit: string;
-  lot: string;
-  profit: string;
-  date: string;
-  bias: "BUY" | "SELL";
-};
+import { Trade } from "@/types/trade";
 
 export default function TradesPage() {
 
-  const [form, setForm] = useState<Trade>({
+  // ✅ FORM STATE
+  const [form, setForm] = useState({
     pair: "",
     entry: "",
     exit: "",
     lot: "",
     profit: "",
     date: "",
-    bias: "BUY",
+    bias: "BUY" as "BUY" | "SELL",
   });
 
-  const [trades, setTrades] = useState<Trade[]>([
-    {
-      pair: "GBPJPY",
-      entry: "198.200",
-      exit: "199.100",
-      lot: "0.10",
-      profit: "+120",
-      date: "2026-05-09",
-      bias: "BUY",
-    },
-  ]);
+  // ✅ TRADES STATE
+  const [trades, setTrades] = useState<Trade[]>([]);
 
-  // ✅ CUSTOM DROPDOWN STATE
+  // ✅ EDIT MODE
+  const [editingId, setEditingId] = useState<number | null>(null);
+
+  // ✅ CUSTOM DROPDOWN
   const [biasOpen, setBiasOpen] = useState(false);
 
   const biasDropdownRef = useRef<HTMLDivElement>(null);
+
+  // ✅ LOAD SAVED TRADES
+  useEffect(() => {
+
+    const savedTrades = localStorage.getItem("trades");
+
+    if (savedTrades) {
+      setTrades(JSON.parse(savedTrades));
+    }
+
+  }, []);
+
+  // ✅ AUTO SAVE TRADES
+  useEffect(() => {
+
+    localStorage.setItem(
+      "trades",
+      JSON.stringify(trades)
+    );
+
+  }, [trades]);
 
   // ✅ CLOSE DROPDOWN OUTSIDE CLICK
   useEffect(() => {
@@ -70,13 +77,15 @@ export default function TradesPage() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+
     setForm({
       ...form,
       [e.target.name]: e.target.value,
     });
+
   };
 
-  // ✅ ADD TRADE
+  // ✅ ADD / UPDATE TRADE
   const handleAddTrade = () => {
 
     if (
@@ -90,8 +99,38 @@ export default function TradesPage() {
       return;
     }
 
-    setTrades([form, ...trades]);
+    const newTrade: Trade = {
+      id: editingId || Date.now(),
+      pair: form.pair,
+      entry: Number(form.entry),
+      exit: Number(form.exit),
+      lot: Number(form.lot),
+      profit: Number(form.profit),
+      date: form.date,
+      bias: form.bias,
+    };
 
+    // ✅ UPDATE EXISTING TRADE
+    if (editingId) {
+
+      const updatedTrades = trades.map((trade) =>
+        trade.id === editingId
+          ? newTrade
+          : trade
+      );
+
+      setTrades(updatedTrades);
+
+      setEditingId(null);
+
+    } else {
+
+      // ✅ ADD NEW TRADE
+      setTrades([newTrade, ...trades]);
+
+    }
+
+    // ✅ RESET FORM
     setForm({
       pair: "",
       entry: "",
@@ -137,7 +176,7 @@ export default function TradesPage() {
       ">
 
         <h2 className="text-lg font-medium mb-4 text-black dark:text-white">
-          Add New Trade
+          {editingId ? "Edit Trade" : "Add New Trade"}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -196,7 +235,7 @@ export default function TradesPage() {
             className={`${inputStyles} dark:[color-scheme:dark]`}
           />
 
-          {/* ✅ CUSTOM BUY / SELL DROPDOWN */}
+          {/* BUY / SELL DROPDOWN */}
           <div ref={biasDropdownRef} className="relative">
 
             <button
@@ -248,12 +287,14 @@ export default function TradesPage() {
                 <div
                   key={bias}
                   onClick={() => {
+
                     setForm({
                       ...form,
                       bias: bias as "BUY" | "SELL",
                     });
 
                     setBiasOpen(false);
+
                   }}
                   className={`
                     px-4 py-3 cursor-pointer transition
@@ -287,7 +328,7 @@ export default function TradesPage() {
             hover:shadow-lg
           "
         >
-          Add Trade
+          {editingId ? "Update Trade" : "Add Trade"}
         </button>
 
       </div>
@@ -298,7 +339,7 @@ export default function TradesPage() {
         bg-white/60 dark:bg-white/5
         backdrop-blur-xl
         border border-gray-200/70 dark:border-white/10
-        shadow-sm
+        shadow-sm overflow-x-auto
       ">
 
         <table className="w-full">
@@ -306,22 +347,47 @@ export default function TradesPage() {
           <thead className="bg-gray-100/70 dark:bg-white/10 text-left">
 
             <tr>
-              <th className="px-6 py-4 text-black dark:text-white">Pair</th>
-              <th className="px-6 py-4 text-black dark:text-white">Bias</th>
-              <th className="px-6 py-4 text-black dark:text-white">Entry</th>
-              <th className="px-6 py-4 text-black dark:text-white">Exit</th>
-              <th className="px-6 py-4 text-black dark:text-white">Lot</th>
-              <th className="px-6 py-4 text-black dark:text-white">Profit</th>
-              <th className="px-6 py-4 text-black dark:text-white">Date</th>
+              <th className="px-6 py-4 text-black dark:text-white">
+                Pair
+              </th>
+
+              <th className="px-6 py-4 text-black dark:text-white">
+                Bias
+              </th>
+
+              <th className="px-6 py-4 text-black dark:text-white">
+                Entry
+              </th>
+
+              <th className="px-6 py-4 text-black dark:text-white">
+                Exit
+              </th>
+
+              <th className="px-6 py-4 text-black dark:text-white">
+                Lot
+              </th>
+
+              <th className="px-6 py-4 text-black dark:text-white">
+                Profit
+              </th>
+
+              <th className="px-6 py-4 text-black dark:text-white">
+                Date
+              </th>
+
+              <th className="px-6 py-4 text-black dark:text-white">
+                Actions
+              </th>
             </tr>
 
           </thead>
 
           <tbody>
 
-            {trades.map((trade, index) => (
+            {trades.map((trade) => (
+
               <tr
-                key={index}
+                key={trade.id}
                 className="border-t border-gray-200/50 dark:border-white/10"
               >
 
@@ -329,11 +395,13 @@ export default function TradesPage() {
                   {trade.pair}
                 </td>
 
-                <td className={`px-6 py-4 font-semibold ${
-                  trade.bias === "BUY"
-                    ? "text-green-500"
-                    : "text-red-500"
-                }`}>
+                <td
+                  className={`px-6 py-4 font-semibold ${
+                    trade.bias === "BUY"
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
+                >
                   {trade.bias}
                 </td>
 
@@ -349,7 +417,13 @@ export default function TradesPage() {
                   {trade.lot}
                 </td>
 
-                <td className="px-6 py-4 text-green-500">
+                <td
+                  className={`px-6 py-4 font-semibold ${
+                    trade.profit >= 0
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
+                >
                   ${trade.profit}
                 </td>
 
@@ -357,7 +431,61 @@ export default function TradesPage() {
                   {trade.date}
                 </td>
 
+                <td className="px-6 py-4 flex gap-2">
+
+                  {/* EDIT */}
+                  <button
+                    onClick={() => {
+
+                      setForm({
+                        pair: trade.pair,
+                        entry: String(trade.entry),
+                        exit: String(trade.exit),
+                        lot: String(trade.lot),
+                        profit: String(trade.profit),
+                        date: trade.date,
+                        bias: trade.bias,
+                      });
+
+                      setEditingId(trade.id);
+
+                    }}
+                    className="
+                      px-3 py-1 rounded-lg
+                      bg-cyan-500 hover:bg-cyan-600
+                      text-white text-sm
+                      transition
+                    "
+                  >
+                    Edit
+                  </button>
+
+                  {/* DELETE */}
+                  <button
+                    onClick={() => {
+
+                      const filteredTrades =
+                        trades.filter(
+                          (t) => t.id !== trade.id
+                        );
+
+                      setTrades(filteredTrades);
+
+                    }}
+                    className="
+                      px-3 py-1 rounded-lg
+                      bg-red-500 hover:bg-red-600
+                      text-white text-sm
+                      transition
+                    "
+                  >
+                    Delete
+                  </button>
+
+                </td>
+
               </tr>
+
             ))}
 
           </tbody>

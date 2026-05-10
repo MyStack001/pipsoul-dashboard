@@ -1,47 +1,109 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { trades as allTrades } from "@/data/trades";
-import type { Trade } from "@/data/trades";
+import type { Trade } from "@/types/trade";
 
-export default function TradesTable({ pair }: { pair: string }) {
+export default function TradesTable({
+  pair,
+}: {
+  pair: string;
+}) {
+
+  // ✅ LOCAL STORAGE TRADES
+  const [allTrades, setAllTrades] = useState<Trade[]>([]);
+
+  // ✅ SEARCH
   const [search, setSearch] = useState("");
+
+  // ✅ PAGINATION
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  // ✅ SORT
+  const [sortOrder, setSortOrder] =
+    useState<"asc" | "desc">("desc");
 
   const itemsPerPage = 5;
 
+  // ✅ LOAD TRADES FROM LOCAL STORAGE
+  useEffect(() => {
+
+    const storedTrades =
+      localStorage.getItem("trades");
+
+    if (storedTrades) {
+      setAllTrades(JSON.parse(storedTrades));
+    }
+
+  }, []);
+
+  // ✅ FILTERED TRADES
   const filteredTrades: Trade[] = useMemo(() => {
+
     return allTrades
-      .filter((t) => pair === "ALL" || t.pair === pair)
+      .filter(
+        (t) =>
+          pair === "ALL" ||
+          t.pair === pair
+      )
       .filter((t) =>
-        t.pair.toLowerCase().includes(search.toLowerCase())
+        t.pair
+          .toLowerCase()
+          .includes(search.toLowerCase())
       );
-  }, [pair, search]);
 
-  const totalPages = Math.ceil(filteredTrades.length / itemsPerPage);
+  }, [allTrades, pair, search]);
 
+  // ✅ TOTAL PAGES
+  const totalPages = Math.ceil(
+    filteredTrades.length / itemsPerPage
+  );
+
+  // ✅ PAGINATED TRADES
   const paginatedTrades: Trade[] = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
-    return filteredTrades.slice(start, start + itemsPerPage);
+
+    const start =
+      (currentPage - 1) * itemsPerPage;
+
+    return filteredTrades.slice(
+      start,
+      start + itemsPerPage
+    );
+
   }, [filteredTrades, currentPage]);
 
+  // ✅ SORTED TRADES
   const sortedTrades: Trade[] = useMemo(() => {
-    return [...paginatedTrades].sort((a, b) => {
-      return sortOrder === "asc"
-        ? a.profit - b.profit
-        : b.profit - a.profit;
-    });
+
+    return [...paginatedTrades].sort(
+      (a, b) => {
+
+        return sortOrder === "asc"
+          ? a.profit - b.profit
+          : b.profit - a.profit;
+
+      }
+    );
+
   }, [paginatedTrades, sortOrder]);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="backdrop-blur-lg bg-white/60 dark:bg-white/5 border border-white/20 dark:border-white/10 text-black dark:text-white rounded-xl shadow-lg p-4"
+      className="
+        backdrop-blur-lg
+        bg-white/60 dark:bg-white/5
+        border border-white/20 dark:border-white/10
+        text-black dark:text-white
+        rounded-xl shadow-lg p-4
+        overflow-x-auto
+      "
     >
-      <h2 className="text-lg font-semibold mb-4">Trades</h2>
+
+      <h2 className="text-lg font-semibold mb-4">
+        Trades
+      </h2>
 
       {/* SEARCH */}
       <input
@@ -49,47 +111,97 @@ export default function TradesTable({ pair }: { pair: string }) {
         placeholder="Search pair..."
         value={search}
         onChange={(e) => {
+
           setSearch(e.target.value);
           setCurrentPage(1);
+
         }}
-        className="mb-3 p-2 w-full rounded bg-white/70 dark:bg-white/10 border border-white/20 dark:border-white/10"
+        className="
+          mb-3 p-2 w-full rounded
+          bg-white/70 dark:bg-white/10
+          border border-white/20 dark:border-white/10
+        "
       />
 
       <table className="w-full text-sm">
-        <thead>
-          <tr className="text-left border-b border-gray-300/70 dark:border-white/10">
 
-            <th>Pair</th>
-            <th>Date</th>
-            <th>Bias</th> {/* ✅ NEW */}
-            <th>Entry</th>
-            <th>Exit</th>
-            <th>Lot</th>
+        <thead>
+
+          <tr className="
+            text-left
+            border-b border-gray-300/70
+            dark:border-white/10
+          ">
+
+            <th className="py-3">Pair</th>
+
+            <th className="py-3">Date</th>
+
+            <th className="py-3">
+              Bias
+            </th>
+
+            <th className="py-3">
+              Entry
+            </th>
+
+            <th className="py-3">
+              Exit
+            </th>
+
+            <th className="py-3">
+              Lot
+            </th>
 
             <th
-              className="cursor-pointer"
+              className="
+                py-3 cursor-pointer
+              "
               onClick={() =>
-                setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+                setSortOrder(
+                  sortOrder === "asc"
+                    ? "desc"
+                    : "asc"
+                )
               }
             >
-              Profit {sortOrder === "asc" ? "↑" : "↓"}
+              Profit{" "}
+              {sortOrder === "asc"
+                ? "↑"
+                : "↓"}
             </th>
 
           </tr>
+
         </thead>
 
         <tbody>
+
           {sortedTrades.map((trade) => (
+
             <tr
               key={trade.id}
-              className="border-b border-gray-200/80 dark:border-white/10 hover:bg-cyan-50/70 dark:hover:bg-white/10"
+              className="
+                border-b
+                border-gray-200/80
+                dark:border-white/10
+                hover:bg-cyan-50/70
+                dark:hover:bg-white/10
+                transition
+              "
             >
 
-              <td>{trade.pair}</td>
-              <td>{trade.date}</td>
+              <td className="py-4">
+                {trade.pair}
+              </td>
 
-              {/* ✅ Bias column */}
-              <td>
+              <td className="py-4">
+                {trade.date}
+              </td>
+
+              {/* BIAS */}
+              <td className="py-4">
+
                 <span
                   className={
                     trade.bias === "BUY"
@@ -99,24 +211,57 @@ export default function TradesTable({ pair }: { pair: string }) {
                 >
                   {trade.bias}
                 </span>
+
               </td>
 
-              <td>{trade.entry}</td>
-              <td>{trade.exit}</td>
-              <td>{trade.lot}</td>
+              <td className="py-4">
+                {trade.entry}
+              </td>
 
-              <td className={trade.profit > 0 ? "text-green-500" : "text-red-500"}>
-                {trade.profit}
+              <td className="py-4">
+                {trade.exit}
+              </td>
+
+              <td className="py-4">
+                {trade.lot}
+              </td>
+
+              <td
+                className={`py-4 font-medium ${
+                  trade.profit >= 0
+                    ? "text-green-500"
+                    : "text-red-500"
+                }`}
+              >
+                ${trade.profit}
               </td>
 
             </tr>
+
           ))}
+
         </tbody>
+
       </table>
 
       {/* PAGINATION */}
-      <div className="flex gap-2 mt-4 items-center">
-        <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}>
+      <div className="
+        flex gap-3 mt-4 items-center
+      ">
+
+        <button
+          onClick={() =>
+            setCurrentPage((p) =>
+              Math.max(p - 1, 1)
+            )
+          }
+          className="
+            px-3 py-1 rounded-lg
+            bg-white/70 dark:bg-white/10
+            border border-white/20
+            dark:border-white/10
+          "
+        >
           Prev
         </button>
 
@@ -126,12 +271,25 @@ export default function TradesTable({ pair }: { pair: string }) {
 
         <button
           onClick={() =>
-            setCurrentPage((p) => Math.min(p + 1, totalPages))
+            setCurrentPage((p) =>
+              Math.min(
+                p + 1,
+                totalPages
+              )
+            )
           }
+          className="
+            px-3 py-1 rounded-lg
+            bg-white/70 dark:bg-white/10
+            border border-white/20
+            dark:border-white/10
+          "
         >
           Next
         </button>
+
       </div>
+
     </motion.div>
   );
 }

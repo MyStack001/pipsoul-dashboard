@@ -1,10 +1,20 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import EquityChart from "@/components/charts/EquityChart";
-import TradesTable from "@/components/table/TradesTable";
+import dynamic from "next/dynamic";
 import KPI from "@/components/KPI";
 import { ChevronDown } from "lucide-react";
+
+// safer dynamic imports
+const EquityChart = dynamic(
+  () => import("@/components/charts/EquityChart"),
+  { ssr: false }
+);
+
+const TradesTable = dynamic(
+  () => import("@/components/table/TradesTable"),
+  { ssr: false }
+);
 
 export default function DashboardPage() {
   const [pair, setPair] = useState("ALL");
@@ -19,34 +29,43 @@ export default function DashboardPage() {
     maxDrawdown: 0,
   });
 
-  // ✅ LOAD TRADES FROM LOCALSTORAGE (NEW)
+  // ✅ DYNAMIC PAIRS (NEW FIX)
+  const [pairs, setPairs] = useState<string[]>(["ALL"]);
+
+  // LOAD TRADES + STATS + PAIRS
   useEffect(() => {
     const stored = localStorage.getItem("trades");
 
-    if (stored) {
-      const parsed = JSON.parse(stored);
+    if (!stored) return;
 
-      const totalProfit = parsed.reduce(
-        (sum: number, t: any) => sum + Number(t.profit),
-        0
-      );
+    const parsed = JSON.parse(stored);
 
-      const wins = parsed.filter(
-        (t: any) => Number(t.profit) > 0
-      ).length;
+    // stats
+    const totalProfit = parsed.reduce(
+      (sum: number, t: any) => sum + Number(t.profit),
+      0
+    );
 
-      setStats({
-        totalProfit,
-        winRate: parsed.length
-          ? (wins / parsed.length) * 100
-          : 0,
-        totalTrades: parsed.length,
-        maxDrawdown: 0,
-      });
-    }
+    const wins = parsed.filter(
+      (t: any) => Number(t.profit) > 0
+    ).length;
+
+    setStats({
+      totalProfit,
+      winRate: parsed.length ? (wins / parsed.length) * 100 : 0,
+      totalTrades: parsed.length,
+      maxDrawdown: 0,
+    });
+
+    // ✅ UNIQUE PAIRS (NEW FIX)
+    const uniquePairs = Array.from(
+      new Set(parsed.map((t: any) => t.pair))
+    );
+
+    setPairs(["ALL", ...uniquePairs]);
   }, []);
 
-  // ✅ CLOSE DROPDOWN OUTSIDE CLICK
+  // CLOSE DROPDOWN OUTSIDE CLICK
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -62,8 +81,6 @@ export default function DashboardPage() {
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const pairs = ["ALL", "GBPJPY", "EURUSD", "XAUUSD"];
-
   return (
     <div className="p-6 space-y-6">
 
@@ -77,7 +94,6 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* KPI */}
       <KPI stats={stats} />
 
       {/* FILTER DROPDOWN */}
@@ -86,14 +102,17 @@ export default function DashboardPage() {
         <button
           onClick={() => setOpen(!open)}
           className="
-            flex items-center gap-2 px-4 py-2 rounded-lg
-            bg-white dark:bg-gray-900
+            flex items-center justify-between gap-2
+            px-4 py-3 rounded-lg
+            bg-white dark:bg-[#111827]
             border border-gray-200/70 dark:border-white/10
             text-black dark:text-white
             hover:shadow-sm transition-all
           "
         >
-          {pair === "ALL" ? "All Pairs" : pair}
+          <span className="font-medium">
+            {pair === "ALL" ? "All Pairs" : pair}
+          </span>
 
           <ChevronDown
             className={`w-4 h-4 transition-transform duration-300 ${
@@ -105,7 +124,7 @@ export default function DashboardPage() {
         <div
           className={`
             absolute mt-2 w-full z-50
-            bg-white dark:bg-gray-900
+            bg-white dark:bg-[#111827]
             border border-gray-200/70 dark:border-white/10
             rounded-lg shadow-lg overflow-hidden
             transition-all duration-200 origin-top
@@ -124,11 +143,9 @@ export default function DashboardPage() {
                 setOpen(false);
               }}
               className="
-                px-4 py-2 cursor-pointer
+                px-4 py-3 cursor-pointer transition
                 text-black dark:text-white
                 hover:bg-cyan-50 dark:hover:bg-white/10
-                hover:text-black dark:hover:text-white
-                transition
               "
             >
               {p === "ALL" ? "All Pairs" : p}

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { ChevronDown } from "lucide-react";
 
 type Trade = {
   pair: string;
@@ -9,7 +10,7 @@ type Trade = {
   lot: string;
   profit: string;
   date: string;
-  bias: "BUY" | "SELL"; // ✅ NEW
+  bias: "BUY" | "SELL";
 };
 
 export default function TradesPage() {
@@ -21,10 +22,9 @@ export default function TradesPage() {
     lot: "",
     profit: "",
     date: "",
-    bias: "BUY", // default value
+    bias: "BUY",
   });
 
-  // ✅ Dynamic trades state
   const [trades, setTrades] = useState<Trade[]>([
     {
       pair: "GBPJPY",
@@ -37,9 +37,38 @@ export default function TradesPage() {
     },
   ]);
 
-  // ✅ Input handler
+  // ✅ CUSTOM DROPDOWN STATE
+  const [biasOpen, setBiasOpen] = useState(false);
+
+  const biasDropdownRef = useRef<HTMLDivElement>(null);
+
+  // ✅ CLOSE DROPDOWN OUTSIDE CLICK
+  useEffect(() => {
+
+    const handleClickOutside = (event: MouseEvent) => {
+
+      if (
+        biasDropdownRef.current &&
+        !biasDropdownRef.current.contains(event.target as Node)
+      ) {
+        setBiasOpen(false);
+      }
+
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () =>
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+
+  }, []);
+
+  // ✅ INPUT HANDLER
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement>
   ) => {
     setForm({
       ...form,
@@ -47,7 +76,7 @@ export default function TradesPage() {
     });
   };
 
-  // ✅ Add Trade Logic
+  // ✅ ADD TRADE
   const handleAddTrade = () => {
 
     if (
@@ -72,6 +101,7 @@ export default function TradesPage() {
       date: "",
       bias: "BUY",
     });
+
   };
 
   const inputStyles = `
@@ -166,16 +196,83 @@ export default function TradesPage() {
             className={`${inputStyles} dark:[color-scheme:dark]`}
           />
 
-          {/* ✅ NEW: BUY / SELL SELECT */}
-          <select
-            name="bias"
-            value={form.bias}
-            onChange={handleChange}
-            className={inputStyles}
-          >
-            <option value="BUY">BUY</option>
-            <option value="SELL">SELL</option>
-          </select>
+          {/* ✅ CUSTOM BUY / SELL DROPDOWN */}
+          <div ref={biasDropdownRef} className="relative">
+
+            <button
+              type="button"
+              onClick={() => setBiasOpen(!biasOpen)}
+              className="
+                w-full flex items-center justify-between
+                px-4 py-3 rounded-lg
+                bg-white dark:bg-[#111827]
+                border border-gray-200/70 dark:border-white/10
+                text-black dark:text-white
+                hover:shadow-sm transition-all
+              "
+            >
+              <span
+                className={`font-medium ${
+                  form.bias === "BUY"
+                    ? "text-green-500"
+                    : "text-red-500"
+                }`}
+              >
+                {form.bias}
+              </span>
+
+              <ChevronDown
+                className={`w-4 h-4 transition-transform duration-300 ${
+                  biasOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            <div
+              className={`
+                absolute mt-2 w-full z-50
+                bg-white dark:bg-[#111827]
+                border border-gray-200/70 dark:border-white/10
+                rounded-lg shadow-lg overflow-hidden
+                transition-all duration-200 origin-top
+                ${
+                  biasOpen
+                    ? "opacity-100 scale-100"
+                    : "opacity-0 scale-95 pointer-events-none"
+                }
+              `}
+            >
+
+              {["BUY", "SELL"].map((bias) => (
+
+                <div
+                  key={bias}
+                  onClick={() => {
+                    setForm({
+                      ...form,
+                      bias: bias as "BUY" | "SELL",
+                    });
+
+                    setBiasOpen(false);
+                  }}
+                  className={`
+                    px-4 py-3 cursor-pointer transition
+                    hover:bg-cyan-50 dark:hover:bg-white/10
+                    ${
+                      bias === "BUY"
+                        ? "text-green-500"
+                        : "text-red-500"
+                    }
+                  `}
+                >
+                  {bias}
+                </div>
+
+              ))}
+
+            </div>
+
+          </div>
 
         </div>
 

@@ -12,11 +12,13 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const getTrades = () => {
+import { Trade } from "@/types/trade";
+
+const getTrades = (): Trade[] => {
   if (typeof window === "undefined") return [];
 
   const stored = localStorage.getItem("trades");
-  return stored ? JSON.parse(stored) : [];
+  return stored ? (JSON.parse(stored) as Trade[]) : [];
 };
 
 type EquityChartProps = {
@@ -30,19 +32,20 @@ type EquityChartProps = {
 };
 
 export default function EquityChart({ pair, onStats }: EquityChartProps) {
-  // ✅ FILTERED DATA (memoized for stability)
+  // ✅ FILTERED DATA
   const filteredTrades = useMemo(() => {
-  const trades = getTrades();
+    const trades = getTrades();
 
-  return pair === "ALL"
-    ? trades
-    : trades.filter((t) => t.pair === pair);
-}, [pair]);
+    return pair === "ALL"
+      ? trades
+      : trades.filter((t: Trade) => t.pair === pair);
+  }, [pair]);
+
   // ✅ EQUITY CURVE
   const equityData = useMemo(() => {
     let running = 1000;
 
-    return filteredTrades.map((t, index) => {
+    return filteredTrades.map((t: Trade, index: number) => {
       running += t.profit;
 
       return {
@@ -52,7 +55,7 @@ export default function EquityChart({ pair, onStats }: EquityChartProps) {
     });
   }, [filteredTrades]);
 
-  // ✅ DRAWDOWN SAFE CALC
+  // ✅ DRAWDOWN
   const drawdownData = useMemo(() => {
     let peak = -Infinity;
 
@@ -67,10 +70,10 @@ export default function EquityChart({ pair, onStats }: EquityChartProps) {
     });
   }, [equityData]);
 
-  // ✅ STATS (SAFE)
+  // ✅ STATS
   const stats = useMemo(() => {
     const totalProfit = filteredTrades.reduce(
-      (acc, t) => acc + t.profit,
+      (acc: number, t: Trade) => acc + t.profit,
       0
     );
 
@@ -81,7 +84,7 @@ export default function EquityChart({ pair, onStats }: EquityChartProps) {
 
     const winRate =
       filteredTrades.length > 0
-        ? (filteredTrades.filter((t) => t.profit > 0).length /
+        ? (filteredTrades.filter((t: Trade) => t.profit > 0).length /
             filteredTrades.length) *
           100
         : 0;
@@ -94,11 +97,9 @@ export default function EquityChart({ pair, onStats }: EquityChartProps) {
     };
   }, [filteredTrades, drawdownData]);
 
-  // ✅ SAFE SIDE EFFECT (no crashes)
+  // ✅ SEND STATS UP
   useEffect(() => {
-    if (onStats) {
-      onStats(stats);
-    }
+    onStats?.(stats);
   }, [stats, onStats]);
 
   return (

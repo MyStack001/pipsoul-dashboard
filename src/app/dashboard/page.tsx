@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import KPI from "@/components/KPI";
 import { ChevronDown } from "lucide-react";
 
-// safer dynamic imports
+// ✅ safer dynamic imports (prevents SSR issues)
 const EquityChart = dynamic(
   () => import("@/components/charts/EquityChart"),
   { ssr: false }
@@ -22,6 +22,8 @@ export default function DashboardPage() {
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const [pairs, setPairs] = useState<string[]>(["ALL"]);
+
   const [stats, setStats] = useState({
     totalProfit: 0,
     winRate: 0,
@@ -29,18 +31,15 @@ export default function DashboardPage() {
     maxDrawdown: 0,
   });
 
-  // ✅ DYNAMIC PAIRS (NEW FIX)
-  const [pairs, setPairs] = useState<string[]>(["ALL"]);
-
-  // LOAD TRADES + STATS + PAIRS
+  // ✅ LOAD TRADES + STATS + PAIRS (SAFE BUILD VERSION)
   useEffect(() => {
     const stored = localStorage.getItem("trades");
 
     if (!stored) return;
 
-    const parsed = JSON.parse(stored);
+    const parsed: any[] = JSON.parse(stored);
 
-    // stats
+    // STATS
     const totalProfit = parsed.reduce(
       (sum: number, t: any) => sum + Number(t.profit),
       0
@@ -57,12 +56,13 @@ export default function DashboardPage() {
       maxDrawdown: 0,
     });
 
-    // ✅ UNIQUE PAIRS (NEW FIX)
-    const uniquePairs = Array.from(
-      new Set(parsed.map((t: any) => t.pair))
+    // UNIQUE PAIRS (SAFE STRING CONVERSION)
+    const uniquePairs: string[] = Array.from(
+      new Set(parsed.map((t: any) => String(t.pair)))
     );
 
     setPairs(["ALL", ...uniquePairs]);
+
   }, []);
 
   // CLOSE DROPDOWN OUTSIDE CLICK
@@ -94,9 +94,10 @@ export default function DashboardPage() {
         </p>
       </div>
 
+      {/* KPI */}
       <KPI stats={stats} />
 
-      {/* FILTER DROPDOWN */}
+      {/* DROPDOWN */}
       <div ref={dropdownRef} className="relative w-fit">
 
         <button

@@ -1,27 +1,43 @@
-import { trades } from "@/data/trades";
+export type Trade = {
+  id: number;
+  pair: string;
+  entry: number;
+  exit: number;
+  lot: number;
+  profit: number;
+  date: string;
+  bias: "BUY" | "SELL";
+};
 
-export function getStats(filteredTrades = trades) {
+export function getStats(filteredTrades: Trade[] = []) {
   const totalTrades = filteredTrades.length;
 
-  const wins = filteredTrades.filter((t) => t.profit > 0).length;
+  const totalProfit = filteredTrades.reduce(
+    (acc: number, t: Trade) => acc + Number(t.profit),
+    0
+  );
 
-  const winRate = totalTrades === 0 ? 0 : (wins / totalTrades) * 100;
+  const wins = filteredTrades.filter(
+    (t: Trade) => Number(t.profit) > 0
+  ).length;
 
-  const totalProfit = filteredTrades.reduce((acc, t) => acc + t.profit, 0);
+  const winRate = totalTrades
+    ? (wins / totalTrades) * 100
+    : 0;
 
-  // Equity + drawdown
-  const equityData = filteredTrades.map((trade, index) => {
-    return filteredTrades
-      .slice(0, index + 1)
-      .reduce((acc, t) => acc + t.profit, 1000);
-  });
+  // simple drawdown (safe version for now)
+  let peak = 0;
+  let maxDrawdown = 0;
 
-  const drawdowns = equityData.map((equity, index) => {
-    const peak = Math.max(...equityData.slice(0, index + 1));
-    return equity - peak;
-  });
+  let equity = 1000;
 
-  const maxDrawdown = Math.min(...drawdowns);
+  for (const t of filteredTrades) {
+    equity += Number(t.profit);
+    if (equity > peak) peak = equity;
+
+    const dd = equity - peak;
+    if (dd < maxDrawdown) maxDrawdown = dd;
+  }
 
   return {
     totalTrades,

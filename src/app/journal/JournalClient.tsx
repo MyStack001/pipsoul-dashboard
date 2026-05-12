@@ -156,9 +156,13 @@ export default function JournalClient() {
                 className="p-5 rounded-xl border bg-white/60 dark:bg-white/5 space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <h2 className="font-semibold text-lg">
-                    Trade #{entry.tradeId}
-                  </h2>
+                  <h2 className="font-semibold text-lg text-cyan-500">
+  {
+    JSON.parse(localStorage.getItem("trades") || "[]")
+      .find((t: Trade) => t.id === entry.tradeId)
+      ?.pair || "Unknown Pair"
+  }
+</h2>
 
                   <button
                     onClick={() =>

@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Trade } from "@/types/trade";
 import { JournalEntry } from "@/types/journal";
 
 export default function JournalClient() {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const tradeIdParam = searchParams.get("id");
 
@@ -17,6 +18,8 @@ export default function JournalClient() {
 
   const [trade, setTrade] = useState<Trade | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const [savedJournals, setSavedJournals] = useState<JournalEntry[]>([]);
 
   const [journal, setJournal] = useState<JournalEntry>({
     tradeId: tradeId ?? 0,
@@ -30,41 +33,46 @@ export default function JournalClient() {
     images: [],
   });
 
+  // LOAD DATA
   useEffect(() => {
-    if (!tradeId) {
-      setLoading(false);
-      return;
-    }
-
     try {
       const storedTrades = localStorage.getItem("trades");
       const storedJournals = localStorage.getItem("journals");
 
-      if (storedTrades) {
+      // LOAD ALL JOURNALS
+      if (storedJournals) {
+        const parsed = JSON.parse(storedJournals);
+
+        const normalized: JournalEntry[] = parsed.map((j: any) => ({
+          ...j,
+          images: j.images ?? [],
+        }));
+
+        setSavedJournals(normalized);
+
+        // LOAD EXISTING JOURNAL FOR SPECIFIC TRADE
+        if (tradeId) {
+          const existing = normalized.find(
+            (j) => j.tradeId === tradeId
+          );
+
+          if (existing) {
+            setJournal(existing);
+          }
+        }
+      }
+
+      // LOAD TRADE
+      if (tradeId && storedTrades) {
         const parsedTrades: Trade[] = JSON.parse(storedTrades);
 
         const found = parsedTrades.find(
           (t) => t.id === tradeId
         );
 
-        if (found) setTrade(found);
-      }
-
-      if (storedJournals) {
-        const parsed = JSON.parse(storedJournals);
-
-        const normalized: JournalEntry[] = parsed.map(
-          (j: any) => ({
-            ...j,
-            images: j.images ?? [],
-          })
-        );
-
-        const existing = normalized.find(
-          (j) => j.tradeId === tradeId
-        );
-
-        if (existing) setJournal(existing);
+        if (found) {
+          setTrade(found);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -73,52 +81,143 @@ export default function JournalClient() {
     }
   }, [tradeId]);
 
-  if (!tradeId) {
-    return (
-      <p className="p-6 text-red-500">
-        Invalid trade link. Open from dashboard.
-      </p>
-    );
-  }
-
-  if (loading) {
-    return <p className="p-6">Loading...</p>;
-  }
-
-  if (!trade) {
-    return <p className="p-6">Trade not found</p>;
-  }
-
+  // SAVE JOURNAL
   const saveJournal = () => {
-    const stored = localStorage.getItem("journals");
+    try {
+      const stored = localStorage.getItem("journals");
 
-    const journals: JournalEntry[] = stored
-      ? JSON.parse(stored)
-      : [];
+      const journals: JournalEntry[] = stored
+        ? JSON.parse(stored)
+        : [];
 
-    const index = journals.findIndex(
-      (j) => j.tradeId === tradeId
-    );
+      const normalized = journals.map((j: any) => ({
+        ...j,
+        images: j.images ?? [],
+      }));
 
-    if (index !== -1) {
-      journals[index] = journal;
-    } else {
-      journals.push(journal);
+      const index = normalized.findIndex(
+        (j) => j.tradeId === tradeId
+      );
+
+      if (index !== -1) {
+        normalized[index] = journal;
+      } else {
+        normalized.push(journal);
+      }
+
+      localStorage.setItem(
+        "journals",
+        JSON.stringify(normalized)
+      );
+
+      setSavedJournals(normalized);
+
+      alert("Journal saved successfully ✅");
+    } catch (err) {
+      console.error(err);
     }
-
-    localStorage.setItem(
-      "journals",
-      JSON.stringify(journals)
-    );
   };
 
   const inputStyles =
     "w-full h-28 p-3 rounded-lg border bg-white dark:bg-[#111827] text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500";
 
+  // LOADING
+  if (loading) {
+    return <p className="p-6">Loading...</p>;
+  }
+
+  // =========================================
+  // SHOW ALL SAVED JOURNALS
+  // =========================================
+
+  if (!tradeId) {
+    return (
+      <div className="p-6 space-y-6 text-black dark:text-white">
+
+        <div>
+          <h1 className="text-2xl font-semibold">
+            Saved Journals
+          </h1>
+
+          <p className="text-sm text-gray-500">
+            Review all your trading reflections
+          </p>
+        </div>
+
+        {savedJournals.length === 0 ? (
+          <div className="p-6 rounded-xl border bg-white/60 dark:bg-white/5">
+            No saved journals yet.
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {savedJournals.map((entry) => (
+              <div
+                key={entry.tradeId}
+                className="p-5 rounded-xl border bg-white/60 dark:bg-white/5 space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <h2 className="font-semibold text-lg">
+                    Trade #{entry.tradeId}
+                  </h2>
+
+                  <button
+                    onClick={() =>
+                      router.push(`/journal?id=${entry.tradeId}`)
+                    }
+                    className="text-cyan-500 hover:underline"
+                  >
+                    Open Journal
+                  </button>
+                </div>
+
+                <p>
+                  <strong>Reason:</strong> {entry.reason || "-"}
+                </p>
+
+                <p>
+                  <strong>Emotions:</strong> {entry.emotions || "-"}
+                </p>
+
+                <p>
+                  <strong>Management:</strong> {entry.management || "-"}
+                </p>
+
+                {entry.images?.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+                    {entry.images.map((img, i) => (
+                      <img
+                        key={i}
+                        src={img}
+                        alt="Journal"
+                        className="rounded-lg border h-28 object-cover w-full"
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // INVALID TRADE
+  if (!trade) {
+    return (
+      <p className="p-6 text-red-500">
+        Trade not found.
+      </p>
+    );
+  }
+
+  // =========================================
+  // SINGLE TRADE JOURNAL PAGE
+  // =========================================
+
   return (
     <div className="p-6 space-y-6 text-black dark:text-white">
 
-      {/* HEADER */}
       <div>
         <h1 className="text-2xl font-semibold">
           Trading Journal
@@ -129,7 +228,6 @@ export default function JournalClient() {
         </p>
       </div>
 
-      {/* TRADE INFO */}
       <div className="p-4 rounded-xl border space-y-2 bg-white/60 dark:bg-white/5">
         <p><strong>Pair:</strong> {trade.pair}</p>
 
@@ -150,7 +248,6 @@ export default function JournalClient() {
         <p><strong>Date:</strong> {trade.date}</p>
       </div>
 
-      {/* INPUTS */}
       <div className="space-y-4">
 
         <textarea
@@ -237,7 +334,6 @@ export default function JournalClient() {
           className={inputStyles}
         />
 
-        {/* IMAGE UPLOAD */}
         <input
           type="file"
           accept="image/png, image/jpeg"
@@ -266,7 +362,6 @@ export default function JournalClient() {
           className="w-full p-3 rounded-lg border bg-white dark:bg-[#111827]"
         />
 
-        {/* IMAGE PREVIEW */}
         {journal.images?.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {journal.images.map((img, i) => (
@@ -289,13 +384,7 @@ export default function JournalClient() {
                       ),
                     }))
                   }
-                  className="
-                    absolute top-2 right-2
-                    bg-red-500 text-white
-                    text-xs px-2 py-1 rounded
-                    opacity-0 group-hover:opacity-100
-                    transition
-                  "
+                  className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition"
                 >
                   Delete
                 </button>
@@ -304,14 +393,9 @@ export default function JournalClient() {
           </div>
         )}
 
-        {/* SAVE BUTTON */}
         <button
           onClick={saveJournal}
-          className="
-            px-4 py-3 rounded-lg
-            bg-cyan-500 hover:bg-cyan-600
-            text-white font-medium transition
-          "
+          className="px-4 py-3 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white font-medium transition"
         >
           Save Journal
         </button>

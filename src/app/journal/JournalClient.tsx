@@ -155,25 +155,56 @@ export default function JournalClient() {
                 key={entry.tradeId}
                 className="p-5 rounded-xl border bg-white/60 dark:bg-white/5 space-y-3"
               >
-                <div className="flex items-center justify-between">
-                  <h2 className="font-semibold text-lg text-cyan-500">
-  {
-    JSON.parse(localStorage.getItem("trades") || "[]")
-      .find((t: Trade) => t.id === entry.tradeId)
-      ?.pair || "Unknown Pair"
-  }
-</h2>
+                <div className="flex items-center justify-between gap-3">
 
-                  <button
-                    onClick={() =>
-                      router.push(`/journal?id=${entry.tradeId}`)
-                    }
-                    className="text-cyan-500 hover:underline"
-                  >
-                    Open Journal
-                  </button>
-                </div>
+  <h2 className="font-semibold text-lg text-cyan-500">
+    {
+      JSON.parse(localStorage.getItem("trades") || "[]")
+        .find((t: Trade) => t.id === entry.tradeId)
+        ?.pair || "Unknown Pair"
+    }
+  </h2>
 
+  <div className="flex items-center gap-2">
+
+    <button
+      onClick={() =>
+        router.push(`/journal?id=${entry.tradeId}`)
+      }
+      className="text-cyan-500 hover:underline"
+    >
+      Open Journal
+    </button>
+
+    <button
+      onClick={() => {
+
+        const updatedJournals =
+          savedJournals.filter(
+            (j) => j.tradeId !== entry.tradeId
+          );
+
+        localStorage.setItem(
+          "journals",
+          JSON.stringify(updatedJournals)
+        );
+
+        setSavedJournals(updatedJournals);
+
+      }}
+      className="
+        px-3 py-1 rounded-lg
+        bg-red-500 hover:bg-red-600
+        text-white text-sm
+        transition
+      "
+    >
+      Delete
+    </button>
+
+  </div>
+
+</div>
                 <p>
                   <strong>Reason:</strong> {entry.reason || "-"}
                 </p>

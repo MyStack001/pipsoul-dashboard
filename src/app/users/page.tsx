@@ -1,240 +1,143 @@
-"use client";
+"use client"
 
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react"
+import { supabase } from "@/lib/supabase"
+
+type User = {
+  id: string
+  name: string
+  email: string
+  trading_style: string
+  account_type: string
+  experience: string
+}
 
 export default function UsersPage() {
-  const user = {
-    name: "Shadrach",
-    email: "pipsoul@example.com",
-    tradingStyle: "Intraday Trader",
-    accountType: "Prop Firm",
-    experience: "Intermediate",
-    totalTrades: 148,
-    winRate: "63%",
-    totalProfit: "$4,820",
-    journals: 39,
-    joined: "May 2026",
-  };
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const stats = [
-    {
-      label: "Total Trades",
-      value: user.totalTrades,
-    },
-    {
-      label: "Win Rate",
-      value: user.winRate,
-    },
-    {
-      label: "Total Profit",
-      value: user.totalProfit,
-    },
-    {
-      label: "Journal Entries",
-      value: user.journals,
-    },
-  ];
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+
+  // READ
+  async function fetchUsers() {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .order("created_at", { ascending: false })
+
+    if (!error && data) {
+      setUsers(data)
+    }
+
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    fetchUsers()
+  }, [])
+
+  // CREATE
+  async function createUser() {
+    if (!name || !email) return
+
+    const { error } = await supabase.from("users").insert([
+      {
+        name,
+        email,
+        trading_style: "Intraday",
+        account_type: "Demo",
+        experience: "Beginner",
+      },
+    ])
+
+    if (!error) {
+      setName("")
+      setEmail("")
+      fetchUsers()
+    }
+  }
+
+  // DELETE
+  async function deleteUser(id: string) {
+    await supabase.from("users").delete().eq("id", id)
+    fetchUsers()
+  }
 
   return (
     <div className="p-6 space-y-6 text-black dark:text-white">
 
       {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-bold">
-          User Profile
-        </h1>
-
-        <p className="text-gray-500 dark:text-gray-400">
-          Manage your trader profile and statistics
-        </p>
+        <h1 className="text-3xl font-bold">Users CRUD</h1>
+        <p className="text-gray-500">Live database connected</p>
       </div>
 
-      {/* PROFILE CARD */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="
-          p-6 rounded-2xl
-          border border-white/20 dark:border-white/10
-          bg-white/60 dark:bg-white/5
-          backdrop-blur-lg
-          shadow-lg
-          flex flex-col md:flex-row
-          gap-6 items-center
-        "
-      >
+      {/* CREATE USER */}
+      <div className="p-6 rounded-2xl border bg-white/60 dark:bg-white/5 space-y-4">
+        <h2 className="text-xl font-semibold">Create User</h2>
 
-        <div
-          className="
-            h-24 w-24 rounded-full
-            bg-cyan-500
-            flex items-center justify-center
-            text-3xl font-bold text-white
-          "
-        >
-          S
-        </div>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Name"
+          className="p-3 w-full rounded-xl border"
+        />
 
-        <div className="flex-1 space-y-2">
-
-          <h2 className="text-2xl font-semibold">
-            {user.name}
-          </h2>
-
-          <p className="text-gray-500 dark:text-gray-400">
-            {user.email}
-          </p>
-
-          <div className="flex flex-wrap gap-3 pt-2">
-
-            <span className="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-500 text-sm">
-              {user.tradingStyle}
-            </span>
-
-            <span className="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm">
-              {user.accountType}
-            </span>
-
-            <span className="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm">
-              {user.experience}
-            </span>
-
-          </div>
-        </div>
+        <input
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          className="p-3 w-full rounded-xl border"
+        />
 
         <button
-          className="
-            px-4 py-2 rounded-xl
-            bg-cyan-500 hover:bg-cyan-600
-            text-white transition
-          "
+          onClick={createUser}
+          className="px-4 py-2 rounded-xl bg-cyan-500 text-white"
         >
-          Edit Profile
+          Add User
         </button>
-
-      </motion.div>
-
-      {/* STATS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-
-        {stats.map((stat) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="
-              p-5 rounded-2xl
-              border border-white/20 dark:border-white/10
-              bg-white/60 dark:bg-white/5
-              backdrop-blur-lg
-              shadow-lg
-            "
-          >
-
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {stat.label}
-            </p>
-
-            <h3 className="text-2xl font-bold mt-2">
-              {stat.value}
-            </h3>
-
-          </motion.div>
-        ))}
-
       </div>
 
-      {/* BIO */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="
-          p-6 rounded-2xl
-          border border-white/20 dark:border-white/10
-          bg-white/60 dark:bg-white/5
-          backdrop-blur-lg
-          shadow-lg
-          space-y-4
-        "
-      >
+      {/* USERS LIST */}
+      <div className="space-y-4">
+        {loading ? (
+          <p>Loading...</p>
+        ) : users.length === 0 ? (
+          <p>No users yet</p>
+        ) : (
+          users.map((user) => (
+            <div
+              key={user.id}
+              className="p-5 rounded-2xl border bg-white/60 dark:bg-white/5 flex justify-between items-center"
+            >
+              <div>
+                <h2 className="font-bold text-lg">{user.name}</h2>
+                <p className="text-gray-500">{user.email}</p>
 
-        <h2 className="text-xl font-semibold">
-          Trader Bio
-        </h2>
+                <div className="flex gap-2 mt-2">
+                  <span className="text-xs px-2 py-1 bg-cyan-500/10 text-cyan-500 rounded-full">
+                    {user.trading_style}
+                  </span>
+                  <span className="text-xs px-2 py-1 bg-green-500/10 text-green-500 rounded-full">
+                    {user.account_type}
+                  </span>
+                  <span className="text-xs px-2 py-1 bg-purple-500/10 text-purple-500 rounded-full">
+                    {user.experience}
+                  </span>
+                </div>
+              </div>
 
-        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-          Passionate forex trader focused on discipline,
-          risk management, and long-term consistency.
-          Journaling every trade to improve execution,
-          psychology, and strategy refinement.
-        </p>
-
-      </motion.div>
-
-      {/* ACCOUNT INFO */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="
-          p-6 rounded-2xl
-          border border-white/20 dark:border-white/10
-          bg-white/60 dark:bg-white/5
-          backdrop-blur-lg
-          shadow-lg
-          space-y-4
-        "
-      >
-
-        <h2 className="text-xl font-semibold">
-          Account Information
-        </h2>
-
-        <div className="grid md:grid-cols-2 gap-4">
-
-          <div>
-            <p className="text-sm text-gray-500">
-              Email
-            </p>
-
-            <p className="font-medium">
-              {user.email}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-sm text-gray-500">
-              Joined
-            </p>
-
-            <p className="font-medium">
-              {user.joined}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-sm text-gray-500">
-              Trading Style
-            </p>
-
-            <p className="font-medium">
-              {user.tradingStyle}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-sm text-gray-500">
-              Experience
-            </p>
-
-            <p className="font-medium">
-              {user.experience}
-            </p>
-          </div>
-
-        </div>
-
-      </motion.div>
-
+              <button
+                onClick={() => deleteUser(user.id)}
+                className="px-3 py-1 bg-red-500 text-white rounded-lg"
+              >
+                Delete
+              </button>
+            </div>
+          ))
+        )}
+      </div>
     </div>
-  );
+  )
 }

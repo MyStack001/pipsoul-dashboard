@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
 import KPI from "@/components/KPI";
 import { ChevronDown } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/AuthProvider";
 
 // ✅ safer dynamic imports (prevents SSR issues)
 const EquityChart = dynamic(
@@ -17,6 +19,9 @@ const TradesTable = dynamic(
 );
 
 export default function DashboardPage() {
+  const { session, loading } = useAuth();
+  const router = useRouter();
+
   const [pair, setPair] = useState("ALL");
   const [open, setOpen] = useState(false);
 
@@ -31,7 +36,14 @@ export default function DashboardPage() {
     maxDrawdown: 0,
   });
 
-  // ✅ LOAD TRADES + STATS + PAIRS (SAFE BUILD VERSION)
+  // ✅ PROTECT DASHBOARD
+  useEffect(() => {
+    if (!loading && !session) {
+      router.push("/login");
+    }
+  }, [session, loading, router]);
+
+  // ✅ LOAD TRADES + STATS + PAIRS
   useEffect(() => {
     const stored = localStorage.getItem("trades");
 
@@ -56,7 +68,7 @@ export default function DashboardPage() {
       maxDrawdown: 0,
     });
 
-    // UNIQUE PAIRS (SAFE STRING CONVERSION)
+    // UNIQUE PAIRS
     const uniquePairs: string[] = Array.from(
       new Set(parsed.map((t: any) => String(t.pair)))
     );
@@ -65,7 +77,7 @@ export default function DashboardPage() {
 
   }, []);
 
-  // CLOSE DROPDOWN OUTSIDE CLICK
+  // ✅ CLOSE DROPDOWN OUTSIDE CLICK
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -77,9 +89,24 @@ export default function DashboardPage() {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
+
     return () =>
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // ✅ LOADING STATE
+  if (loading) {
+    return (
+      <div className="p-6 text-black dark:text-white">
+        Loading...
+      </div>
+    );
+  }
+
+  // ✅ BLOCK UNAUTHENTICATED ACCESS
+  if (!session) {
+    return null;
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -89,8 +116,13 @@ export default function DashboardPage() {
         <h1 className="text-2xl font-semibold text-black dark:text-white">
           Trading Overview
         </h1>
+
         <p className="text-sm text-gray-600 dark:text-gray-300">
           Monitor your performance and trades
+        </p>
+
+        <p className="text-xs text-cyan-600 dark:text-cyan-400 mt-1">
+          Logged in as: {session.user.email}
         </p>
       </div>
 

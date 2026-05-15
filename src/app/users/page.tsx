@@ -138,14 +138,24 @@ async function updateUser() {
     <input
       value={editName}
       onChange={(e) => setEditName(e.target.value)}
-      className="p-3 w-full border rounded-xl"
+      className="
+  p-3 w-full rounded-xl border
+  bg-white dark:bg-gray-900
+  text-black dark:text-white
+  border-gray-300 dark:border-gray-700
+"
       placeholder="Name"
     />
 
     <input
       value={editEmail}
       onChange={(e) => setEditEmail(e.target.value)}
-      className="p-3 w-full border rounded-xl"
+      className="
+  p-3 w-full rounded-xl border
+  bg-white dark:bg-gray-900
+  text-black dark:text-white
+  border-gray-300 dark:border-gray-700
+"
       placeholder="Email"
     />
 

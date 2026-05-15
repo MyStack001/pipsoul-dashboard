@@ -18,6 +18,9 @@ export default function UsersPage() {
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
+  const [editingUser, setEditingUser] = useState<any>(null)
+const [editName, setEditName] = useState("")
+const [editEmail, setEditEmail] = useState("")
 
   // READ
   async function fetchUsers() {
@@ -64,6 +67,26 @@ export default function UsersPage() {
     fetchUsers()
   }
 
+// ADD IT HERE
+async function updateUser() {
+  if (!editingUser) return
+
+  const { error } = await supabase
+    .from("users")
+    .update({
+      name: editName,
+      email: editEmail,
+    })
+    .eq("id", editingUser.id)
+
+  if (!error) {
+    setEditingUser(null)
+    setEditName("")
+    setEditEmail("")
+    fetchUsers()
+  }
+}
+
   return (
     <div className="p-6 space-y-6 text-black dark:text-white">
 
@@ -81,14 +104,24 @@ export default function UsersPage() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Name"
-          className="p-3 w-full rounded-xl border"
+         className="
+  p-3 w-full rounded-xl border
+  bg-white dark:bg-gray-900
+  text-black dark:text-white
+  border-gray-300 dark:border-gray-700
+"
         />
 
         <input
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
-          className="p-3 w-full rounded-xl border"
+          className="
+  p-3 w-full rounded-xl border
+  bg-white dark:bg-gray-900
+  text-black dark:text-white
+  border-gray-300 dark:border-gray-700
+"
         />
 
         <button
@@ -98,6 +131,41 @@ export default function UsersPage() {
           Add User
         </button>
       </div>
+      {editingUser && (
+  <div className="p-6 rounded-2xl border bg-white dark:bg-black space-y-4">
+    <h2 className="text-xl font-bold">Edit User</h2>
+
+    <input
+      value={editName}
+      onChange={(e) => setEditName(e.target.value)}
+      className="p-3 w-full border rounded-xl"
+      placeholder="Name"
+    />
+
+    <input
+      value={editEmail}
+      onChange={(e) => setEditEmail(e.target.value)}
+      className="p-3 w-full border rounded-xl"
+      placeholder="Email"
+    />
+
+    <div className="flex gap-2">
+      <button
+        onClick={updateUser}
+        className="px-4 py-2 bg-green-500 text-white rounded-xl"
+      >
+        Save
+      </button>
+
+      <button
+        onClick={() => setEditingUser(null)}
+        className="px-4 py-2 bg-gray-500 text-white rounded-xl"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
 
       {/* USERS LIST */}
       <div className="space-y-4">
@@ -128,12 +196,27 @@ export default function UsersPage() {
                 </div>
               </div>
 
-              <button
-                onClick={() => deleteUser(user.id)}
-                className="px-3 py-1 bg-red-500 text-white rounded-lg"
-              >
-                Delete
-              </button>
+             <div className="flex gap-2">
+
+  <button
+    onClick={() => {
+      setEditingUser(user)
+      setEditName(user.name)
+      setEditEmail(user.email)
+    }}
+    className="px-3 py-1 bg-yellow-500 text-white rounded-lg"
+  >
+    Edit
+  </button>
+
+  <button
+    onClick={() => deleteUser(user.id)}
+    className="px-3 py-1 bg-red-500 text-white rounded-lg"
+  >
+    Delete
+  </button>
+
+</div>
             </div>
           ))
         )}

@@ -1,68 +1,49 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import type { Trade } from "@/types/trade";
 
-import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
+import { useTradesRealtime } from "@/hooks/useTradesRealtime";
 
 export default function TradesTable({ pair }: { pair: string }) {
   const { session } = useAuth();
 
-  const [allTrades, setAllTrades] = useState<Trade[]>([]);
+  const { filteredTrades } = useTradesRealtime(pair);
+
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const itemsPerPage = 5;
 
-  // ✅ FETCH FROM SUPABASE (NO LOCALSTORAGE)
-  useEffect(() => {
-    const fetchTrades = async () => {
-      if (!session) return;
-
-      const { data, error } = await supabase
-        .from("trades")
-        .select("*")
-        .eq("user_id", session.user.id)
-        .order("date", { ascending: false });
-
-      if (error) {
-        console.error(error);
-        return;
-      }
-
-      setAllTrades(data || []);
-    };
-
-    fetchTrades();
-  }, [session]);
-
   // FILTER + SEARCH
-  const filteredTrades: Trade[] = useMemo(() => {
-    return allTrades
-      .filter((t) => pair === "ALL" || t.pair === pair)
-      .filter((t) =>
-        t.pair.toLowerCase().includes(search.toLowerCase())
-      );
-  }, [allTrades, pair, search]);
+  const searchedTrades: Trade[] = useMemo(() => {
+    return filteredTrades.filter((t) =>
+      t.pair.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [filteredTrades, search]);
 
   // PAGINATION
-  const totalPages = Math.ceil(filteredTrades.length / itemsPerPage);
+  const totalPages = Math.ceil(searchedTrades.length / itemsPerPage);
 
   const paginatedTrades: Trade[] = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
-    return filteredTrades.slice(start, start + itemsPerPage);
-  }, [filteredTrades, currentPage]);
+    return searchedTrades.slice(start, start + itemsPerPage);
+  }, [searchedTrades, currentPage]);
 
   // SORTING
   const sortedTrades: Trade[] = useMemo(() => {
     return [...paginatedTrades].sort((a, b) =>
-      sortOrder === "asc" ? a.profit - b.profit : b.profit - a.profit
+      sortOrder === "asc"
+        ? a.profit - b.profit
+        : b.profit - a.profit
     );
   }, [paginatedTrades, sortOrder]);
+
+  if (!session) return null;
 
   return (
     <motion.div
@@ -72,6 +53,7 @@ export default function TradesTable({ pair }: { pair: string }) {
     >
       <h2 className="text-lg font-semibold mb-4">Trades</h2>
 
+      {/* SEARCH */}
       <input
         type="text"
         placeholder="Search pair..."
@@ -83,6 +65,7 @@ export default function TradesTable({ pair }: { pair: string }) {
         className="mb-3 p-2 w-full rounded bg-white/70 dark:bg-white/10 border border-white/20 dark:border-white/10"
       />
 
+      {/* TABLE */}
       <table className="w-full text-sm">
         <thead>
           <tr className="text-left border-b border-gray-300/70 dark:border-white/10">
@@ -154,6 +137,7 @@ export default function TradesTable({ pair }: { pair: string }) {
         </tbody>
       </table>
 
+      {/* PAGINATION */}
       <div className="flex gap-3 mt-4 items-center">
         <button
           onClick={() =>
@@ -171,7 +155,7 @@ export default function TradesTable({ pair }: { pair: string }) {
         <button
           onClick={() =>
             setCurrentPage((p) =>
-              Math.min(p + 1, totalPages)
+              Math.min(p + 1, totalPages || 1)
             )
           }
           className="px-3 py-1 rounded-lg bg-white/70 dark:bg-white/10 border border-white/20 dark:border-white/10"

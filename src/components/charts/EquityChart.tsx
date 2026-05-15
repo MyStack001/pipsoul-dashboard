@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import {
   LineChart,
   Line,
@@ -12,9 +12,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
-import { Trade } from "@/types/trade";
+import { useTradesRealtime } from "@/hooks/useTradesRealtime";
+import type { Trade } from "@/types/trade";
 
 type EquityChartProps = {
   pair: string;
@@ -32,38 +32,10 @@ export default function EquityChart({
 }: EquityChartProps) {
   const { session } = useAuth();
 
-  const [trades, setTrades] = useState<Trade[]>([]);
+  // ✅ SINGLE SOURCE OF TRUTH (REALTIME)
+  const { filteredTrades } = useTradesRealtime(pair);
 
-  // ✅ FETCH TRADES FROM SUPABASE
-  useEffect(() => {
-    const fetchTrades = async () => {
-      if (!session) return;
-
-      const { data, error } = await supabase
-        .from("trades")
-        .select("*")
-        .eq("user_id", session.user.id)
-        .order("date", { ascending: true });
-
-      if (error) {
-        console.error(error);
-        return;
-      }
-
-      setTrades(data || []);
-    };
-
-    fetchTrades();
-  }, [session]);
-
-  // ✅ FILTERED DATA
-  const filteredTrades = useMemo(() => {
-    return pair === "ALL"
-      ? trades
-      : trades.filter((t) => t.pair === pair);
-  }, [pair, trades]);
-
-  // ✅ EQUITY CURVE
+  // EQUITY CURVE
   const equityData = useMemo(() => {
     let running = 1000;
 
@@ -77,7 +49,7 @@ export default function EquityChart({
     });
   }, [filteredTrades]);
 
-  // ✅ DRAWDOWN
+  // DRAWDOWN
   const drawdownData = useMemo(() => {
     let peak = -Infinity;
 
@@ -92,7 +64,7 @@ export default function EquityChart({
     });
   }, [equityData]);
 
-  // ✅ STATS
+  // STATS
   const stats = useMemo(() => {
     const totalProfit = filteredTrades.reduce(
       (acc, t) => acc + Number(t.profit),
@@ -119,10 +91,12 @@ export default function EquityChart({
     };
   }, [filteredTrades, drawdownData]);
 
-  // ✅ SEND STATS UP
+  // SEND STATS UP
   useEffect(() => {
     onStats?.(stats);
   }, [stats, onStats]);
+
+  if (!session) return null;
 
   return (
     <motion.div
@@ -144,17 +118,13 @@ export default function EquityChart({
       <div className="w-full h-64">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={drawdownData}>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="#374151"
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
             <XAxis dataKey="trade" stroke="#9CA3AF" />
             <YAxis stroke="#9CA3AF" />
 
             <Tooltip
               contentStyle={{
-                backgroundColor:
-                  "rgba(31, 41, 55, 0.9)",
+                backgroundColor: "rgba(31, 41, 55, 0.9)",
                 border: "none",
                 borderRadius: "10px",
                 color: "#fff",

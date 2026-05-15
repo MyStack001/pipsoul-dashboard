@@ -5,7 +5,12 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import type { Trade } from "@/types/trade";
 
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/components/AuthProvider";
+
 export default function TradesTable({ pair }: { pair: string }) {
+  const { session } = useAuth();
+
   const [allTrades, setAllTrades] = useState<Trade[]>([]);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -13,13 +18,29 @@ export default function TradesTable({ pair }: { pair: string }) {
 
   const itemsPerPage = 5;
 
+  // ✅ FETCH FROM SUPABASE (NO LOCALSTORAGE)
   useEffect(() => {
-    const storedTrades = localStorage.getItem("trades");
-    if (storedTrades) {
-      setAllTrades(JSON.parse(storedTrades));
-    }
-  }, []);
+    const fetchTrades = async () => {
+      if (!session) return;
 
+      const { data, error } = await supabase
+        .from("trades")
+        .select("*")
+        .eq("user_id", session.user.id)
+        .order("date", { ascending: false });
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      setAllTrades(data || []);
+    };
+
+    fetchTrades();
+  }, [session]);
+
+  // FILTER + SEARCH
   const filteredTrades: Trade[] = useMemo(() => {
     return allTrades
       .filter((t) => pair === "ALL" || t.pair === pair)
@@ -28,6 +49,7 @@ export default function TradesTable({ pair }: { pair: string }) {
       );
   }, [allTrades, pair, search]);
 
+  // PAGINATION
   const totalPages = Math.ceil(filteredTrades.length / itemsPerPage);
 
   const paginatedTrades: Trade[] = useMemo(() => {
@@ -35,6 +57,7 @@ export default function TradesTable({ pair }: { pair: string }) {
     return filteredTrades.slice(start, start + itemsPerPage);
   }, [filteredTrades, currentPage]);
 
+  // SORTING
   const sortedTrades: Trade[] = useMemo(() => {
     return [...paginatedTrades].sort((a, b) =>
       sortOrder === "asc" ? a.profit - b.profit : b.profit - a.profit
@@ -69,11 +92,16 @@ export default function TradesTable({ pair }: { pair: string }) {
             <th className="py-3">Entry</th>
             <th className="py-3">Exit</th>
             <th className="py-3">Lot</th>
-            <th className="py-3 cursor-pointer" onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}>
+
+            <th
+              className="py-3 cursor-pointer"
+              onClick={() =>
+                setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+              }
+            >
               Profit {sortOrder === "asc" ? "↑" : "↓"}
             </th>
 
-            {/* ✅ NEW COLUMN HEADER */}
             <th className="py-3">Journal</th>
           </tr>
         </thead>
@@ -105,13 +133,14 @@ export default function TradesTable({ pair }: { pair: string }) {
 
               <td
                 className={`py-4 font-medium ${
-                  trade.profit >= 0 ? "text-green-500" : "text-red-500"
+                  trade.profit >= 0
+                    ? "text-green-500"
+                    : "text-red-500"
                 }`}
               >
                 ${trade.profit}
               </td>
 
-              {/* ✅ THIS IS THE IMPORTANT PART */}
               <td className="py-4 whitespace-nowrap">
                 <Link
                   href={`/journal?id=${trade.id}`}
@@ -127,7 +156,9 @@ export default function TradesTable({ pair }: { pair: string }) {
 
       <div className="flex gap-3 mt-4 items-center">
         <button
-          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+          onClick={() =>
+            setCurrentPage((p) => Math.max(p - 1, 1))
+          }
           className="px-3 py-1 rounded-lg bg-white/70 dark:bg-white/10 border border-white/20 dark:border-white/10"
         >
           Prev
@@ -138,7 +169,11 @@ export default function TradesTable({ pair }: { pair: string }) {
         </span>
 
         <button
-          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+          onClick={() =>
+            setCurrentPage((p) =>
+              Math.min(p + 1, totalPages)
+            )
+          }
           className="px-3 py-1 rounded-lg bg-white/70 dark:bg-white/10 border border-white/20 dark:border-white/10"
         >
           Next

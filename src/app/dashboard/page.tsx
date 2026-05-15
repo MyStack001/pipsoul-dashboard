@@ -3,11 +3,13 @@
 import { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
 import KPI from "@/components/KPI";
+import AddTradeForm from "@/components/AddTradeForm";
 import { ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
+import { supabase } from "@/lib/supabase";
 
-// ✅ safer dynamic imports (prevents SSR issues)
+// ✅ safer dynamic imports
 const EquityChart = dynamic(
   () => import("@/components/charts/EquityChart"),
   { ssr: false }
@@ -43,55 +45,81 @@ export default function DashboardPage() {
     }
   }, [session, loading, router]);
 
-  // ✅ LOAD TRADES + STATS + PAIRS
+  // ✅ LOAD Trades from Supabase fetch migration
   useEffect(() => {
-    const stored = localStorage.getItem("trades");
+  const fetchTrades = async () => {
+    if (!session) return;
 
-    if (!stored) return;
+    const { data, error } = await supabase
+      .from("trades")
+      .select("*")
+      .eq("user_id", session.user.id);
 
-    const parsed: any[] = JSON.parse(stored);
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    const trades = data || [];
 
     // STATS
-    const totalProfit = parsed.reduce(
-      (sum: number, t: any) => sum + Number(t.profit),
+    const totalProfit = trades.reduce(
+      (sum, t) => sum + Number(t.profit),
       0
     );
 
-    const wins = parsed.filter(
-      (t: any) => Number(t.profit) > 0
+    const wins = trades.filter(
+      (t) => Number(t.profit) > 0
     ).length;
 
     setStats({
       totalProfit,
-      winRate: parsed.length ? (wins / parsed.length) * 100 : 0,
-      totalTrades: parsed.length,
+      winRate: trades.length
+        ? (wins / trades.length) * 100
+        : 0,
+
+      totalTrades: trades.length,
+
       maxDrawdown: 0,
     });
 
     // UNIQUE PAIRS
     const uniquePairs: string[] = Array.from(
-      new Set(parsed.map((t: any) => String(t.pair)))
+      new Set(trades.map((t) => String(t.pair)))
     );
 
     setPairs(["ALL", ...uniquePairs]);
+  };
 
-  }, []);
+  fetchTrades();
+}, [session]);
+  
 
   // ✅ CLOSE DROPDOWN OUTSIDE CLICK
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (
+      event: MouseEvent
+    ) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(
+          event.target as Node
+        )
       ) {
         setOpen(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
 
     return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
   }, []);
 
   // ✅ LOADING STATE
@@ -126,12 +154,17 @@ export default function DashboardPage() {
         </p>
       </div>
 
+      {/* ✅ ADD TRADE FORM */}
+      <AddTradeForm />
+
       {/* KPI */}
       <KPI stats={stats} />
 
       {/* DROPDOWN */}
-      <div ref={dropdownRef} className="relative w-fit">
-
+      <div
+        ref={dropdownRef}
+        className="relative w-fit"
+      >
         <button
           onClick={() => setOpen(!open)}
           className="
@@ -144,7 +177,9 @@ export default function DashboardPage() {
           "
         >
           <span className="font-medium">
-            {pair === "ALL" ? "All Pairs" : pair}
+            {pair === "ALL"
+              ? "All Pairs"
+              : pair}
           </span>
 
           <ChevronDown
@@ -181,15 +216,19 @@ export default function DashboardPage() {
                 hover:bg-cyan-50 dark:hover:bg-white/10
               "
             >
-              {p === "ALL" ? "All Pairs" : p}
+              {p === "ALL"
+                ? "All Pairs"
+                : p}
             </div>
           ))}
         </div>
-
       </div>
 
       {/* CHART */}
-      <EquityChart pair={pair} onStats={setStats} />
+      <EquityChart
+        pair={pair}
+        onStats={setStats}
+      />
 
       {/* TABLE */}
       <TradesTable pair={pair} />

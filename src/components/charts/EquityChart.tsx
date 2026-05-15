@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   LineChart,
   Line,
@@ -12,14 +12,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/components/AuthProvider";
 import { Trade } from "@/types/trade";
-
-const getTrades = (): Trade[] => {
-  if (typeof window === "undefined") return [];
-
-  const stored = localStorage.getItem("trades");
-  return stored ? (JSON.parse(stored) as Trade[]) : [];
-};
 
 type EquityChartProps = {
   pair: string;
@@ -31,21 +26,48 @@ type EquityChartProps = {
   }) => void;
 };
 
-export default function EquityChart({ pair, onStats }: EquityChartProps) {
+export default function EquityChart({
+  pair,
+  onStats,
+}: EquityChartProps) {
+  const { session } = useAuth();
+
+  const [trades, setTrades] = useState<Trade[]>([]);
+
+  // ✅ FETCH TRADES FROM SUPABASE
+  useEffect(() => {
+    const fetchTrades = async () => {
+      if (!session) return;
+
+      const { data, error } = await supabase
+        .from("trades")
+        .select("*")
+        .eq("user_id", session.user.id)
+        .order("date", { ascending: true });
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      setTrades(data || []);
+    };
+
+    fetchTrades();
+  }, [session]);
+
   // ✅ FILTERED DATA
   const filteredTrades = useMemo(() => {
-    const trades = getTrades();
-
     return pair === "ALL"
       ? trades
-      : trades.filter((t: Trade) => t.pair === pair);
-  }, [pair]);
+      : trades.filter((t) => t.pair === pair);
+  }, [pair, trades]);
 
   // ✅ EQUITY CURVE
   const equityData = useMemo(() => {
     let running = 1000;
 
-    return filteredTrades.map((t: Trade, index: number) => {
+    return filteredTrades.map((t, index) => {
       running += t.profit;
 
       return {
@@ -73,7 +95,7 @@ export default function EquityChart({ pair, onStats }: EquityChartProps) {
   // ✅ STATS
   const stats = useMemo(() => {
     const totalProfit = filteredTrades.reduce(
-      (acc: number, t: Trade) => acc + t.profit,
+      (acc, t) => acc + Number(t.profit),
       0
     );
 
@@ -84,7 +106,7 @@ export default function EquityChart({ pair, onStats }: EquityChartProps) {
 
     const winRate =
       filteredTrades.length > 0
-        ? (filteredTrades.filter((t: Trade) => t.profit > 0).length /
+        ? (filteredTrades.filter((t) => t.profit > 0).length /
             filteredTrades.length) *
           100
         : 0;
@@ -115,18 +137,24 @@ export default function EquityChart({ pair, onStats }: EquityChartProps) {
         p-4 rounded-xl shadow-lg mb-6
       "
     >
-      <h2 className="text-lg font-semibold mb-4">Equity Curve</h2>
+      <h2 className="text-lg font-semibold mb-4">
+        Equity Curve
+      </h2>
 
       <div className="w-full h-64">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={drawdownData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="#374151"
+            />
             <XAxis dataKey="trade" stroke="#9CA3AF" />
             <YAxis stroke="#9CA3AF" />
 
             <Tooltip
               contentStyle={{
-                backgroundColor: "rgba(31, 41, 55, 0.9)",
+                backgroundColor:
+                  "rgba(31, 41, 55, 0.9)",
                 border: "none",
                 borderRadius: "10px",
                 color: "#fff",

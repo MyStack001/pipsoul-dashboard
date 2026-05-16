@@ -7,7 +7,6 @@ import AddTradeForm from "@/components/AddTradeForm";
 import { ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
-import { supabase } from "@/lib/supabase";
 
 // ✅ safer dynamic imports
 const EquityChart = dynamic(
@@ -45,81 +44,21 @@ export default function DashboardPage() {
     }
   }, [session, loading, router]);
 
-  // ✅ LOAD Trades from Supabase fetch migration
-  useEffect(() => {
-  const fetchTrades = async () => {
-    if (!session) return;
-
-    const { data, error } = await supabase
-      .from("trades")
-      .select("*")
-      .eq("user_id", session.user.id);
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    const trades = data || [];
-
-    // STATS
-    const totalProfit = trades.reduce(
-      (sum, t) => sum + Number(t.profit),
-      0
-    );
-
-    const wins = trades.filter(
-      (t) => Number(t.profit) > 0
-    ).length;
-
-    setStats({
-      totalProfit,
-      winRate: trades.length
-        ? (wins / trades.length) * 100
-        : 0,
-
-      totalTrades: trades.length,
-
-      maxDrawdown: 0,
-    });
-
-    // UNIQUE PAIRS
-    const uniquePairs: string[] = Array.from(
-      new Set(trades.map((t) => String(t.pair)))
-    );
-
-    setPairs(["ALL", ...uniquePairs]);
-  };
-
-  fetchTrades();
-}, [session]);
-  
-
   // ✅ CLOSE DROPDOWN OUTSIDE CLICK
   useEffect(() => {
-    const handleClickOutside = (
-      event: MouseEvent
-    ) => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(
-          event.target as Node
-        )
+        !dropdownRef.current.contains(event.target as Node)
       ) {
         setOpen(false);
       }
     };
 
-    document.addEventListener(
-      "mousedown",
-      handleClickOutside
-    );
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () =>
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // ✅ LOADING STATE
@@ -154,17 +93,15 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* ✅ ADD TRADE FORM */}
+      {/* ADD TRADE */}
       <AddTradeForm />
 
       {/* KPI */}
       <KPI stats={stats} />
 
       {/* DROPDOWN */}
-      <div
-        ref={dropdownRef}
-        className="relative w-fit"
-      >
+      <div ref={dropdownRef} className="relative w-fit">
+
         <button
           onClick={() => setOpen(!open)}
           className="
@@ -177,9 +114,7 @@ export default function DashboardPage() {
           "
         >
           <span className="font-medium">
-            {pair === "ALL"
-              ? "All Pairs"
-              : pair}
+            {pair === "ALL" ? "All Pairs" : pair}
           </span>
 
           <ChevronDown
@@ -216,21 +151,19 @@ export default function DashboardPage() {
                 hover:bg-cyan-50 dark:hover:bg-white/10
               "
             >
-              {p === "ALL"
-                ? "All Pairs"
-                : p}
+              {p === "ALL" ? "All Pairs" : p}
             </div>
           ))}
         </div>
       </div>
 
-      {/* CHART */}
+      {/* CHART (LIVE STATS COMES FROM HERE) */}
       <EquityChart
         pair={pair}
         onStats={setStats}
       />
 
-      {/* TABLE */}
+      {/* TABLE (REALTIME VIA HOOK INSIDE) */}
       <TradesTable pair={pair} />
 
     </div>

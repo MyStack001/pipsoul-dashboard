@@ -21,6 +21,9 @@ export default function JournalClient() {
 
   const [savedJournals, setSavedJournals] = useState<JournalEntry[]>([]);
 
+  // ✅ IMAGE VIEWER MODAL STATE
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
   const [journal, setJournal] = useState<JournalEntry>({
     tradeId: tradeId ?? 0,
     reason: "",
@@ -50,7 +53,7 @@ export default function JournalClient() {
 
         setSavedJournals(normalized);
 
-        // LOAD EXISTING JOURNAL FOR SPECIFIC TRADE
+        // LOAD EXISTING JOURNAL
         if (tradeId) {
           const existing = normalized.find(
             (j) => j.tradeId === tradeId
@@ -67,7 +70,7 @@ export default function JournalClient() {
         const parsedTrades: Trade[] = JSON.parse(storedTrades);
 
         const found = parsedTrades.find(
-          (t) => t.id === tradeId
+          (t) => Number(t.id) === tradeId
         );
 
         if (found) {
@@ -157,54 +160,52 @@ export default function JournalClient() {
               >
                 <div className="flex items-center justify-between gap-3">
 
-  <h2 className="font-semibold text-lg text-cyan-500">
-    {
-      JSON.parse(localStorage.getItem("trades") || "[]")
-        .find((t: Trade) => t.id === entry.tradeId)
-        ?.pair || "Unknown Pair"
-    }
-  </h2>
+                  <h2 className="font-semibold text-lg text-cyan-500">
+                    {
+                      JSON.parse(localStorage.getItem("trades") || "[]")
+                        .find((t: Trade) => Number(t.id) === entry.tradeId)
+                        ?.pair || "Unknown Pair"
+                    }
+                  </h2>
 
-  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
 
-    <button
-      onClick={() =>
-        router.push(`/journal?id=${entry.tradeId}`)
-      }
-      className="text-cyan-500 hover:underline"
-    >
-      Open Journal
-    </button>
+                    <button
+                      onClick={() =>
+                        router.push(`/journal?id=${entry.tradeId}`)
+                      }
+                      className="text-cyan-500 hover:underline"
+                    >
+                      Open Journal
+                    </button>
 
-    <button
-      onClick={() => {
+                    <button
+                      onClick={() => {
+                        const updatedJournals =
+                          savedJournals.filter(
+                            (j) => j.tradeId !== entry.tradeId
+                          );
 
-        const updatedJournals =
-          savedJournals.filter(
-            (j) => j.tradeId !== entry.tradeId
-          );
+                        localStorage.setItem(
+                          "journals",
+                          JSON.stringify(updatedJournals)
+                        );
 
-        localStorage.setItem(
-          "journals",
-          JSON.stringify(updatedJournals)
-        );
+                        setSavedJournals(updatedJournals);
+                      }}
+                      className="
+                        px-3 py-1 rounded-lg
+                        bg-red-500 hover:bg-red-600
+                        text-white text-sm
+                        transition
+                      "
+                    >
+                      Delete
+                    </button>
 
-        setSavedJournals(updatedJournals);
+                  </div>
+                </div>
 
-      }}
-      className="
-        px-3 py-1 rounded-lg
-        bg-red-500 hover:bg-red-600
-        text-white text-sm
-        transition
-      "
-    >
-      Delete
-    </button>
-
-  </div>
-
-</div>
                 <p>
                   <strong>Reason:</strong> {entry.reason || "-"}
                 </p>
@@ -217,6 +218,7 @@ export default function JournalClient() {
                   <strong>Management:</strong> {entry.management || "-"}
                 </p>
 
+                {/* ✅ CLICKABLE IMAGES */}
                 {entry.images?.length > 0 && (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
                     {entry.images.map((img, i) => (
@@ -224,13 +226,52 @@ export default function JournalClient() {
                         key={i}
                         src={img}
                         alt="Journal"
-                        className="rounded-lg border h-28 object-cover w-full"
+                        onClick={() => setSelectedImage(img)}
+                        className="
+                          rounded-lg border h-28 object-cover w-full
+                          cursor-pointer hover:scale-[1.02] transition
+                        "
                       />
                     ))}
                   </div>
                 )}
               </div>
             ))}
+          </div>
+        )}
+
+        {/* ✅ FULLSCREEN MODAL */}
+        {selectedImage && (
+          <div
+            className="
+              fixed inset-0 z-50
+              bg-black/90
+              flex items-center justify-center
+              p-4
+            "
+            onClick={() => setSelectedImage(null)}
+          >
+            <div className="relative max-w-6xl w-full">
+              <button
+                onClick={() => setSelectedImage(null)}
+                className="
+                  absolute top-4 right-4
+                  bg-red-500 hover:bg-red-600
+                  text-white px-3 py-2 rounded-lg
+                "
+              >
+                Close
+              </button>
+
+              <img
+                src={selectedImage}
+                alt="Fullscreen"
+                className="
+                  w-full max-h-[90vh]
+                  object-contain rounded-xl
+                "
+              />
+            </div>
           </div>
         )}
       </div>
@@ -369,6 +410,7 @@ export default function JournalClient() {
           className={inputStyles}
         />
 
+        {/* IMAGE UPLOAD */}
         <input
           type="file"
           accept="image/png, image/jpeg"
@@ -397,6 +439,7 @@ export default function JournalClient() {
           className="w-full p-3 rounded-lg border bg-white dark:bg-[#111827]"
         />
 
+        {/* IMAGE PREVIEW */}
         {journal.images?.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {journal.images.map((img, i) => (
@@ -407,7 +450,11 @@ export default function JournalClient() {
                 <img
                   src={img}
                   alt="Chart"
-                  className="rounded-lg border max-h-40 object-cover w-full"
+                  onClick={() => setSelectedImage(img)}
+                  className="
+                    rounded-lg border max-h-40 object-cover w-full
+                    cursor-pointer hover:scale-[1.02] transition
+                  "
                 />
 
                 <button
@@ -419,7 +466,13 @@ export default function JournalClient() {
                       ),
                     }))
                   }
-                  className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition"
+                  className="
+                    absolute top-2 right-2
+                    bg-red-500 text-white text-xs
+                    px-2 py-1 rounded
+                    opacity-0 group-hover:opacity-100
+                    transition
+                  "
                 >
                   Delete
                 </button>
@@ -430,12 +483,51 @@ export default function JournalClient() {
 
         <button
           onClick={saveJournal}
-          className="px-4 py-3 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white font-medium transition"
+          className="
+            px-4 py-3 rounded-lg
+            bg-cyan-500 hover:bg-cyan-600
+            text-white font-medium transition
+          "
         >
           Save Journal
         </button>
 
       </div>
+
+      {/* ✅ FULLSCREEN IMAGE MODAL */}
+      {selectedImage && (
+        <div
+          className="
+            fixed inset-0 z-50
+            bg-black/90
+            flex items-center justify-center
+            p-4
+          "
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-6xl w-full">
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="
+                absolute top-4 right-4
+                bg-red-500 hover:bg-red-600
+                text-white px-3 py-2 rounded-lg
+              "
+            >
+              Close
+            </button>
+
+            <img
+              src={selectedImage}
+              alt="Fullscreen"
+              className="
+                w-full max-h-[90vh]
+                object-contain rounded-xl
+              "
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

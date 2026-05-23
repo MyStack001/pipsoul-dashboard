@@ -1,5 +1,6 @@
 export interface JournalEntry {
-  tradeId: number;
+  tradeId: string;
+
   reason: string;
   confluence: string;
   stopLoss: string;
@@ -8,6 +9,5 @@ export interface JournalEntry {
   regrets: string;
   management: string;
 
-  // ✅ ADD THIS
   images: string[];
 }

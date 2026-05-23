@@ -3,12 +3,10 @@
 import { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
 import KPI from "@/components/KPI";
-import AddTradeForm from "@/components/AddTradeForm";
 import { ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 
-// ✅ safer dynamic imports
 const EquityChart = dynamic(
   () => import("@/components/charts/EquityChart"),
   { ssr: false }
@@ -28,7 +26,7 @@ export default function DashboardPage() {
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const [pairs, setPairs] = useState<string[]>(["ALL"]);
+  const [pairs] = useState<string[]>(["ALL"]);
 
   const [stats, setStats] = useState({
     totalProfit: 0,
@@ -37,14 +35,12 @@ export default function DashboardPage() {
     maxDrawdown: 0,
   });
 
-  // ✅ PROTECT DASHBOARD
   useEffect(() => {
     if (!loading && !session) {
       router.push("/login");
     }
   }, [session, loading, router]);
 
-  // ✅ CLOSE DROPDOWN OUTSIDE CLICK
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -61,7 +57,6 @@ export default function DashboardPage() {
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ✅ LOADING STATE
   if (loading) {
     return (
       <div className="p-6 text-black dark:text-white">
@@ -70,15 +65,11 @@ export default function DashboardPage() {
     );
   }
 
-  // ✅ BLOCK UNAUTHENTICATED ACCESS
-  if (!session) {
-    return null;
-  }
+  if (!session) return null;
 
   return (
     <div className="p-6 space-y-6">
 
-      {/* HEADER */}
       <div>
         <h1 className="text-2xl font-semibold text-black dark:text-white">
           Trading Overview
@@ -93,13 +84,8 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* ADD TRADE */}
-      <AddTradeForm />
-
-      {/* KPI */}
       <KPI stats={stats} />
 
-      {/* DROPDOWN */}
       <div ref={dropdownRef} className="relative w-fit">
 
         <button
@@ -110,7 +96,6 @@ export default function DashboardPage() {
             bg-white dark:bg-[#111827]
             border border-gray-200/70 dark:border-white/10
             text-black dark:text-white
-            hover:shadow-sm transition-all
           "
         >
           <span className="font-medium">
@@ -130,7 +115,6 @@ export default function DashboardPage() {
             bg-white dark:bg-[#111827]
             border border-gray-200/70 dark:border-white/10
             rounded-lg shadow-lg overflow-hidden
-            transition-all duration-200 origin-top
             ${
               open
                 ? "opacity-100 scale-100"
@@ -146,7 +130,7 @@ export default function DashboardPage() {
                 setOpen(false);
               }}
               className="
-                px-4 py-3 cursor-pointer transition
+                px-4 py-3 cursor-pointer
                 text-black dark:text-white
                 hover:bg-cyan-50 dark:hover:bg-white/10
               "
@@ -157,13 +141,11 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* CHART (LIVE STATS COMES FROM HERE) */}
       <EquityChart
         pair={pair}
         onStats={setStats}
       />
 
-      {/* TABLE (REALTIME VIA HOOK INSIDE) */}
       <TradesTable pair={pair} />
 
     </div>

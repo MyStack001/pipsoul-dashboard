@@ -11,7 +11,7 @@ type KPIStats = {
 };
 
 type KPIProps = {
-  stats?: KPIStats; // ✅ make optional to prevent crash
+  stats?: KPIStats;
 };
 
 function CountUp({
@@ -65,7 +65,6 @@ function Card({
 }
 
 export default function KPI({ stats }: KPIProps) {
-  // ✅ SAFE DEFAULTS (THIS FIXES YOUR CRASH)
   const safeStats: KPIStats = {
     totalProfit: stats?.totalProfit ?? 0,
     winRate: stats?.winRate ?? 0,
@@ -84,13 +83,14 @@ export default function KPI({ stats }: KPIProps) {
   };
 
   const hoverEffect = {
-  scale: 1.05,
-  y: -5,
-  transition: {
-    type: "spring",
-    stiffness: 300,
-  } as const,
-};
+    scale: 1.05,
+    y: -5,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+    } as const,
+  };
+
   return (
     <motion.div
       variants={container}

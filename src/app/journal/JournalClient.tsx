@@ -1,532 +1,218 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+
 import { Trade } from "@/types/trade";
 import { JournalEntry } from "@/types/journal";
 
 export default function JournalClient() {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
-  const tradeIdParam = searchParams.get("id");
-
-  const tradeId =
-    tradeIdParam && !isNaN(Number(tradeIdParam))
-      ? Number(tradeIdParam)
-      : null;
+  // =========================
+  // FIX: KEEP ID AS STRING (NO Number())
+  // =========================
+  const tradeId = searchParams.get("id");
 
   const [trade, setTrade] = useState<Trade | null>(null);
+  const [journals, setJournals] = useState<JournalEntry[]>([]);
+  const [journal, setJournal] = useState<JournalEntry | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const [savedJournals, setSavedJournals] = useState<JournalEntry[]>([]);
+  const inputStyles =
+    "w-full h-28 p-3 rounded-lg border bg-white dark:bg-[#111827] text-black dark:text-white";
 
-  // ✅ IMAGE VIEWER MODAL STATE
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-
-  const [journal, setJournal] = useState<JournalEntry>({
-    tradeId: tradeId ?? 0,
-    reason: "",
-    confluence: "",
-    stopLoss: "",
-    takeProfit: "",
-    emotions: "",
-    regrets: "",
-    management: "",
-    images: [],
-  });
-
-  // LOAD DATA
   useEffect(() => {
-    try {
-      const storedTrades = localStorage.getItem("trades");
-      const storedJournals = localStorage.getItem("journals");
+    const load = async () => {
+      try {
+        // =========================
+        // LOAD JOURNALS (LOCAL STORAGE)
+        // =========================
+        const stored = localStorage.getItem("journals");
+        const parsed: JournalEntry[] = stored ? JSON.parse(stored) : [];
 
-      // LOAD ALL JOURNALS
-      if (storedJournals) {
-        const parsed = JSON.parse(storedJournals);
+        setJournals(parsed);
 
-        const normalized: JournalEntry[] = parsed.map((j: any) => ({
-          ...j,
-          images: j.images ?? [],
-        }));
-
-        setSavedJournals(normalized);
-
-        // LOAD EXISTING JOURNAL
-        if (tradeId) {
-          const existing = normalized.find(
-            (j) => j.tradeId === tradeId
-          );
-
-          if (existing) {
-            setJournal(existing);
-          }
+        // =========================
+        // LIST PAGE (/journal)
+        // =========================
+        if (!tradeId) {
+          setLoading(false);
+          return;
         }
-      }
 
-      // LOAD TRADE
-      if (tradeId && storedTrades) {
-        const parsedTrades: Trade[] = JSON.parse(storedTrades);
+        // =========================
+        // FETCH TRADE (SUPABASE UUID)
+        // =========================
+        const { data, error } = await supabase
+          .from("trades")
+          .select("*")
+          .eq("id", tradeId) // 🔥 STRING MATCH (NO Number)
+          .maybeSingle();
 
-        const found = parsedTrades.find(
-          (t) => Number(t.id) === tradeId
+        if (error) {
+          console.error("Trade fetch error:", error.message);
+        }
+
+        if (data) {
+          setTrade(data);
+        }
+
+        // =========================
+        // FIND JOURNAL (STRING MATCH)
+        // =========================
+        const existing = parsed.find(
+          (j) => j.tradeId === tradeId
         );
 
-        if (found) {
-          setTrade(found);
-        }
+        setJournal(
+          existing || {
+            tradeId,
+
+            reason: "",
+            confluence: "",
+            stopLoss: "",
+            takeProfit: "",
+            emotions: "",
+            regrets: "",
+            management: "",
+            images: [],
+          }
+        );
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    };
+
+    load();
   }, [tradeId]);
 
+  // =========================
   // SAVE JOURNAL
+  // =========================
   const saveJournal = () => {
-    try {
-      const stored = localStorage.getItem("journals");
+    if (!journal || !tradeId) return;
 
-      const journals: JournalEntry[] = stored
-        ? JSON.parse(stored)
-        : [];
+    const stored = localStorage.getItem("journals");
+    const all: JournalEntry[] = stored ? JSON.parse(stored) : [];
 
-      const normalized = journals.map((j: any) => ({
-        ...j,
-        images: j.images ?? [],
-      }));
+    const index = all.findIndex(
+      (j) => j.tradeId === tradeId
+    );
 
-      const index = normalized.findIndex(
-        (j) => j.tradeId === tradeId
-      );
-
-      if (index !== -1) {
-        normalized[index] = journal;
-      } else {
-        normalized.push(journal);
-      }
-
-      localStorage.setItem(
-        "journals",
-        JSON.stringify(normalized)
-      );
-
-      setSavedJournals(normalized);
-
-      alert("Journal saved successfully ✅");
-    } catch (err) {
-      console.error(err);
+    if (index !== -1) {
+      all[index] = journal;
+    } else {
+      all.push(journal);
     }
+
+    localStorage.setItem("journals", JSON.stringify(all));
+    setJournals(all);
+
+    alert("Journal saved ✅");
   };
 
-  const inputStyles =
-    "w-full h-28 p-3 rounded-lg border bg-white dark:bg-[#111827] text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500";
-
+  // =========================
   // LOADING
-  if (loading) {
-    return <p className="p-6">Loading...</p>;
-  }
+  // =========================
+  if (loading) return <p className="p-6">Loading...</p>;
 
-  // =========================================
-  // SHOW ALL SAVED JOURNALS
-  // =========================================
-
+  // =========================
+  // LIST PAGE
+  // =========================
   if (!tradeId) {
     return (
-      <div className="p-6 space-y-6 text-black dark:text-white">
+      <div className="p-6">
+        <h1 className="text-2xl font-semibold">All Journals</h1>
 
-        <div>
-          <h1 className="text-2xl font-semibold">
-            Saved Journals
-          </h1>
-
-          <p className="text-sm text-gray-500">
-            Review all your trading reflections
-          </p>
-        </div>
-
-        {savedJournals.length === 0 ? (
-          <div className="p-6 rounded-xl border bg-white/60 dark:bg-white/5">
-            No saved journals yet.
-          </div>
+        {journals.length === 0 ? (
+          <p className="text-gray-500 mt-4">No journals yet</p>
         ) : (
-          <div className="grid gap-4">
-            {savedJournals.map((entry) => (
-              <div
-                key={entry.tradeId}
-                className="p-5 rounded-xl border bg-white/60 dark:bg-white/5 space-y-3"
-              >
-                <div className="flex items-center justify-between gap-3">
-
-                  <h2 className="font-semibold text-lg text-cyan-500">
-                    {
-                      JSON.parse(localStorage.getItem("trades") || "[]")
-                        .find((t: Trade) => Number(t.id) === entry.tradeId)
-                        ?.pair || "Unknown Pair"
-                    }
-                  </h2>
-
-                  <div className="flex items-center gap-2">
-
-                    <button
-                      onClick={() =>
-                        router.push(`/journal?id=${entry.tradeId}`)
-                      }
-                      className="text-cyan-500 hover:underline"
-                    >
-                      Open Journal
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        const updatedJournals =
-                          savedJournals.filter(
-                            (j) => j.tradeId !== entry.tradeId
-                          );
-
-                        localStorage.setItem(
-                          "journals",
-                          JSON.stringify(updatedJournals)
-                        );
-
-                        setSavedJournals(updatedJournals);
-                      }}
-                      className="
-                        px-3 py-1 rounded-lg
-                        bg-red-500 hover:bg-red-600
-                        text-white text-sm
-                        transition
-                      "
-                    >
-                      Delete
-                    </button>
-
-                  </div>
-                </div>
-
-                <p>
-                  <strong>Reason:</strong> {entry.reason || "-"}
-                </p>
-
-                <p>
-                  <strong>Emotions:</strong> {entry.emotions || "-"}
-                </p>
-
-                <p>
-                  <strong>Management:</strong> {entry.management || "-"}
-                </p>
-
-                {/* ✅ CLICKABLE IMAGES */}
-                {entry.images?.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
-                    {entry.images.map((img, i) => (
-                      <img
-                        key={i}
-                        src={img}
-                        alt="Journal"
-                        onClick={() => setSelectedImage(img)}
-                        className="
-                          rounded-lg border h-28 object-cover w-full
-                          cursor-pointer hover:scale-[1.02] transition
-                        "
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* ✅ FULLSCREEN MODAL */}
-        {selectedImage && (
-          <div
-            className="
-              fixed inset-0 z-50
-              bg-black/90
-              flex items-center justify-center
-              p-4
-            "
-            onClick={() => setSelectedImage(null)}
-          >
-            <div className="relative max-w-6xl w-full">
-              <button
-                onClick={() => setSelectedImage(null)}
-                className="
-                  absolute top-4 right-4
-                  bg-red-500 hover:bg-red-600
-                  text-white px-3 py-2 rounded-lg
-                "
-              >
-                Close
-              </button>
-
-              <img
-                src={selectedImage}
-                alt="Fullscreen"
-                className="
-                  w-full max-h-[90vh]
-                  object-contain rounded-xl
-                "
-              />
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // INVALID TRADE
-  if (!trade) {
-    return (
-      <p className="p-6 text-red-500">
-        Trade not found.
-      </p>
-    );
-  }
-
-  // =========================================
-  // SINGLE TRADE JOURNAL PAGE
-  // =========================================
-
-  return (
-    <div className="p-6 space-y-6 text-black dark:text-white">
-
-      <div>
-        <h1 className="text-2xl font-semibold">
-          Trading Journal
-        </h1>
-
-        <p className="text-sm text-gray-500">
-          Review and reflect on your trade
-        </p>
-      </div>
-
-      <div className="p-4 rounded-xl border space-y-2 bg-white/60 dark:bg-white/5">
-        <p><strong>Pair:</strong> {trade.pair}</p>
-
-        <p>
-          <strong>Bias:</strong>{" "}
-          <span
-            className={
-              trade.bias === "BUY"
-                ? "text-green-500"
-                : "text-red-500"
-            }
-          >
-            {trade.bias}
-          </span>
-        </p>
-
-        <p><strong>Profit:</strong> ${trade.profit}</p>
-        <p><strong>Date:</strong> {trade.date}</p>
-      </div>
-
-      <div className="space-y-4">
-
-        <textarea
-          value={journal.reason}
-          onChange={(e) =>
-            setJournal({
-              ...journal,
-              reason: e.target.value,
-            })
-          }
-          placeholder="Reason for the trade..."
-          className={inputStyles}
-        />
-
-        <textarea
-          value={journal.confluence}
-          onChange={(e) =>
-            setJournal({
-              ...journal,
-              confluence: e.target.value,
-            })
-          }
-          placeholder="Confluence for entry..."
-          className={inputStyles}
-        />
-
-        <textarea
-          value={journal.stopLoss}
-          onChange={(e) =>
-            setJournal({
-              ...journal,
-              stopLoss: e.target.value,
-            })
-          }
-          placeholder="Stop loss (pips)..."
-          className={inputStyles}
-        />
-
-        <textarea
-          value={journal.takeProfit}
-          onChange={(e) =>
-            setJournal({
-              ...journal,
-              takeProfit: e.target.value,
-            })
-          }
-          placeholder="Take profit (pips)..."
-          className={inputStyles}
-        />
-
-        <textarea
-          value={journal.emotions}
-          onChange={(e) =>
-            setJournal({
-              ...journal,
-              emotions: e.target.value,
-            })
-          }
-          placeholder="Emotions during trade..."
-          className={inputStyles}
-        />
-
-        <textarea
-          value={journal.regrets}
-          onChange={(e) =>
-            setJournal({
-              ...journal,
-              regrets: e.target.value,
-            })
-          }
-          placeholder="How could this trade have been better?"
-          className={inputStyles}
-        />
-
-        <textarea
-          value={journal.management}
-          onChange={(e) =>
-            setJournal({
-              ...journal,
-              management: e.target.value,
-            })
-          }
-          placeholder="Trade management notes..."
-          className={inputStyles}
-        />
-
-        {/* IMAGE UPLOAD */}
-        <input
-          type="file"
-          accept="image/png, image/jpeg"
-          multiple
-          onChange={(e) => {
-            const files = e.target.files;
-
-            if (!files) return;
-
-            Array.from(files).forEach((file) => {
-              const reader = new FileReader();
-
-              reader.onloadend = () => {
-                setJournal((prev) => ({
-                  ...prev,
-                  images: [
-                    ...(prev.images || []),
-                    reader.result as string,
-                  ],
-                }));
-              };
-
-              reader.readAsDataURL(file);
-            });
-          }}
-          className="w-full p-3 rounded-lg border bg-white dark:bg-[#111827]"
-        />
-
-        {/* IMAGE PREVIEW */}
-        {journal.images?.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {journal.images.map((img, i) => (
-              <div
-                key={i}
-                className="relative group"
-              >
-                <img
-                  src={img}
-                  alt="Chart"
-                  onClick={() => setSelectedImage(img)}
-                  className="
-                    rounded-lg border max-h-40 object-cover w-full
-                    cursor-pointer hover:scale-[1.02] transition
-                  "
-                />
-
-                <button
-                  onClick={() =>
-                    setJournal((prev) => ({
-                      ...prev,
-                      images: prev.images.filter(
-                        (_, index) => index !== i
-                      ),
-                    }))
-                  }
-                  className="
-                    absolute top-2 right-2
-                    bg-red-500 text-white text-xs
-                    px-2 py-1 rounded
-                    opacity-0 group-hover:opacity-100
-                    transition
-                  "
-                >
-                  Delete
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <button
-          onClick={saveJournal}
-          className="
-            px-4 py-3 rounded-lg
-            bg-cyan-500 hover:bg-cyan-600
-            text-white font-medium transition
-          "
-        >
-          Save Journal
-        </button>
-
-      </div>
-
-      {/* ✅ FULLSCREEN IMAGE MODAL */}
-      {selectedImage && (
-        <div
-          className="
-            fixed inset-0 z-50
-            bg-black/90
-            flex items-center justify-center
-            p-4
-          "
-          onClick={() => setSelectedImage(null)}
-        >
-          <div className="relative max-w-6xl w-full">
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="
-                absolute top-4 right-4
-                bg-red-500 hover:bg-red-600
-                text-white px-3 py-2 rounded-lg
-              "
+          journals.map((j) => (
+            <a
+              key={j.tradeId}
+              href={`/journal?id=${j.tradeId}`}
+              className="block p-4 border rounded-lg mt-3 hover:bg-gray-50 dark:hover:bg-white/10"
             >
-              Close
-            </button>
+              Trade #{j.tradeId}
+            </a>
+          ))
+        )}
+      </div>
+    );
+  }
 
-            <img
-              src={selectedImage}
-              alt="Fullscreen"
-              className="
-                w-full max-h-[90vh]
-                object-contain rounded-xl
-              "
-            />
-          </div>
+  // =========================
+  // EDIT MODE
+  // =========================
+  return (
+    <div className="p-6 space-y-6">
+      <h1 className="text-xl font-bold">
+        Journal Trade #{tradeId}
+      </h1>
+
+      {/* TRADE INFO */}
+      {trade ? (
+        <div className="p-4 border rounded-lg">
+          <p>Pair: {trade.pair}</p>
+          <p>Bias: {trade.bias}</p>
+          <p>Profit: ${trade.profit}</p>
         </div>
+      ) : (
+        <p className="text-yellow-500">
+          Trade not found in Supabase (journal still works)
+        </p>
+      )}
+
+      {/* JOURNAL FORM */}
+      {journal && (
+        <>
+          <textarea
+            value={journal.reason}
+            onChange={(e) =>
+              setJournal({ ...journal, reason: e.target.value })
+            }
+            placeholder="Reason..."
+            className={inputStyles}
+          />
+
+          <textarea
+            value={journal.confluence}
+            onChange={(e) =>
+              setJournal({ ...journal, confluence: e.target.value })
+            }
+            placeholder="Confluence..."
+            className={inputStyles}
+          />
+
+          <textarea
+            value={journal.emotions}
+            onChange={(e) =>
+              setJournal({ ...journal, emotions: e.target.value })
+            }
+            placeholder="Emotions..."
+            className={inputStyles}
+          />
+
+          <textarea
+            value={journal.management}
+            onChange={(e) =>
+              setJournal({ ...journal, management: e.target.value })
+            }
+            placeholder="Management..."
+            className={inputStyles}
+          />
+
+          <button
+            onClick={saveJournal}
+            className="px-4 py-3 bg-cyan-500 text-white rounded-lg"
+          >
+            Save Journal
+          </button>
+        </>
       )}
     </div>
   );

@@ -2,153 +2,79 @@
 
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/components/AuthProvider";
 import { useTradesStore } from "@/hooks/useTradesStore";
+import { supabase } from "@/lib/supabase";
 
-export default function TradesTable({
-  pair,
-}: {
-  pair: string;
-}) {
+export default function TradesTable({ pair }: { pair: string }) {
   const { session } = useAuth();
-
+  const router = useRouter();
   const { trades } = useTradesStore();
 
-  const [search, setSearch] =
-    useState("");
-
-  const [currentPage, setCurrentPage] =
-    useState(1);
-
-  const [sortOrder, setSortOrder] =
-    useState<"asc" | "desc">("desc");
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const itemsPerPage = 5;
 
   // FILTER
   const filteredTrades = useMemo(() => {
-    if (!Array.isArray(trades))
-      return [];
+    if (!Array.isArray(trades)) return [];
+    if (pair === "ALL") return trades;
 
-    if (pair === "ALL")
-      return trades;
-
-    return trades.filter(
-      (t) => t.pair === pair
-    );
+    return trades.filter((t) => t.pair === pair);
   }, [trades, pair]);
 
   // SEARCH
   const searchedTrades = useMemo(() => {
     return filteredTrades.filter((t) =>
-      t.pair
-        .toLowerCase()
-        .includes(search.toLowerCase())
+      t.pair.toLowerCase().includes(search.toLowerCase())
     );
   }, [filteredTrades, search]);
 
   // PAGINATION
-  const totalPages = Math.ceil(
-    searchedTrades.length /
-      itemsPerPage
-  );
+  const totalPages = Math.ceil(searchedTrades.length / itemsPerPage);
 
-  const paginatedTrades =
-    useMemo(() => {
-      const start =
-        (currentPage - 1) *
-        itemsPerPage;
-
-      return searchedTrades.slice(
-        start,
-        start + itemsPerPage
-      );
-    }, [
-      searchedTrades,
-      currentPage,
-    ]);
+  const paginatedTrades = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return searchedTrades.slice(start, start + itemsPerPage);
+  }, [searchedTrades, currentPage]);
 
   // SORT
   const sortedTrades = useMemo(() => {
-    return [...paginatedTrades].sort(
-      (a, b) => {
-        const profitA = Number(
-          a.profit || 0
-        );
+    return [...paginatedTrades].sort((a, b) => {
+      const aProfit = Number(a.profit || 0);
+      const bProfit = Number(b.profit || 0);
 
-        const profitB = Number(
-          b.profit || 0
-        );
+      return sortOrder === "asc"
+        ? aProfit - bProfit
+        : bProfit - aProfit;
+    });
+  }, [paginatedTrades, sortOrder]);
 
-        return sortOrder === "asc"
-          ? profitA - profitB
-          : profitB - profitA;
-      }
-    );
-  }, [
-    paginatedTrades,
-    sortOrder,
-  ]);
-
-  if (!session) return null;
+  if (!session) {
+    return <p className="p-6">No session</p>;
+  }
 
   return (
     <motion.div
-      initial={{
-        opacity: 0,
-        y: 10,
-      }}
-      animate={{
-        opacity: 1,
-        y: 0,
-      }}
-      className="
-        p-6 rounded-2xl
-        bg-white/60 dark:bg-white/5
-        backdrop-blur-xl
-        border border-gray-200/70 dark:border-white/10
-        shadow-sm
-        overflow-x-auto
-      "
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="p-6 rounded-2xl bg-white/60 dark:bg-white/5"
     >
       {/* HEADER */}
-      <div
-        className="
-          flex items-center
-          justify-between
-          mb-5
-        "
-      >
-        <h2
-          className="
-            text-lg font-semibold
-            text-black dark:text-white
-          "
-        >
-          Trades
-        </h2>
+      <div className="flex justify-between mb-5">
+        <h2 className="text-lg font-semibold">Trades</h2>
 
         <button
           onClick={() =>
-            setSortOrder(
-              sortOrder === "asc"
-                ? "desc"
-                : "asc"
-            )
+            setSortOrder(sortOrder === "asc" ? "desc" : "asc")
           }
-          className="
-            px-4 py-2 rounded-lg
-            bg-cyan-500 hover:bg-cyan-600
-            text-white text-sm
-            transition-all duration-200
-          "
+          className="px-4 py-2 bg-cyan-500 text-white rounded-lg"
         >
-          Sort:
-          {" "}
-          {sortOrder === "asc"
-            ? "Lowest"
-            : "Highest"}
+          Sort
         </button>
       </div>
 
@@ -156,277 +82,77 @@ export default function TradesTable({
       <input
         value={search}
         onChange={(e) => {
-          setSearch(
-            e.target.value
-          );
-
+          setSearch(e.target.value);
           setCurrentPage(1);
         }}
         placeholder="Search pair..."
-        className="
-          mb-5 w-full
-          px-4 py-3 rounded-lg
-          bg-white dark:bg-[#111827]
-          border border-gray-200/70 dark:border-white/10
-          text-black dark:text-white
-          placeholder:text-gray-400
-          focus:outline-none
-          focus:ring-2
-          focus:ring-cyan-400
-        "
+        className="mb-5 w-full p-3 border rounded-lg"
       />
 
       {/* TABLE */}
-<table className="w-full text-sm">
-  <thead
-    className="
-      bg-gray-100/70
-      dark:bg-white/10
-    "
-  >
-    <tr>
-      <th
-        className="
-          px-4 py-3 text-left
-          text-black dark:text-white
-        "
-      >
-        Pair
-      </th>
+      <table className="w-full text-sm">
+        <thead>
+          <tr>
+            <th>Pair</th>
+            <th>Bias</th>
+            <th>Entry</th>
+            <th>Exit</th>
+            <th>Lot</th>
+            <th>Profit</th>
+            <th>Journal</th>
+          </tr>
+        </thead>
 
-      <th
-        className="
-          px-4 py-3 text-left
-          text-black dark:text-white
-        "
-      >
-        Bias
-      </th>
+        <tbody>
+          {sortedTrades.map((trade) => (
+            <tr key={trade.id}>
+              <td>{trade.pair}</td>
+              <td>{trade.bias}</td>
+              <td>{trade.entry}</td>
+              <td>{trade.exit}</td>
+              <td>{trade.lot}</td>
+              <td>${trade.profit}</td>
 
-      <th
-        className="
-          px-4 py-3 text-left
-          text-black dark:text-white
-        "
-      >
-        Entry
-      </th>
+              <td className="flex gap-3">
+                <button
+                  onClick={() =>
+                    router.push(`/journal?id=${trade.id}`)
+                  }
+                  className="text-cyan-500"
+                >
+                  Edit
+                </button>
 
-      <th
-        className="
-          px-4 py-3 text-left
-          text-black dark:text-white
-        "
-      >
-        Exit
-      </th>
+                <a href="/journal" className="text-gray-500">
+                  View
+                </a>
 
-      <th
-        className="
-          px-4 py-3 text-left
-          text-black dark:text-white
-        "
-      >
-        Lot
-      </th>
+                <button
+                  onClick={async () => {
+                    const confirmDelete = confirm("Delete?");
+                    if (!confirmDelete) return;
 
-      <th
-        className="
-          px-4 py-3 text-left
-          text-black dark:text-white
-        "
-      >
-        Profit
-      </th>
+                    const { error } = await supabase
+                      .from("trades")
+                      .delete()
+                      .eq("id", trade.id);
 
-      {/* NEW */}
-      <th
-        className="
-          px-4 py-3 text-left
-          text-black dark:text-white
-        "
-      >
-        Journal
-      </th>
-    </tr>
-  </thead>
+                    if (error) alert(error.message);
+                  }}
+                  className="text-red-500"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-  <tbody>
-    {sortedTrades.map((trade) => (
-      <tr
-        key={trade.id}
-        className="
-          border-t
-          border-gray-200/50
-          dark:border-white/10
-          hover:bg-black/5
-          dark:hover:bg-white/5
-          transition
-        "
-      >
-        <td
-          className="
-            px-4 py-4
-            text-black
-            dark:text-white
-          "
-        >
-          {trade.pair}
-        </td>
-
-        <td
-          className={`
-            px-4 py-4 font-medium
-            ${
-              trade.bias === "BUY"
-                ? "text-green-500"
-                : "text-red-500"
-            }
-          `}
-        >
-          {trade.bias}
-        </td>
-
-        <td
-          className="
-            px-4 py-4
-            text-black
-            dark:text-white
-          "
-        >
-          {trade.entry}
-        </td>
-
-        <td
-          className="
-            px-4 py-4
-            text-black
-            dark:text-white
-          "
-        >
-          {trade.exit}
-        </td>
-
-        <td
-          className="
-            px-4 py-4
-            text-black
-            dark:text-white
-          "
-        >
-          {trade.lot}
-        </td>
-
-        <td
-          className={`
-            px-4 py-4 font-semibold
-            ${
-              Number(trade.profit) >= 0
-                ? "text-green-500"
-                : "text-red-500"
-            }
-          `}
-        >
-          $
-          {Number(
-            trade.profit
-          ).toFixed(2)}
-        </td>
-
-        {/* OPEN JOURNAL LINK */}
-        <td className="px-4 py-4">
-          <a
-            href={`/journal/${trade.id}`}
-            className="
-              text-cyan-500
-              hover:text-cyan-400
-              transition-colors duration-200
-              font-medium
-            "
-          >
-            Open Journal
-          </a>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
-
-      {/* EMPTY */}
-      {sortedTrades.length ===
-        0 && (
-        <div
-          className="
-            py-10 text-center
-            text-gray-500
-            dark:text-gray-400
-          "
-        >
+      {sortedTrades.length === 0 && (
+        <p className="text-center text-gray-500 mt-5">
           No trades found
-        </div>
-      )}
-
-      {/* PAGINATION */}
-      {totalPages > 1 && (
-        <div
-          className="
-            flex items-center
-            justify-center gap-3
-            mt-6
-          "
-        >
-          <button
-            disabled={
-              currentPage === 1
-            }
-            onClick={() =>
-              setCurrentPage(
-                (prev) =>
-                  prev - 1
-              )
-            }
-            className="
-              px-4 py-2 rounded-lg
-              bg-white dark:bg-[#111827]
-              border border-gray-200/70 dark:border-white/10
-              text-black dark:text-white
-              disabled:opacity-40
-            "
-          >
-            Prev
-          </button>
-
-          <span
-            className="
-              text-black dark:text-white
-            "
-          >
-            {currentPage} /{" "}
-            {totalPages}
-          </span>
-
-          <button
-            disabled={
-              currentPage ===
-              totalPages
-            }
-            onClick={() =>
-              setCurrentPage(
-                (prev) =>
-                  prev + 1
-              )
-            }
-            className="
-              px-4 py-2 rounded-lg
-              bg-white dark:bg-[#111827]
-              border border-gray-200/70 dark:border-white/10
-              text-black dark:text-white
-              disabled:opacity-40
-            "
-          >
-            Next
-          </button>
-        </div>
+        </p>
       )}
     </motion.div>
   );

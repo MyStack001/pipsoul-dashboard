@@ -177,160 +177,180 @@ export default function TradesTable({
       />
 
       {/* TABLE */}
-      <table className="w-full text-sm">
-        <thead
+<table className="w-full text-sm">
+  <thead
+    className="
+      bg-gray-100/70
+      dark:bg-white/10
+    "
+  >
+    <tr>
+      <th
+        className="
+          px-4 py-3 text-left
+          text-black dark:text-white
+        "
+      >
+        Pair
+      </th>
+
+      <th
+        className="
+          px-4 py-3 text-left
+          text-black dark:text-white
+        "
+      >
+        Bias
+      </th>
+
+      <th
+        className="
+          px-4 py-3 text-left
+          text-black dark:text-white
+        "
+      >
+        Entry
+      </th>
+
+      <th
+        className="
+          px-4 py-3 text-left
+          text-black dark:text-white
+        "
+      >
+        Exit
+      </th>
+
+      <th
+        className="
+          px-4 py-3 text-left
+          text-black dark:text-white
+        "
+      >
+        Lot
+      </th>
+
+      <th
+        className="
+          px-4 py-3 text-left
+          text-black dark:text-white
+        "
+      >
+        Profit
+      </th>
+
+      {/* NEW */}
+      <th
+        className="
+          px-4 py-3 text-left
+          text-black dark:text-white
+        "
+      >
+        Journal
+      </th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {sortedTrades.map((trade) => (
+      <tr
+        key={trade.id}
+        className="
+          border-t
+          border-gray-200/50
+          dark:border-white/10
+          hover:bg-black/5
+          dark:hover:bg-white/5
+          transition
+        "
+      >
+        <td
           className="
-            bg-gray-100/70
-            dark:bg-white/10
+            px-4 py-4
+            text-black
+            dark:text-white
           "
         >
-          <tr>
-            <th
-              className="
-                px-4 py-3 text-left
-                text-black dark:text-white
-              "
-            >
-              Pair
-            </th>
+          {trade.pair}
+        </td>
 
-            <th
-              className="
-                px-4 py-3 text-left
-                text-black dark:text-white
-              "
-            >
-              Bias
-            </th>
+        <td
+          className={`
+            px-4 py-4 font-medium
+            ${
+              trade.bias === "BUY"
+                ? "text-green-500"
+                : "text-red-500"
+            }
+          `}
+        >
+          {trade.bias}
+        </td>
 
-            <th
-              className="
-                px-4 py-3 text-left
-                text-black dark:text-white
-              "
-            >
-              Entry
-            </th>
+        <td
+          className="
+            px-4 py-4
+            text-black
+            dark:text-white
+          "
+        >
+          {trade.entry}
+        </td>
 
-            <th
-              className="
-                px-4 py-3 text-left
-                text-black dark:text-white
-              "
-            >
-              Exit
-            </th>
+        <td
+          className="
+            px-4 py-4
+            text-black
+            dark:text-white
+          "
+        >
+          {trade.exit}
+        </td>
 
-            <th
-              className="
-                px-4 py-3 text-left
-                text-black dark:text-white
-              "
-            >
-              Lot
-            </th>
+        <td
+          className="
+            px-4 py-4
+            text-black
+            dark:text-white
+          "
+        >
+          {trade.lot}
+        </td>
 
-            <th
-              className="
-                px-4 py-3 text-left
-                text-black dark:text-white
-              "
-            >
-              Profit
-            </th>
-          </tr>
-        </thead>
+        <td
+          className={`
+            px-4 py-4 font-semibold
+            ${
+              Number(trade.profit) >= 0
+                ? "text-green-500"
+                : "text-red-500"
+            }
+          `}
+        >
+          $
+          {Number(
+            trade.profit
+          ).toFixed(2)}
+        </td>
 
-        <tbody>
-          {sortedTrades.map(
-            (trade) => (
-              <tr
-                key={trade.id}
-                className="
-                  border-t
-                  border-gray-200/50
-                  dark:border-white/10
-                  hover:bg-black/5
-                  dark:hover:bg-white/5
-                  transition
-                "
-              >
-                <td
-                  className="
-                    px-4 py-4
-                    text-black
-                    dark:text-white
-                  "
-                >
-                  {trade.pair}
-                </td>
-
-                <td
-                  className={`
-                    px-4 py-4 font-medium
-                    ${
-                      trade.bias ===
-                      "BUY"
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }
-                  `}
-                >
-                  {trade.bias}
-                </td>
-
-                <td
-                  className="
-                    px-4 py-4
-                    text-black
-                    dark:text-white
-                  "
-                >
-                  {trade.entry}
-                </td>
-
-                <td
-                  className="
-                    px-4 py-4
-                    text-black
-                    dark:text-white
-                  "
-                >
-                  {trade.exit}
-                </td>
-
-                <td
-                  className="
-                    px-4 py-4
-                    text-black
-                    dark:text-white
-                  "
-                >
-                  {trade.lot}
-                </td>
-
-                <td
-                  className={`
-                    px-4 py-4 font-semibold
-                    ${
-                      Number(
-                        trade.profit
-                      ) >= 0
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }
-                  `}
-                >
-                  $
-                  {Number(
-                    trade.profit
-                  ).toFixed(2)}
-                </td>
-              </tr>
-            )
-          )}
-        </tbody>
-      </table>
+        {/* OPEN JOURNAL LINK */}
+        <td className="px-4 py-4">
+          <a
+            href={`/journal/${trade.id}`}
+            className="
+              text-cyan-500
+              hover:text-cyan-400
+              transition-colors duration-200
+              font-medium
+            "
+          >
+            Open Journal
+          </a>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
 
       {/* EMPTY */}
       {sortedTrades.length ===

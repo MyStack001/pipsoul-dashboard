@@ -3,78 +3,105 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
+import { ChevronDown } from "lucide-react";
 
 export default function AddTradeForm() {
   const { session } = useAuth();
 
   const [pair, setPair] = useState("");
-  const [bias, setBias] = useState<"BUY" | "SELL">("BUY");
+
+  // ✅ CUSTOM BIAS DROPDOWN
+  const [bias, setBias] =
+    useState<"BUY" | "SELL" | "">("");
+
+  const [biasOpen, setBiasOpen] =
+    useState(false);
 
   const [entry, setEntry] = useState("");
   const [exit, setExit] = useState("");
   const [lot, setLot] = useState("");
 
-  const [loading, setLoading] = useState(false);
+  // ✅ MANUAL PROFIT INPUT
+  const [profit, setProfit] =
+    useState("");
 
-  const calculateProfit = () => {
-    const e = Number(entry);
-    const x = Number(exit);
-    const l = Number(lot);
+  const [loading, setLoading] =
+    useState(false);
 
-    if (bias === "BUY") {
-      return (x - e) * l * 10000;
-    }
-
-    return (e - x) * l * 10000;
-  };
+  const inputStyles = `
+    px-4 py-3 rounded-lg
+    bg-white dark:bg-[#111827]
+    border border-gray-200/70 dark:border-white/10
+    text-black dark:text-white
+    placeholder:text-gray-400 dark:placeholder:text-gray-500
+    focus:outline-none focus:ring-2 focus:ring-cyan-400
+  `;
 
   const handleSubmit = async (
     e: React.FormEvent
   ) => {
     e.preventDefault();
 
-    if (!session) return;
-
-    setLoading(true);
-
-    const profit = calculateProfit();
-
-    const { error } = await supabase
-      .from("trades")
-      .insert([
-        {
-          user_id: session.user.id,
-
-          pair,
-          bias,
-
-          entry: Number(entry),
-          exit: Number(exit),
-
-          lot: Number(lot),
-
-          profit,
-
-          date: new Date().toISOString(),
-        },
-      ]);
-
-    setLoading(false);
-
-    if (error) {
-      console.error(error);
-      alert(error.message);
+    if (!session?.user?.id) {
+      alert("No session found");
       return;
     }
 
-    alert("Trade added!");
+    setLoading(true);
 
-    setPair("");
-    setEntry("");
-    setExit("");
-    setLot("");
+    try {
+      const payload = {
+        user_id: session.user.id,
 
-    window.location.reload();
+        pair,
+        bias,
+
+        entry: Number(entry),
+        exit: Number(exit),
+
+        lot: Number(lot),
+
+        // ✅ MANUAL PROFIT
+        profit: Number(profit),
+
+        date: new Date().toISOString(),
+      };
+
+      const { data, error } =
+        await supabase
+          .from("trades")
+          .insert([payload])
+          .select();
+
+      if (error) {
+        console.error(error);
+        alert(error.message);
+        return;
+      }
+
+      console.log(
+        "INSERT SUCCESS:",
+        data
+      );
+
+      // ✅ RESET
+      setPair("");
+
+      setBias("");
+      setBiasOpen(false);
+
+      setEntry("");
+      setExit("");
+      setLot("");
+
+      setProfit("");
+
+    } catch (err) {
+      console.error(err);
+      alert("Something crashed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -83,68 +110,173 @@ export default function AddTradeForm() {
       className="
         grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3
         gap-4
-        p-4
-        rounded-xl
-        bg-white dark:bg-[#111827]
+        p-6 rounded-2xl
+        bg-white/60 dark:bg-white/5
+        backdrop-blur-xl
         border border-gray-200/70 dark:border-white/10
+        shadow-sm
       "
     >
+      {/* PAIR */}
       <input
         type="text"
         placeholder="Pair"
         value={pair}
-        onChange={(e) => setPair(e.target.value)}
-        className="p-3 rounded bg-gray-100 dark:bg-black/30"
+        onChange={(e) =>
+          setPair(e.target.value)
+        }
+        className={inputStyles}
       />
 
-      <select
-        value={bias}
-        onChange={(e) =>
-          setBias(e.target.value as "BUY" | "SELL")
-        }
-        className="p-3 rounded bg-gray-100 dark:bg-black/30"
-      >
-        <option value="BUY">BUY</option>
-        <option value="SELL">SELL</option>
-      </select>
+      {/* CUSTOM BIAS DROPDOWN */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() =>
+            setBiasOpen(!biasOpen)
+          }
+          className={`
+            ${inputStyles}
+            w-full flex items-center
+            justify-between text-left
+          `}
+        >
+          <span
+            className={`
+              ${
+                bias
+                  ? bias === "BUY"
+                    ? "text-green-500"
+                    : "text-red-500"
+                  : "text-gray-400 dark:text-gray-500"
+              }
+            `}
+          >
+            {bias || "BIAS"}
+          </span>
 
+          <ChevronDown
+            size={18}
+            className={`
+              transition-transform duration-300
+              text-gray-500
+              ${
+                biasOpen
+                  ? "rotate-180"
+                  : ""
+              }
+            `}
+          />
+        </button>
+
+        {/* DROPDOWN MENU */}
+        <div
+          className={`
+            absolute mt-2 w-full z-50
+            bg-white dark:bg-[#111827]
+            border border-gray-200/70 dark:border-white/10
+            rounded-lg shadow-lg overflow-hidden
+            transition-all duration-200 origin-top
+            ${
+              biasOpen
+                ? "opacity-100 scale-100"
+                : "opacity-0 scale-95 pointer-events-none"
+            }
+          `}
+        >
+          {["BUY", "SELL"].map(
+            (item) => (
+              <div
+                key={item}
+                onClick={() => {
+                  setBias(
+                    item as
+                      | "BUY"
+                      | "SELL"
+                  );
+
+                  setBiasOpen(false);
+                }}
+                className={`
+                  px-4 py-3 cursor-pointer transition
+                  hover:bg-cyan-50 dark:hover:bg-white/10
+                  ${
+                    item === "BUY"
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }
+                `}
+              >
+                {item}
+              </div>
+            )
+          )}
+        </div>
+      </div>
+
+      {/* ENTRY */}
       <input
         type="number"
         step="0.0001"
         placeholder="Entry"
         value={entry}
-        onChange={(e) => setEntry(e.target.value)}
-        className="p-3 rounded bg-gray-100 dark:bg-black/30"
+        onChange={(e) =>
+          setEntry(e.target.value)
+        }
+        className={inputStyles}
       />
 
+      {/* EXIT */}
       <input
         type="number"
         step="0.0001"
         placeholder="Exit"
         value={exit}
-        onChange={(e) => setExit(e.target.value)}
-        className="p-3 rounded bg-gray-100 dark:bg-black/30"
+        onChange={(e) =>
+          setExit(e.target.value)
+        }
+        className={inputStyles}
       />
 
+      {/* LOT SIZE */}
       <input
         type="number"
         step="0.01"
         placeholder="Lot Size"
         value={lot}
-        onChange={(e) => setLot(e.target.value)}
-        className="p-3 rounded bg-gray-100 dark:bg-black/30"
+        onChange={(e) =>
+          setLot(e.target.value)
+        }
+        className={inputStyles}
       />
 
+      {/* PROFIT */}
+      <input
+        type="number"
+        step="0.01"
+        placeholder="Profit / Loss"
+        value={profit}
+        onChange={(e) =>
+          setProfit(e.target.value)
+        }
+        className={inputStyles}
+      />
+
+      {/* BUTTON */}
       <button
         type="submit"
         disabled={loading}
         className="
-          bg-cyan-600 hover:bg-cyan-700
-          text-white font-semibold
-          rounded p-3
+          px-5 py-3 rounded-lg
+          bg-cyan-500 hover:bg-cyan-600
+          text-white font-medium
+          transition-all duration-200
+          hover:shadow-lg
         "
       >
-        {loading ? "Saving..." : "Add Trade"}
+        {loading
+          ? "Saving..."
+          : "Add Trade"}
       </button>
     </form>
   );

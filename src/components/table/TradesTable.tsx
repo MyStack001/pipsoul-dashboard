@@ -90,65 +90,100 @@ export default function TradesTable({ pair }: { pair: string }) {
       />
 
       {/* TABLE */}
-      <table className="w-full text-sm">
-        <thead>
-          <tr>
-            <th>Pair</th>
-            <th>Bias</th>
-            <th>Entry</th>
-            <th>Exit</th>
-            <th>Lot</th>
-            <th>Profit</th>
-            <th>Journal</th>
-          </tr>
-        </thead>
+<table className="w-full text-sm border-collapse">
+  <thead>
+    <tr className="border-b border-gray-200 dark:border-white/10">
+      <th className="px-4 py-3 text-left">Pair</th>
+      <th className="px-4 py-3 text-left">Bias</th>
+      <th className="px-4 py-3 text-left">Entry</th>
+      <th className="px-4 py-3 text-left">Exit</th>
+      <th className="px-4 py-3 text-left">Lot</th>
+      <th className="px-4 py-3 text-left">Profit</th>
+      <th className="px-4 py-3 text-left">Journal</th>
+    </tr>
+  </thead>
 
-        <tbody>
-          {sortedTrades.map((trade) => (
-            <tr key={trade.id}>
-              <td>{trade.pair}</td>
-              <td>{trade.bias}</td>
-              <td>{trade.entry}</td>
-              <td>{trade.exit}</td>
-              <td>{trade.lot}</td>
-              <td>${trade.profit}</td>
+  <tbody>
+    {sortedTrades.map((trade) => (
+      <tr
+        key={trade.id}
+        className="border-b border-gray-200 dark:border-white/10"
+      >
+        <td className="px-4 py-3">{trade.pair}</td>
 
-              <td className="flex gap-3">
-                <button
-                  onClick={() =>
-                    router.push(`/journal?id=${trade.id}`)
-                  }
-                  className="text-cyan-500"
-                >
-                  Edit
-                </button>
+        <td
+          className={`px-4 py-3 font-medium ${
+            trade.bias === "BUY"
+              ? "text-green-500"
+              : "text-red-500"
+          }`}
+        >
+          {trade.bias}
+        </td>
 
-                <a href="/journal" className="text-gray-500">
-                  View
-                </a>
+        <td className="px-4 py-3">
+          {trade.entry}
+        </td>
 
-                <button
-                  onClick={async () => {
-                    const confirmDelete = confirm("Delete?");
-                    if (!confirmDelete) return;
+        <td className="px-4 py-3">
+          {trade.exit}
+        </td>
 
-                    const { error } = await supabase
-                      .from("trades")
-                      .delete()
-                      .eq("id", trade.id);
+        <td className="px-4 py-3">
+          {trade.lot}
+        </td>
 
-                    if (error) alert(error.message);
-                  }}
-                  className="text-red-500"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <td className="px-4 py-3 font-semibold">
+          ${trade.profit}
+        </td>
 
+        <td className="px-4 py-3">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() =>
+                router.push(
+                  `/journal?id=${trade.id}`
+                )
+              }
+              className="text-cyan-500 hover:text-cyan-400"
+            >
+              Edit
+            </button>
+
+            <a
+              href="/journal"
+              className="text-gray-500 hover:text-gray-400"
+            >
+              View
+            </a>
+
+            <button
+              onClick={async () => {
+                const confirmDelete =
+                  confirm("Delete?");
+
+                if (!confirmDelete) return;
+
+                const { error } =
+                  await supabase
+                    .from("trades")
+                    .delete()
+                    .eq("id", trade.id);
+
+                if (error) {
+                  alert(error.message);
+                }
+              }}
+              className="text-red-500 hover:text-red-400"
+            >
+              Delete
+            </button>
+          </div>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
       {sortedTrades.length === 0 && (
         <p className="text-center text-gray-500 mt-5">
           No trades found

@@ -1,48 +1,98 @@
 export type Trade = {
-  id: number;
+  id: number | string;
+
   pair: string;
+
   entry: number;
   exit: number;
+
   lot: number;
+
   profit: number;
+
   date: string;
+
   bias: "BUY" | "SELL";
+
+  created_at?: string;
 };
 
 export function getStats(filteredTrades: Trade[] = []) {
-  const totalTrades = filteredTrades.length;
-
-  const totalProfit = filteredTrades.reduce(
-    (acc: number, t: Trade) => acc + Number(t.profit),
-    0
+  const sortedTrades = [...filteredTrades].sort(
+    (a, b) =>
+      new Date(
+        a.created_at || a.date
+      ).getTime() -
+      new Date(
+        b.created_at || b.date
+      ).getTime()
   );
 
-  const wins = filteredTrades.filter(
-    (t: Trade) => Number(t.profit) > 0
-  ).length;
+  const totalTrades =
+    sortedTrades.length;
 
-  const winRate = totalTrades
-    ? (wins / totalTrades) * 100
-    : 0;
+  const totalProfit =
+    sortedTrades.reduce(
+      (acc, t) =>
+        acc + Number(t.profit || 0),
+      0
+    );
 
-  // simple drawdown (safe version for now)
+  const wins =
+    sortedTrades.filter(
+      (t) =>
+        Number(t.profit || 0) > 0
+    ).length;
+
+  const winRate =
+    totalTrades > 0
+      ? (wins / totalTrades) * 100
+      : 0;
+
+  // =========================
+  // EQUITY + DRAWDOWN
+  // =========================
+  let equity = 0;
+
   let peak = 0;
+
   let maxDrawdown = 0;
 
-  let equity = 1000;
+  const equityCurve: {
+  equity: number;
+  drawdown: number;
+}[] = [];
 
-  for (const t of filteredTrades) {
-    equity += Number(t.profit);
-    if (equity > peak) peak = equity;
+  for (const trade of sortedTrades) {
+    equity += Number(
+      trade.profit || 0
+    );
 
-    const dd = equity - peak;
-    if (dd < maxDrawdown) maxDrawdown = dd;
+   if (equity > peak) {
+  peak = equity;
+}
+
+const drawdown = peak - equity;
+
+equityCurve.push({
+  equity,
+  drawdown: -drawdown,
+});
+
+if (drawdown > maxDrawdown) {
+  maxDrawdown = drawdown;
+}
   }
 
   return {
     totalTrades,
-    winRate,
+
     totalProfit,
+
+    winRate,
+
     maxDrawdown,
+
+    equityCurve,
   };
 }

@@ -14,6 +14,7 @@ import {
 
 import { useAuth } from "@/components/AuthProvider";
 import { useTradesStore } from "@/hooks/useTradesStore";
+import { getStats } from "@/lib/calcStats";
 
 type Props = {
   pair: string;
@@ -23,6 +24,10 @@ type Props = {
     winRate: number;
     totalTrades: number;
     maxDrawdown: number;
+   equityCurve: {
+  equity: number;
+  drawdown: number;
+}[];
   }) => void;
 };
 
@@ -50,56 +55,22 @@ export default function EquityChart({
     );
   }, [trades, pair]);
 
+   const stats = useMemo(() => {
+  return getStats(filteredTrades);
+}, [filteredTrades]);
+    
+
   // EQUITY DATA
   const data = useMemo(() => {
-    let running = 1000;
-
-    return filteredTrades.map((t, i) => {
-      const profit = Number(
-        t?.profit ?? 0
-      );
-
-      running += isNaN(profit)
-        ? 0
-        : profit;
-
-      return {
-        trade: i + 1,
-        equity: running,
-      };
-    });
-  }, [filteredTrades]);
-
-  // CALCULATE STATS
-  const stats = useMemo(() => {
-    const totalTrades =
-      filteredTrades.length;
-
-    const totalProfit =
-      filteredTrades.reduce(
-        (acc, t) =>
-          acc + Number(t?.profit ?? 0),
-        0
-      );
-
-    const wins =
-      filteredTrades.filter(
-        (t) => Number(t?.profit) > 0
-      ).length;
-
-    const winRate =
-      totalTrades > 0
-        ? (wins / totalTrades) * 100
-        : 0;
-
-    return {
-      totalProfit,
-      winRate,
-      totalTrades,
-      maxDrawdown: 0,
-    };
-  }, [filteredTrades]);
-
+  return stats.equityCurve.map(
+    (point, index) => ({
+      trade: index + 1,
+      equity: point.equity,
+      drawdown: point.drawdown,
+    })
+  );
+}, [stats]);
+      
   // SEND STATS TO DASHBOARD
   useEffect(() => {
     if (onStats) {
@@ -161,6 +132,13 @@ export default function EquityChart({
               strokeWidth={2}
               dot={false}
             />
+            <Line
+  type="monotone"
+  dataKey="drawdown"
+  stroke="#ef4444"
+  strokeWidth={2}
+  dot={false}
+/>
           </LineChart>
         </ResponsiveContainer>
       </div>

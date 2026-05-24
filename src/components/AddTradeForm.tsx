@@ -4,6 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
 import { ChevronDown } from "lucide-react";
+import { refreshTrades } from "@/hooks/useTradesStore";
 
 export default function AddTradeForm() {
   const { session } = useAuth();
@@ -83,6 +84,7 @@ export default function AddTradeForm() {
         "INSERT SUCCESS:",
         data
       );
+      refreshTrades (session.user.id);
 
       // ✅ RESET
       setPair("");

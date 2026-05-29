@@ -10,10 +10,7 @@ import type { Trade } from "@/types/trade";
 // =========================
 let globalTrades: Trade[] = [];
 
-let subscribers: React.Dispatch<
-  React.SetStateAction<Trade[]>
->[] = [];
-
+let subscribers: ((trades: Trade[]) => void)[] = [];
 function notify() {
   subscribers.forEach((fn) =>
     fn([...globalTrades])
@@ -102,7 +99,6 @@ export function useTradesStore() {
     const channelName = `trades-${userId}`;
 
 // 🔥 REMOVE OLD CHANNEL FIRST
-supabase.removeAllChannels();
 
 const channel =
   supabase.channel(channelName);

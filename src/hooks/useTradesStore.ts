@@ -17,25 +17,6 @@ function notify() {
   );
 }
 // GLOBAL STATE
-export function refreshTrades(userId: string) {
-  const fetchTrades = async () => {
-    const { data, error } = await supabase
-      .from("trades")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("REFRESH ERROR:", error.message);
-      return;
-    }
-
-    globalTrades = data || [];
-    notify();
-  };
-
-  fetchTrades();
-}
 
 // HOOK STARTS HERE
 
@@ -96,32 +77,25 @@ export function useTradesStore() {
     // =========================
     // REALTIME
     // =========================
-    const channelName = `trades-${userId}`;
+    const channel = supabase
+  .channel(`trades-${userId}`)
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "trades",
+      filter: `user_id=eq.${userId}`,
+    },
+    () => {
+      fetchTrades();
+    }
+  )
+  .subscribe();
 
-// 🔥 REMOVE OLD CHANNEL FIRST
-
-const channel =
-  supabase.channel(channelName);
-    channel.on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "trades",
-        filter: `user_id=eq.${userId}`,
-      },
-      () => {
-        // 🔥 ALWAYS REFETCH
-        fetchTrades();
-      }
-    );
-
-    channel.subscribe();
-
-    // CLEANUP
-    return () => {
-      supabase.removeChannel(channel);
-    };
+return () => {
+  supabase.removeChannel(channel);
+};
   }, [session?.user?.id]);
 
   return { trades };

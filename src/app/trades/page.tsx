@@ -2,8 +2,10 @@
 
 import AddTradeForm from "@/components/AddTradeForm";
 import TradesTable from "@/components/table/TradesTable";
+import { useTradesStore } from "@/hooks/useTradesStore";
 
 export default function TradesPage() {
+  const { trades } = useTradesStore();
   return (
     <div className="p-6 space-y-6">
       {/* HEADER */}
@@ -21,7 +23,7 @@ export default function TradesPage() {
       <AddTradeForm />
 
       {/* LIVE TRADES TABLE */}
-      <TradesTable pair="ALL" />
+      <TradesTable pair="ALL" trades={trades} />
     </div>
   );
 }

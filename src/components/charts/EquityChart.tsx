@@ -13,12 +13,13 @@ import {
 } from "recharts";
 
 import { useAuth } from "@/components/AuthProvider";
-import { useTradesStore } from "@/hooks/useTradesStore";
 import { getStats } from "@/lib/calcStats";
+
+import type { Trade } from "@/types/trade";
 
 type Props = {
   pair: string;
-
+  trades: Trade[];
   onStats?: (stats: {
     totalProfit: number;
     winRate: number;
@@ -33,11 +34,12 @@ type Props = {
 
 export default function EquityChart({
   pair,
+  trades,
   onStats,
-}: Props) {
-  const { session } = useAuth();
+}: Props)
 
-  const { trades } = useTradesStore();
+{
+  const { session } = useAuth();
 
   // AUTH GUARD
   if (!session) return null;

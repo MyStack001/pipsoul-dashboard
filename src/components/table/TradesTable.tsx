@@ -5,13 +5,20 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/components/AuthProvider";
-import { useTradesStore } from "@/hooks/useTradesStore";
 import { supabase } from "@/lib/supabase";
+import type { Trade } from "@/types/trade"
 
-export default function TradesTable({ pair }: { pair: string }) {
+export default function TradesTable({
+  pair,
+  trades,
+}: {
+  pair: string;
+  trades: Trade[];
+})
+{
   const { session } = useAuth();
   const router = useRouter();
-  const { trades } = useTradesStore();
+  
 
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);

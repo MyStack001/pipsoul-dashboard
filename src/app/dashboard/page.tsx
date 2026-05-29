@@ -156,12 +156,15 @@ const { trades } = useTradesStore();
       </div>
 
       <EquityChart
-        pair={pair}
-        onStats={setStats}
-      />
+  pair={pair}
+  trades={trades}
+  onStats={setStats}
+/>
 
-      <TradesTable pair={pair} />
-
+<TradesTable
+  pair={pair}
+  trades={trades}
+/>
     </div>
   );
 }

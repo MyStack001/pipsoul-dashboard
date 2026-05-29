@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
 import KPI from "@/components/KPI";
 import { ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
+import { useTradesStore } from "@/hooks/useTradesStore";
 
 const EquityChart = dynamic(
   () => import("@/components/charts/EquityChart"),
@@ -20,13 +21,26 @@ const TradesTable = dynamic(
 export default function DashboardPage() {
   const { session, loading } = useAuth();
   const router = useRouter();
+const { trades } = useTradesStore();
 
   const [pair, setPair] = useState("ALL");
   const [open, setOpen] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const [pairs] = useState<string[]>(["ALL"]);
+  const pairs = useMemo(() => {
+  if (!Array.isArray(trades)) return ["ALL"];
+
+  const uniquePairs = Array.from(
+    new Set(
+      trades
+        .map((t) => t.pair)
+        .filter(Boolean)
+    )
+  );
+
+  return ["ALL", ...uniquePairs];
+}, [trades]);
 
   const [stats, setStats] = useState({
     totalProfit: 0,

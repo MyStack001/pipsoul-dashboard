@@ -93,20 +93,41 @@ export default function TradesTable({
           setCurrentPage(1);
         }}
         placeholder="Search pair..."
-        className="mb-5 w-full p-3 border rounded-lg"
+        className="
+  mb-5 w-full p-3 rounded-lg border
+  bg-white dark:bg-[#111827]
+  text-black dark:text-white
+  border-gray-200 dark:border-white/10
+"
       />
 
       {/* TABLE */}
+
+  {/* TABLE */}
 <table className="w-full text-sm border-collapse">
   <thead>
     <tr className="border-b border-gray-200 dark:border-white/10">
-      <th className="px-4 py-3 text-left">Pair</th>
-      <th className="px-4 py-3 text-left">Bias</th>
-      <th className="px-4 py-3 text-left">Entry</th>
-      <th className="px-4 py-3 text-left">Exit</th>
-      <th className="px-4 py-3 text-left">Lot</th>
-      <th className="px-4 py-3 text-left">Profit</th>
-      <th className="px-4 py-3 text-left">Journal</th>
+      <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
+        Pair
+      </th>
+      <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
+        Bias
+      </th>
+      <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
+        Entry
+      </th>
+      <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
+        Exit
+      </th>
+      <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
+        Lot
+      </th>
+      <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
+        Profit
+      </th>
+      <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
+        Journal
+      </th>
     </tr>
   </thead>
 
@@ -116,7 +137,9 @@ export default function TradesTable({
         key={trade.id}
         className="border-b border-gray-200 dark:border-white/10"
       >
-        <td className="px-4 py-3">{trade.pair}</td>
+        <td className="px-4 py-3 text-gray-900 dark:text-white">
+          {trade.pair}
+        </td>
 
         <td
           className={`px-4 py-3 font-medium ${
@@ -128,19 +151,25 @@ export default function TradesTable({
           {trade.bias}
         </td>
 
-        <td className="px-4 py-3">
+        <td className="px-4 py-3 text-gray-900 dark:text-white">
           {trade.entry}
         </td>
 
-        <td className="px-4 py-3">
+        <td className="px-4 py-3 text-gray-900 dark:text-white">
           {trade.exit}
         </td>
 
-        <td className="px-4 py-3">
+        <td className="px-4 py-3 text-gray-900 dark:text-white">
           {trade.lot}
         </td>
 
-        <td className="px-4 py-3 font-semibold">
+        <td
+          className={`px-4 py-3 font-semibold ${
+            Number(trade.profit) >= 0
+              ? "text-green-500"
+              : "text-red-500"
+          }`}
+        >
           ${trade.profit}
         </td>
 
@@ -148,9 +177,7 @@ export default function TradesTable({
           <div className="flex items-center gap-3">
             <button
               onClick={() =>
-                router.push(
-                  `/journal?id=${trade.id}`
-                )
+                router.push(`/journal?id=${trade.id}`)
               }
               className="text-cyan-500 hover:text-cyan-400"
             >
@@ -159,23 +186,24 @@ export default function TradesTable({
 
             <a
               href="/journal"
-              className="text-gray-500 hover:text-gray-400"
+              className="
+                text-gray-700 dark:text-gray-300
+                hover:text-gray-900 dark:hover:text-white
+              "
             >
               View
             </a>
 
             <button
               onClick={async () => {
-                const confirmDelete =
-                  confirm("Delete?");
+                const confirmDelete = confirm("Delete?");
 
                 if (!confirmDelete) return;
 
-                const { error } =
-                  await supabase
-                    .from("trades")
-                    .delete()
-                    .eq("id", trade.id);
+                const { error } = await supabase
+                  .from("trades")
+                  .delete()
+                  .eq("id", trade.id);
 
                 if (error) {
                   alert(error.message);

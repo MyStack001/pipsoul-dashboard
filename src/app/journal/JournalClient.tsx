@@ -269,15 +269,19 @@ const deleteImage = (imageUrl: string) => {
           dark:border-white/10
         "
       >
-        <img
-          src={img}
-          alt="chart"
-          className="
-            w-full
-            h-40
-            object-cover
-          "
-        />
+       <img
+  src={img}
+  alt="chart"
+  onClick={() => setPreviewImg(img)}
+  className="
+    w-full
+    h-40
+    object-cover
+    cursor-pointer
+    hover:opacity-90
+    transition
+  "
+/>
 
         <button
           onClick={() => deleteImage(img)}
@@ -301,16 +305,48 @@ const deleteImage = (imageUrl: string) => {
 )}
           {/* ZOOM MODAL */}
           {previewImg && (
-            <div
-              onClick={() => setPreviewImg(null)}
-              className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
-            >
-              <img
-                src={previewImg}
-                className="max-w-[90%] max-h-[90%] rounded-lg"
-              />
-            </div>
-          )}
+  <div
+    onClick={() => setPreviewImg(null)}
+    className="
+      fixed
+      inset-0
+      bg-black/90
+      flex
+      items-center
+      justify-center
+      z-50
+      p-6
+    "
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="relative"
+    >
+      <button
+        onClick={() => setPreviewImg(null)}
+        className="
+          absolute
+          -top-12
+          right-0
+          text-white
+          text-xl
+        "
+      >
+        ✕
+      </button>
+
+      <img
+        src={previewImg}
+        alt="preview"
+        className="
+          max-w-[95vw]
+          max-h-[90vh]
+          rounded-xl
+        "
+      />
+    </div>
+  </div>
+)}
 
           <button
             onClick={saveJournal}

@@ -313,13 +313,21 @@ export default function JournalClient() {
           </div>
 
           {/* ACTIONS */}
-          <button onClick={saveJournal} className="px-4 py-3 bg-cyan-500 text-white rounded-lg">
-            Save Journal
-          </button>
+          <div className="flex flex-wrap gap-3">
+  <button
+    onClick={saveJournal}
+    className="px-4 py-3 bg-cyan-500 text-white rounded-lg"
+  >
+    Save Journal
+  </button>
 
-          <button onClick={deleteJournal} className="px-4 py-3 bg-red-500 text-white rounded-lg mt-3">
-            Delete Journal
-          </button>
+  <button
+    onClick={deleteJournal}
+    className="px-4 py-3 bg-red-500 text-white rounded-lg"
+  >
+    Delete Journal
+  </button>
+</div>
         </>
       )}
     {previewImg && (

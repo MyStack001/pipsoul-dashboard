@@ -163,47 +163,55 @@ export default function JournalClient() {
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-  Journal Trade #{tradeId}
+  {trade ? `${trade.pair} Trade Journal` : "Trade Journal"}
 </h1>
-
-      {/* TRADE INFO */}
-      {trade ? (
-        <div
-  className="
-    p-4 rounded-lg border
-    border-gray-200 dark:border-white/10
-    bg-white dark:bg-[#111827]
-  "
->
-  <p className="text-gray-900 dark:text-white">
-    Pair: {trade.pair}
-  </p>
-
-  <p
-    className={`${
-      trade.bias === "BUY"
-        ? "text-green-500"
-        : "text-red-500"
-    }`}
+      
+    {/* TRADE INFO */}
+{trade ? (
+  <div
+    className="
+      p-4 rounded-xl
+      border border-gray-200 dark:border-white/10
+      bg-white dark:bg-[#111827]
+    "
   >
-    Bias: {trade.bias}
-  </p>
+    <div className="flex items-center gap-3 flex-wrap">
+      <span
+        className={`font-semibold ${
+          trade.bias === "BUY"
+            ? "text-green-500"
+            : "text-red-500"
+        }`}
+      >
+        {trade.bias}
+      </span>
 
-  <p
-    className={`font-semibold ${
-      Number(trade.profit) >= 0
-        ? "text-green-500"
-        : "text-red-500"
-    }`}
+      <span className="text-gray-400">•</span>
+
+      <span
+        className={`font-semibold ${
+          Number(trade.profit) >= 0
+            ? "text-green-500"
+            : "text-red-500"
+        }`}
+      >
+        {Number(trade.profit) >= 0 ? "+" : ""}
+        ${trade.profit}
+      </span>
+    </div>
+  </div>
+) : (
+  <div
+    className="
+      p-4 rounded-xl
+      border border-yellow-500/30
+      bg-yellow-500/10
+      text-yellow-600 dark:text-yellow-400
+    "
   >
-    Profit: ${trade.profit}
-  </p>
-</div>
-      ) : (
-        <p className="text-yellow-500">
-          Trade not found in Supabase (journal still works)
-        </p>
-      )}
+    Trade not found
+  </div>
+)}
 
       {/* JOURNAL FORM */}
       {journal && (

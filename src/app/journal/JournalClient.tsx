@@ -277,19 +277,32 @@ export default function JournalClient() {
             type="file"
             accept="image/*"
             multiple
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) uploadImage(file);
-            }}
+            onChange={async (e) => {
+  const files = Array.from(e.target.files || []);
+
+  for (const file of files) {
+    await uploadImage(file);
+  }
+}}
           />
+        {uploading && (
+  <p className="text-cyan-500 text-sm">
+    Uploading image...
+  </p>
+)}
 
           {/* IMAGES */}
           <div className="grid grid-cols-2 gap-3 mt-4">
             {journal.images?.map((img, i) => (
               <div key={i} className="relative">
-                <img src={img} className="rounded-lg h-40 w-full object-cover" />
-
-                <button
+                <img
+  src={img}
+  className="rounded-lg h-40 w-full object-cover cursor-pointer"
+  onClick={() => {
+    setPreviewImg(img);
+    setZoom(1);
+  }}
+/>              <button
                   onClick={() => deleteImage(img)}
                   className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded"
                 >
@@ -309,6 +322,78 @@ export default function JournalClient() {
           </button>
         </>
       )}
+    {previewImg && (
+  <div
+    onClick={() => setPreviewImg(null)}
+    className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4"
+  >
+    {/* MODAL CONTENT */}
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="relative flex items-center justify-center"
+    >
+      {/* CLOSE BUTTON */}
+      <button
+        onClick={() => {
+          setPreviewImg(null);
+          setZoom(1);
+        }}
+        className="absolute -top-12 right-0 text-white text-2xl"
+      >
+        ✕
+      </button>
+
+      {/* IMAGE */}
+      <img
+        src={previewImg}
+        style={{
+          transform: `scale(${zoom})`,
+          transition: "transform 0.2s ease",
+        }}
+        className="max-w-[90vw] max-h-[85vh] rounded-lg"
+      />
+
+      {/* CONTROLS (BOTTOM CENTER) */}
+     <div
+  className="
+    absolute
+    bottom-6
+    left-1/2
+    -translate-x-1/2
+    flex
+    items-center
+    gap-2
+    z-50
+  "
+>
+               <button
+          onClick={() =>
+            setZoom((z) => Math.max(0.5, z - 0.25))
+          }
+          className="px-4 py-2 bg-black/70 backdrop-blur-sm text-white"
+        >
+          −
+        </button>
+
+        <button
+          onClick={() => setZoom(1)}
+          className="px-4 py-2 bg-black/70 backdrop-blur-sm text-white"
+        >
+          {Math.round(zoom * 100)}%
+        </button>
+
+        <button
+          onClick={() =>
+            setZoom((z) => Math.min(4, z + 0.25))
+          }
+          className="px-4 py-2 bg-black/70 backdrop-blur-sm text-white"
+        >
+          +
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

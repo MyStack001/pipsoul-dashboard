@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/components/AuthProvider";
 
 import { Trade } from "@/types/trade";
 import { JournalEntry } from "@/types/journal";
@@ -10,9 +11,10 @@ import { JournalEntry } from "@/types/journal";
 export default function JournalClient() {
   const searchParams = useSearchParams();
   const tradeId = searchParams.get("id");
+  const { session } = useAuth();
 
   const [trade, setTrade] = useState<Trade | null>(null);
-  const [journals, setJournals] = useState<JournalEntry[]>([]);
+  const [journals, setJournals] = useState<any[]>([]);
   const [journal, setJournal] = useState<JournalEntry | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -22,33 +24,49 @@ export default function JournalClient() {
   const inputStyles =
     "w-full h-28 p-3 rounded-lg border bg-white dark:bg-[#111827] text-black dark:text-white";
 
+  // =========================
+  // LOAD DATA
+  // =========================
   useEffect(() => {
     const load = async () => {
       try {
-        const stored = localStorage.getItem("journals");
-        const parsed: JournalEntry[] = stored ? JSON.parse(stored) : [];
+        if (!session?.user?.id) return;
 
-        setJournals(parsed);
+        // 1. LOAD ALL JOURNALS
+        const { data: journalsData, error: journalsError } = await supabase
+          .from("journals")
+          .select("*")
+          .eq("user_id", session.user.id)
+          .order("created_at", { ascending: false });
+
+        if (!journalsError) setJournals(journalsData || []);
 
         if (!tradeId) {
           setLoading(false);
           return;
         }
 
-        const { data } = await supabase
+        // 2. LOAD TRADE
+        const { data: tradeData, error: tradeError } = await supabase
           .from("trades")
           .select("*")
           .eq("id", tradeId)
           .maybeSingle();
 
-        if (data) setTrade(data);
+        if (!tradeError) setTrade(tradeData);
 
-        const existing = parsed.find((j) => j.tradeId === tradeId);
+        // 3. LOAD JOURNAL FOR THIS TRADE
+        const { data: journalData } = await supabase
+          .from("journals")
+          .select("*")
+          .eq("trade_id", tradeId)
+          .eq("user_id", session.user.id)
+          .maybeSingle();
 
         setJournal(
-          existing || {
+          journalData || {
             tradeId,
-            pair: data?.pair || "Unknown",
+            pair: tradeData?.pair || "Unknown",
             reason: "",
             confluence: "",
             stopLoss: "",
@@ -67,7 +85,7 @@ export default function JournalClient() {
     };
 
     load();
-  }, [tradeId]);
+  }, [tradeId, session?.user?.id]);
 
   // =========================
   // UPLOAD IMAGE
@@ -97,73 +115,104 @@ export default function JournalClient() {
 
     setJournal((prev) =>
       prev
-        ? {
-            ...prev,
-            images: [...(prev.images || []), imageUrl],
-          }
+        ? { ...prev, images: [...(prev.images || []), imageUrl] }
         : prev
     );
 
     setUploading(false);
   };
-const deleteImage = (imageUrl: string) => {
-  if (!journal) return;
 
-  setJournal({
-    ...journal,
-    images: journal.images.filter(
-      (img) => img !== imageUrl
-    ),
-  });
-};
   // =========================
-  // SAVE JOURNAL
+  // DELETE IMAGE
   // =========================
-  const saveJournal = () => {
-    if (!journal || !tradeId) return;
+  const deleteImage = (imageUrl: string) => {
+    if (!journal) return;
 
-    const stored = localStorage.getItem("journals");
-    const all: JournalEntry[] = stored ? JSON.parse(stored) : [];
-
-    const index = all.findIndex((j) => j.tradeId === tradeId);
-
-    if (index !== -1) {
-      all[index] = journal;
-    } else {
-      all.push(journal);
-    }
-
-    localStorage.setItem("journals", JSON.stringify(all));
-    setJournals(all);
-
-    alert("Journal saved ✅");
+    setJournal({
+      ...journal,
+      images: journal.images.filter((img) => img !== imageUrl),
+    });
   };
 
+  // =========================
+  // SAVE JOURNAL (SUPABASE)
+  // =========================
+  const saveJournal = async () => {
+  if (!journal || !tradeId || !session?.user?.id) return;
+
+  const { error } = await supabase.from("journals").upsert(
+    {
+      trade_id: tradeId,
+      user_id: session.user.id,
+      pair: trade?.pair || journal.pair,
+      reason: journal.reason,
+      confluence: journal.confluence,
+      stop_loss: journal.stopLoss,
+      take_profit: journal.takeProfit,
+      emotions: journal.emotions,
+      regrets: journal.regrets,
+      management: journal.management,
+      images: journal.images,
+    },
+    {
+      onConflict: "trade_id",
+    }
+  );
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  alert("Journal saved ✅");
+};
+   
+  // =========================
+  // DELETE JOURNAL
+  // =========================
+  const deleteJournal = async () => {
+    if (!tradeId || !session?.user?.id) return;
+
+    const { error } = await supabase
+      .from("journals")
+      .delete()
+      .eq("trade_id", tradeId)
+      .eq("user_id", session.user.id);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    window.location.href = "/journal";
+  };
+
+  // =========================
+  // LOADING
+  // =========================
   if (loading)
     return (
       <p className="p-6 text-gray-900 dark:text-white">Loading...</p>
     );
 
+  // =========================
+  // LIST PAGE
+  // =========================
   if (!tradeId) {
     return (
       <div className="p-6">
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-semibold text-white">
           All Journals
         </h1>
 
         {journals.length === 0 ? (
-          <p className="text-gray-500 mt-4">No journals yet</p>
+          <p className="text-gray-400 mt-4">No journals yet</p>
         ) : (
-          journals.map((j) => (
+          journals.map((j: any) => (
             <a
-              key={j.tradeId}
-              href={`/journal?id=${j.tradeId}`}
-              className="
-                block p-4 mt-3 rounded-lg border
-                border-gray-200 dark:border-white/10
-                text-gray-900 dark:text-white
-                hover:bg-gray-50 dark:hover:bg-white/10
-              "
+              key={j.trade_id}
+              href={`/journal?id=${j.trade_id}`}
+              className="block p-4 mt-3 rounded-lg border border-white/10 text-white hover:bg-white/10"
             >
               {j.pair} Journal
             </a>
@@ -173,26 +222,28 @@ const deleteImage = (imageUrl: string) => {
     );
   }
 
+  // =========================
+  // EDIT MODE
+  // =========================
   return (
     <div className="p-6 space-y-6">
 
-      {/* TITLE */}
-      <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+      <h1 className="text-xl font-bold text-white">
         {trade ? `${trade.pair} Trade Journal` : "Trade Journal"}
       </h1>
 
       {/* TRADE INFO */}
       {trade && (
-        <div className="p-4 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#111827]">
-          <div className="flex items-center gap-3">
-            <span className={`font-semibold ${trade.bias === "BUY" ? "text-green-500" : "text-red-500"}`}>
+        <div className="p-4 rounded-xl border border-white/10 bg-[#111827]">
+          <div className="flex gap-3">
+            <span className={trade.bias === "BUY" ? "text-green-500" : "text-red-500"}>
               {trade.bias}
             </span>
 
             <span className="text-gray-400">•</span>
 
-            <span className={`font-semibold ${Number(trade.profit) >= 0 ? "text-green-500" : "text-red-500"}`}>
-              {Number(trade.profit) >= 0 ? "+" : ""}${trade.profit}
+            <span className={Number(trade.profit) >= 0 ? "text-green-500" : "text-red-500"}>
+              ${trade.profit}
             </span>
           </div>
         </div>
@@ -201,235 +252,60 @@ const deleteImage = (imageUrl: string) => {
       {/* FORM */}
       {journal && (
         <>
-          <textarea
-            value={journal.reason}
-            onChange={(e) =>
-              setJournal({ ...journal, reason: e.target.value })
-            }
+          <textarea className={inputStyles} value={journal.reason}
+            onChange={(e) => setJournal({ ...journal, reason: e.target.value })}
             placeholder="Reason..."
-            className={inputStyles}
           />
 
-          <textarea
-            value={journal.confluence}
-            onChange={(e) =>
-              setJournal({ ...journal, confluence: e.target.value })
-            }
+          <textarea className={inputStyles} value={journal.confluence}
+            onChange={(e) => setJournal({ ...journal, confluence: e.target.value })}
             placeholder="Confluence..."
-            className={inputStyles}
           />
 
-          <textarea
-            value={journal.emotions}
-            onChange={(e) =>
-              setJournal({ ...journal, emotions: e.target.value })
-            }
+          <textarea className={inputStyles} value={journal.emotions}
+            onChange={(e) => setJournal({ ...journal, emotions: e.target.value })}
             placeholder="Emotions..."
-            className={inputStyles}
           />
 
-          <textarea
-            value={journal.management}
-            onChange={(e) =>
-              setJournal({ ...journal, management: e.target.value })
-            }
+          <textarea className={inputStyles} value={journal.management}
+            onChange={(e) => setJournal({ ...journal, management: e.target.value })}
             placeholder="Management..."
-            className={inputStyles}
           />
 
           {/* UPLOAD */}
-          <div className="space-y-3">
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) uploadImage(file);
-              }}
-              className="text-sm text-gray-500"
-            />
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) uploadImage(file);
+            }}
+          />
 
-            {uploading && (
-              <p className="text-cyan-500 text-sm">Uploading...</p>
-            )}
+          {/* IMAGES */}
+          <div className="grid grid-cols-2 gap-3 mt-4">
+            {journal.images?.map((img, i) => (
+              <div key={i} className="relative">
+                <img src={img} className="rounded-lg h-40 w-full object-cover" />
+
+                <button
+                  onClick={() => deleteImage(img)}
+                  className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded"
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
           </div>
 
-          {/* IMAGES GRID */}
-          {journal?.images?.length > 0 && (
-  <div className="grid grid-cols-2 gap-3 mt-4">
-    {journal.images.map((img, i) => (
-      <div
-        key={i}
-        className="
-          relative
-          rounded-lg
-          overflow-hidden
-          border
-          border-gray-200
-          dark:border-white/10
-        "
-      >
-       <img
-  src={img}
-  alt="chart"
-  onClick={() => {
-  setZoom(1);
-  setPreviewImg(img);
-}}
-  className="
-    w-full
-    h-40
-    object-cover
-    cursor-pointer
-    hover:opacity-90
-    transition
-  "
-/>
-
-        <button
-          onClick={() => deleteImage(img)}
-          className="
-            absolute
-            top-2
-            right-2
-            px-2
-            py-1
-            rounded
-            bg-red-500
-            text-white
-            text-xs
-          "
-        >
-          Delete
-        </button>
-      </div>
-    ))}
-  </div>
-)}
-          {/* ZOOM MODAL */}
-     {previewImg && (
-  <div
-    onClick={() => setPreviewImg(null)}
-    className="
-      fixed
-      inset-0
-      bg-black/90
-      flex
-      items-center
-      justify-center
-      z-50
-      p-6
-    "
-  >
-    <div
-      onClick={(e) => e.stopPropagation()}
-      className="relative"
-    >
-      {/* CLOSE */}
-      <button
-        onClick={() => {
-          setPreviewImg(null);
-          setZoom(1);
-        }}
-        className="
-          absolute
-          -top-12
-          right-0
-          text-white
-          text-xl
-        "
-      >
-        ✕
-      </button>
-
-      {/* CONTROLS */}
-      <div
-        className="
-  absolute
-  bottom-4
-  left-1/2
-  -translate-x-1/2
-  flex
-  items-center
-  gap-2
-  z-10
-"
-      >
-        <button
-          onClick={() =>
-            setZoom((prev) => Math.max(0.5, prev - 0.25))
-          }
-          className="
-  px-4 py-2
-  rounded-lg
-  bg-black/60
-  backdrop-blur-sm
-  text-white
-  border
-  border-white/10
-  hover:bg-black/80
-  transition
-"
-        >
-          −
-        </button>
-
-        <button
-          onClick={() => setZoom(1)}
-          className="
-  px-4 py-2
-  rounded-lg
-  bg-black/60
-  backdrop-blur-sm
-  text-white
-  border
-  border-white/10
-  hover:bg-black/80
-  transition
-"
-        >
-         {Math.round(zoom * 100)}%
-        </button>
-
-        <button
-          onClick={() =>
-            setZoom((prev) => Math.min(5, prev + 0.25))
-          }
-          className="
-            px-3 py-1
-            rounded
-            bg-white/20
-            text-white
-          "
-        >
-          +
-        </button>
-      </div>
-
-      {/* IMAGE */}
-      <img
-        src={previewImg}
-        alt="preview"
-        style={{
-          transform: `scale(${zoom})`,
-          transition: "transform 0.2s ease",
-        }}
-        className="
-          max-w-[90vw]
-          max-h-[85vh]
-          rounded-xl
-        "
-      />
-    </div>
-  </div>
-)}     
-     
-          <button
-            onClick={saveJournal}
-            className="px-4 py-3 bg-cyan-500 text-white rounded-lg"
-          >
+          {/* ACTIONS */}
+          <button onClick={saveJournal} className="px-4 py-3 bg-cyan-500 text-white rounded-lg">
             Save Journal
+          </button>
+
+          <button onClick={deleteJournal} className="px-4 py-3 bg-red-500 text-white rounded-lg mt-3">
+            Delete Journal
           </button>
         </>
       )}

@@ -17,6 +17,7 @@ export default function JournalClient() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [previewImg, setPreviewImg] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(1);
 
   const inputStyles =
     "w-full h-28 p-3 rounded-lg border bg-white dark:bg-[#111827] text-black dark:text-white";
@@ -272,7 +273,10 @@ const deleteImage = (imageUrl: string) => {
        <img
   src={img}
   alt="chart"
-  onClick={() => setPreviewImg(img)}
+  onClick={() => {
+  setZoom(1);
+  setPreviewImg(img);
+}}
   className="
     w-full
     h-40
@@ -304,7 +308,7 @@ const deleteImage = (imageUrl: string) => {
   </div>
 )}
           {/* ZOOM MODAL */}
-          {previewImg && (
+     {previewImg && (
   <div
     onClick={() => setPreviewImg(null)}
     className="
@@ -322,8 +326,12 @@ const deleteImage = (imageUrl: string) => {
       onClick={(e) => e.stopPropagation()}
       className="relative"
     >
+      {/* CLOSE */}
       <button
-        onClick={() => setPreviewImg(null)}
+        onClick={() => {
+          setPreviewImg(null);
+          setZoom(1);
+        }}
         className="
           absolute
           -top-12
@@ -335,19 +343,76 @@ const deleteImage = (imageUrl: string) => {
         ✕
       </button>
 
+      {/* CONTROLS */}
+      <div
+        className="
+          absolute
+          -top-12
+          left-0
+          flex
+          items-center
+          gap-2
+        "
+      >
+        <button
+          onClick={() =>
+            setZoom((prev) => Math.max(0.5, prev - 0.25))
+          }
+          className="
+            px-3 py-1
+            rounded
+            bg-white/20
+            text-white
+          "
+        >
+          −
+        </button>
+
+        <button
+          onClick={() => setZoom(1)}
+          className="
+            px-3 py-1
+            rounded
+            bg-white/20
+            text-white
+          "
+        >
+          100%
+        </button>
+
+        <button
+          onClick={() =>
+            setZoom((prev) => Math.min(5, prev + 0.25))
+          }
+          className="
+            px-3 py-1
+            rounded
+            bg-white/20
+            text-white
+          "
+        >
+          +
+        </button>
+      </div>
+
+      {/* IMAGE */}
       <img
         src={previewImg}
         alt="preview"
+        style={{
+          transform: `scale(${zoom})`,
+          transition: "transform 0.2s ease",
+        }}
         className="
-          max-w-[95vw]
-          max-h-[90vh]
+          max-w-[90vw]
+          max-h-[85vh]
           rounded-xl
         "
       />
     </div>
   </div>
-)}
-
+)}     
+     
           <button
             onClick={saveJournal}
             className="px-4 py-3 bg-cyan-500 text-white rounded-lg"

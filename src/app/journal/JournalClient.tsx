@@ -118,7 +118,12 @@ export default function JournalClient() {
   // =========================
   // LOADING
   // =========================
-  if (loading) return <p className="p-6">Loading...</p>;
+  if (loading)
+  return (
+    <p className="p-6 text-gray-900 dark:text-white">
+      Loading...
+    </p>
+  );
 
   // =========================
   // LIST PAGE
@@ -126,7 +131,9 @@ export default function JournalClient() {
   if (!tradeId) {
     return (
       <div className="p-6">
-        <h1 className="text-2xl font-semibold">All Journals</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+  All Journals
+</h1>
 
         {journals.length === 0 ? (
           <p className="text-gray-500 mt-4">No journals yet</p>
@@ -135,7 +142,12 @@ export default function JournalClient() {
             <a
               key={j.tradeId}
               href={`/journal?id=${j.tradeId}`}
-              className="block p-4 border rounded-lg mt-3 hover:bg-gray-50 dark:hover:bg-white/10"
+              className="
+  block p-4 mt-3 rounded-lg border
+  border-gray-200 dark:border-white/10
+  text-gray-900 dark:text-white
+  hover:bg-gray-50 dark:hover:bg-white/10
+"
             >
               Trade #{j.tradeId}
             </a>
@@ -150,17 +162,43 @@ export default function JournalClient() {
   // =========================
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-xl font-bold">
-        Journal Trade #{tradeId}
-      </h1>
+      <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+  Journal Trade #{tradeId}
+</h1>
 
       {/* TRADE INFO */}
       {trade ? (
-        <div className="p-4 border rounded-lg">
-          <p>Pair: {trade.pair}</p>
-          <p>Bias: {trade.bias}</p>
-          <p>Profit: ${trade.profit}</p>
-        </div>
+        <div
+  className="
+    p-4 rounded-lg border
+    border-gray-200 dark:border-white/10
+    bg-white dark:bg-[#111827]
+  "
+>
+  <p className="text-gray-900 dark:text-white">
+    Pair: {trade.pair}
+  </p>
+
+  <p
+    className={`${
+      trade.bias === "BUY"
+        ? "text-green-500"
+        : "text-red-500"
+    }`}
+  >
+    Bias: {trade.bias}
+  </p>
+
+  <p
+    className={`font-semibold ${
+      Number(trade.profit) >= 0
+        ? "text-green-500"
+        : "text-red-500"
+    }`}
+  >
+    Profit: ${trade.profit}
+  </p>
+</div>
       ) : (
         <p className="text-yellow-500">
           Trade not found in Supabase (journal still works)

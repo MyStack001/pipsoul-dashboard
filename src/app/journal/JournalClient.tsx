@@ -9,10 +9,6 @@ import { JournalEntry } from "@/types/journal";
 
 export default function JournalClient() {
   const searchParams = useSearchParams();
-
-  // =========================
-  // FIX: KEEP ID AS STRING (NO Number())
-  // =========================
   const tradeId = searchParams.get("id");
 
   const [trade, setTrade] = useState<Trade | null>(null);
@@ -27,49 +23,38 @@ export default function JournalClient() {
     const load = async () => {
       try {
         // =========================
-        // LOAD JOURNALS (LOCAL STORAGE)
+        // LOAD JOURNALS
         // =========================
         const stored = localStorage.getItem("journals");
         const parsed: JournalEntry[] = stored ? JSON.parse(stored) : [];
 
         setJournals(parsed);
 
-        // =========================
-        // LIST PAGE (/journal)
-        // =========================
         if (!tradeId) {
           setLoading(false);
           return;
         }
 
         // =========================
-        // FETCH TRADE (SUPABASE UUID)
+        // FETCH TRADE
         // =========================
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from("trades")
           .select("*")
-          .eq("id", tradeId) // 🔥 STRING MATCH (NO Number)
+          .eq("id", tradeId)
           .maybeSingle();
 
-        if (error) {
-          console.error("Trade fetch error:", error.message);
-        }
-
-        if (data) {
-          setTrade(data);
-        }
+        if (data) setTrade(data);
 
         // =========================
-        // FIND JOURNAL (STRING MATCH)
+        // FIND JOURNAL
         // =========================
-        const existing = parsed.find(
-          (j) => j.tradeId === tradeId
-        );
+        const existing = parsed.find((j) => j.tradeId === tradeId);
 
         setJournal(
           existing || {
             tradeId,
-
+            pair: data?.pair || "Unknown",
             reason: "",
             confluence: "",
             stopLoss: "",
@@ -99,9 +84,7 @@ export default function JournalClient() {
     const stored = localStorage.getItem("journals");
     const all: JournalEntry[] = stored ? JSON.parse(stored) : [];
 
-    const index = all.findIndex(
-      (j) => j.tradeId === tradeId
-    );
+    const index = all.findIndex((j) => j.tradeId === tradeId);
 
     if (index !== -1) {
       all[index] = journal;
@@ -119,11 +102,9 @@ export default function JournalClient() {
   // LOADING
   // =========================
   if (loading)
-  return (
-    <p className="p-6 text-gray-900 dark:text-white">
-      Loading...
-    </p>
-  );
+    return (
+      <p className="p-6 text-gray-900 dark:text-white">Loading...</p>
+    );
 
   // =========================
   // LIST PAGE
@@ -132,8 +113,8 @@ export default function JournalClient() {
     return (
       <div className="p-6">
         <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
-  All Journals
-</h1>
+          All Journals
+        </h1>
 
         {journals.length === 0 ? (
           <p className="text-gray-500 mt-4">No journals yet</p>
@@ -143,13 +124,13 @@ export default function JournalClient() {
               key={j.tradeId}
               href={`/journal?id=${j.tradeId}`}
               className="
-  block p-4 mt-3 rounded-lg border
-  border-gray-200 dark:border-white/10
-  text-gray-900 dark:text-white
-  hover:bg-gray-50 dark:hover:bg-white/10
-"
+                block p-4 mt-3 rounded-lg border
+                border-gray-200 dark:border-white/10
+                text-gray-900 dark:text-white
+                hover:bg-gray-50 dark:hover:bg-white/10
+              "
             >
-              Trade #{j.tradeId}
+              {j.pair} Journal
             </a>
           ))
         )}
@@ -162,58 +143,34 @@ export default function JournalClient() {
   // =========================
   return (
     <div className="p-6 space-y-6">
+
+      {/* TITLE */}
       <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-  {trade ? `${trade.pair} Trade Journal` : "Trade Journal"}
-</h1>
-      
-    {/* TRADE INFO */}
-{trade ? (
-  <div
-    className="
-      p-4 rounded-xl
-      border border-gray-200 dark:border-white/10
-      bg-white dark:bg-[#111827]
-    "
-  >
-    <div className="flex items-center gap-3 flex-wrap">
-      <span
-        className={`font-semibold ${
-          trade.bias === "BUY"
-            ? "text-green-500"
-            : "text-red-500"
-        }`}
-      >
-        {trade.bias}
-      </span>
+        {trade ? `${trade.pair} Trade Journal` : "Trade Journal"}
+      </h1>
 
-      <span className="text-gray-400">•</span>
+      {/* TRADE INFO (COMPACT) */}
+      {trade ? (
+        <div className="p-4 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#111827]">
+          <div className="flex items-center gap-3">
+            <span className={`font-semibold ${trade.bias === "BUY" ? "text-green-500" : "text-red-500"}`}>
+              {trade.bias}
+            </span>
 
-      <span
-        className={`font-semibold ${
-          Number(trade.profit) >= 0
-            ? "text-green-500"
-            : "text-red-500"
-        }`}
-      >
-        {Number(trade.profit) >= 0 ? "+" : ""}
-        ${trade.profit}
-      </span>
-    </div>
-  </div>
-) : (
-  <div
-    className="
-      p-4 rounded-xl
-      border border-yellow-500/30
-      bg-yellow-500/10
-      text-yellow-600 dark:text-yellow-400
-    "
-  >
-    Trade not found
-  </div>
-)}
+            <span className="text-gray-400">•</span>
 
-      {/* JOURNAL FORM */}
+            <span className={`font-semibold ${Number(trade.profit) >= 0 ? "text-green-500" : "text-red-500"}`}>
+              {Number(trade.profit) >= 0 ? "+" : ""}${trade.profit}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="p-4 rounded-xl border border-yellow-500/30 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400">
+          Trade not found
+        </div>
+      )}
+
+      {/* FORM */}
       {journal && (
         <>
           <textarea

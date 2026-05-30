@@ -73,7 +73,9 @@ export default function TradesTable({
     >
       {/* HEADER */}
       <div className="flex justify-between mb-5">
-        <h2 className="text-lg font-semibold">Trades</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+  Trades
+</h2>
 
         <button
           onClick={() =>

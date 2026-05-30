@@ -346,24 +346,31 @@ const deleteImage = (imageUrl: string) => {
       {/* CONTROLS */}
       <div
         className="
-          absolute
-          -top-12
-          left-0
-          flex
-          items-center
-          gap-2
-        "
+  absolute
+  bottom-4
+  left-1/2
+  -translate-x-1/2
+  flex
+  items-center
+  gap-2
+  z-10
+"
       >
         <button
           onClick={() =>
             setZoom((prev) => Math.max(0.5, prev - 0.25))
           }
           className="
-            px-3 py-1
-            rounded
-            bg-white/20
-            text-white
-          "
+  px-4 py-2
+  rounded-lg
+  bg-black/60
+  backdrop-blur-sm
+  text-white
+  border
+  border-white/10
+  hover:bg-black/80
+  transition
+"
         >
           −
         </button>
@@ -371,13 +378,18 @@ const deleteImage = (imageUrl: string) => {
         <button
           onClick={() => setZoom(1)}
           className="
-            px-3 py-1
-            rounded
-            bg-white/20
-            text-white
-          "
+  px-4 py-2
+  rounded-lg
+  bg-black/60
+  backdrop-blur-sm
+  text-white
+  border
+  border-white/10
+  hover:bg-black/80
+  transition
+"
         >
-          100%
+         {Math.round(zoom * 100)}%
         </button>
 
         <button

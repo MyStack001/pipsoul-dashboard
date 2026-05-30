@@ -15,6 +15,8 @@ export default function JournalClient() {
   const [journals, setJournals] = useState<JournalEntry[]>([]);
   const [journal, setJournal] = useState<JournalEntry | null>(null);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [previewImg, setPreviewImg] = useState<string | null>(null);
 
   const inputStyles =
     "w-full h-28 p-3 rounded-lg border bg-white dark:bg-[#111827] text-black dark:text-white";
@@ -22,9 +24,6 @@ export default function JournalClient() {
   useEffect(() => {
     const load = async () => {
       try {
-        // =========================
-        // LOAD JOURNALS
-        // =========================
         const stored = localStorage.getItem("journals");
         const parsed: JournalEntry[] = stored ? JSON.parse(stored) : [];
 
@@ -35,9 +34,6 @@ export default function JournalClient() {
           return;
         }
 
-        // =========================
-        // FETCH TRADE
-        // =========================
         const { data } = await supabase
           .from("trades")
           .select("*")
@@ -46,9 +42,6 @@ export default function JournalClient() {
 
         if (data) setTrade(data);
 
-        // =========================
-        // FIND JOURNAL
-        // =========================
         const existing = parsed.find((j) => j.tradeId === tradeId);
 
         setJournal(
@@ -76,6 +69,44 @@ export default function JournalClient() {
   }, [tradeId]);
 
   // =========================
+  // UPLOAD IMAGE
+  // =========================
+  const uploadImage = async (file: File) => {
+    if (!file || !tradeId) return;
+
+    setUploading(true);
+
+    const filePath = `${tradeId}/${Date.now()}-${file.name}`;
+
+    const { error } = await supabase.storage
+      .from("journal-images")
+      .upload(filePath, file);
+
+    if (error) {
+      alert(error.message);
+      setUploading(false);
+      return;
+    }
+
+    const { data } = supabase.storage
+      .from("journal-images")
+      .getPublicUrl(filePath);
+
+    const imageUrl = data.publicUrl;
+
+    setJournal((prev) =>
+      prev
+        ? {
+            ...prev,
+            images: [...(prev.images || []), imageUrl],
+          }
+        : prev
+    );
+
+    setUploading(false);
+  };
+
+  // =========================
   // SAVE JOURNAL
   // =========================
   const saveJournal = () => {
@@ -98,17 +129,11 @@ export default function JournalClient() {
     alert("Journal saved ✅");
   };
 
-  // =========================
-  // LOADING
-  // =========================
   if (loading)
     return (
       <p className="p-6 text-gray-900 dark:text-white">Loading...</p>
     );
 
-  // =========================
-  // LIST PAGE
-  // =========================
   if (!tradeId) {
     return (
       <div className="p-6">
@@ -138,9 +163,6 @@ export default function JournalClient() {
     );
   }
 
-  // =========================
-  // EDIT MODE
-  // =========================
   return (
     <div className="p-6 space-y-6">
 
@@ -149,8 +171,8 @@ export default function JournalClient() {
         {trade ? `${trade.pair} Trade Journal` : "Trade Journal"}
       </h1>
 
-      {/* TRADE INFO (COMPACT) */}
-      {trade ? (
+      {/* TRADE INFO */}
+      {trade && (
         <div className="p-4 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#111827]">
           <div className="flex items-center gap-3">
             <span className={`font-semibold ${trade.bias === "BUY" ? "text-green-500" : "text-red-500"}`}>
@@ -163,10 +185,6 @@ export default function JournalClient() {
               {Number(trade.profit) >= 0 ? "+" : ""}${trade.profit}
             </span>
           </div>
-        </div>
-      ) : (
-        <div className="p-4 rounded-xl border border-yellow-500/30 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400">
-          Trade not found
         </div>
       )}
 
@@ -208,6 +226,51 @@ export default function JournalClient() {
             placeholder="Management..."
             className={inputStyles}
           />
+
+          {/* UPLOAD */}
+          <div className="space-y-3">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) uploadImage(file);
+              }}
+              className="text-sm text-gray-500"
+            />
+
+            {uploading && (
+              <p className="text-cyan-500 text-sm">Uploading...</p>
+            )}
+          </div>
+
+          {/* IMAGES GRID */}
+          {journal?.images?.length > 0 && (
+            <div className="grid grid-cols-2 gap-3 mt-4">
+              {journal.images.map((img, i) => (
+                <img
+                  key={i}
+                  src={img}
+                  alt="chart"
+                  className="rounded-lg cursor-pointer hover:scale-105 transition"
+                  onClick={() => setPreviewImg(img)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* ZOOM MODAL */}
+          {previewImg && (
+            <div
+              onClick={() => setPreviewImg(null)}
+              className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+            >
+              <img
+                src={previewImg}
+                className="max-w-[90%] max-h-[90%] rounded-lg"
+              />
+            </div>
+          )}
 
           <button
             onClick={saveJournal}

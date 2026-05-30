@@ -1,5 +1,6 @@
-export interface JournalEntry {
+export type JournalEntry = {
   tradeId: string;
+  pair: string;
 
   reason: string;
   confluence: string;
@@ -8,6 +9,5 @@ export interface JournalEntry {
   emotions: string;
   regrets: string;
   management: string;
-
   images: string[];
-}
+};

@@ -105,7 +105,16 @@ export default function JournalClient() {
 
     setUploading(false);
   };
+const deleteImage = (imageUrl: string) => {
+  if (!journal) return;
 
+  setJournal({
+    ...journal,
+    images: journal.images.filter(
+      (img) => img !== imageUrl
+    ),
+  });
+};
   // =========================
   // SAVE JOURNAL
   // =========================
@@ -232,6 +241,7 @@ export default function JournalClient() {
             <input
               type="file"
               accept="image/*"
+              multiple
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) uploadImage(file);
@@ -246,19 +256,49 @@ export default function JournalClient() {
 
           {/* IMAGES GRID */}
           {journal?.images?.length > 0 && (
-            <div className="grid grid-cols-2 gap-3 mt-4">
-              {journal.images.map((img, i) => (
-                <img
-                  key={i}
-                  src={img}
-                  alt="chart"
-                  className="rounded-lg cursor-pointer hover:scale-105 transition"
-                  onClick={() => setPreviewImg(img)}
-                />
-              ))}
-            </div>
-          )}
+  <div className="grid grid-cols-2 gap-3 mt-4">
+    {journal.images.map((img, i) => (
+      <div
+        key={i}
+        className="
+          relative
+          rounded-lg
+          overflow-hidden
+          border
+          border-gray-200
+          dark:border-white/10
+        "
+      >
+        <img
+          src={img}
+          alt="chart"
+          className="
+            w-full
+            h-40
+            object-cover
+          "
+        />
 
+        <button
+          onClick={() => deleteImage(img)}
+          className="
+            absolute
+            top-2
+            right-2
+            px-2
+            py-1
+            rounded
+            bg-red-500
+            text-white
+            text-xs
+          "
+        >
+          Delete
+        </button>
+      </div>
+    ))}
+  </div>
+)}
           {/* ZOOM MODAL */}
           {previewImg && (
             <div

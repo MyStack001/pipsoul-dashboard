@@ -271,7 +271,7 @@ const [tradeDate, setTradeDate] = useState("");
   onChange={(e) =>
     setTradeDate(e.target.value)
   }
-  className={inputStyles}
+ className={`${inputStyles} dark:[color-scheme:dark]`}
 />
 
       {/* BUTTON */}

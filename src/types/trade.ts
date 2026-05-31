@@ -10,7 +10,7 @@ export type Trade = {
 
   profit: number;
 
-  date: string;
+  tradeDate: string;
 
   bias: "BUY" | "SELL";
 };

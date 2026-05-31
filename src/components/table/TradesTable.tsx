@@ -51,15 +51,20 @@ export default function TradesTable({
 
   // SORT
   const sortedTrades = useMemo(() => {
-    return [...paginatedTrades].sort((a, b) => {
-      const aProfit = Number(a.profit || 0);
-      const bProfit = Number(b.profit || 0);
+  return [...paginatedTrades].sort((a, b) => {
+    const aDate = new Date(
+      a.tradeDate || 0
+    ).getTime();
 
-      return sortOrder === "asc"
-        ? aProfit - bProfit
-        : bProfit - aProfit;
-    });
-  }, [paginatedTrades, sortOrder]);
+    const bDate = new Date(
+      b.tradeDate || 0
+    ).getTime();
+
+    return sortOrder === "asc"
+      ? aDate - bDate
+      : bDate - aDate;
+  });
+}, [paginatedTrades, sortOrder]);
 
   if (!session) {
     return <p className="p-6">No session</p>;
@@ -83,7 +88,9 @@ export default function TradesTable({
           }
           className="px-4 py-2 bg-cyan-500 text-white rounded-lg"
         >
-          Sort
+          {sortOrder === "desc"
+  ? "Newest First"
+  : "Oldest First"}
         </button>
       </div>
 
@@ -127,6 +134,8 @@ export default function TradesTable({
       <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
         Profit
       </th>
+      <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
+        Date</th>
       <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
         Journal
       </th>
@@ -174,6 +183,18 @@ export default function TradesTable({
         >
           ${trade.profit}
         </td>
+        <td className= "px-4 py-3 text-gray-900 dark:text-white">
+  {trade.tradeDate
+    ? new Date(trade.tradeDate).toLocaleDateString(
+        "en-GB",
+        {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }
+      )
+    : "-"}
+</td>
 
         <td className="px-4 py-3">
           <div className="flex items-center gap-3">

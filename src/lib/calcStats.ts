@@ -10,7 +10,7 @@ export type Trade = {
 
   profit: number;
 
-  date: string;
+  tradeDate: string;
 
   bias: "BUY" | "SELL";
 
@@ -21,10 +21,10 @@ export function getStats(filteredTrades: Trade[] = []) {
   const sortedTrades = [...filteredTrades].sort(
     (a, b) =>
       new Date(
-        a.created_at || a.date
+        a.created_at || a.tradeDate
       ).getTime() -
       new Date(
-        b.created_at || b.date
+        b.created_at || b.tradeDate
       ).getTime()
   );
 

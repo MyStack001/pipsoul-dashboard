@@ -255,15 +255,23 @@ export default function TradesTable({
       onClick={() =>
         setCurrentPage((p) => Math.max(1, p - 1))
       }
-      className="
+     className="
   px-4 py-2 rounded-xl
-  bg-white/10
-  backdrop-blur-md
-  border border-white/20
-  text-white
   font-medium
-  hover:bg-white/20
   transition-all duration-200
+
+  bg-gray-100
+  border border-gray-300
+  text-gray-800
+
+  dark:bg-white/10
+  dark:border-white/20
+  dark:text-white
+  dark:backdrop-blur-md
+  dark:hover:bg-white/20
+
+  hover:bg-gray-200
+
   disabled:opacity-40
   disabled:cursor-not-allowed
 "
@@ -282,15 +290,23 @@ export default function TradesTable({
           Math.min(totalPages, p + 1)
         )
       }
-      className="
+     className="
   px-4 py-2 rounded-xl
-  bg-white/10
-  backdrop-blur-md
-  border border-white/20
-  text-white
   font-medium
-  hover:bg-white/20
   transition-all duration-200
+
+  bg-gray-100
+  border border-gray-300
+  text-gray-800
+
+  dark:bg-white/10
+  dark:border-white/20
+  dark:text-white
+  dark:backdrop-blur-md
+  dark:hover:bg-white/20
+
+  hover:bg-gray-200
+
   disabled:opacity-40
   disabled:cursor-not-allowed
 "

@@ -25,6 +25,8 @@ export default function AddTradeForm() {
   // ✅ MANUAL PROFIT INPUT
   const [profit, setProfit] =
     useState("");
+const [tradeDate, setTradeDate] = useState("");
+
 
   const [loading, setLoading] =
     useState(false);
@@ -65,7 +67,7 @@ export default function AddTradeForm() {
         // ✅ MANUAL PROFIT
         profit: Number(profit),
 
-        date: new Date().toISOString(),
+        tradeDate,
       };
 
       const { data, error } =
@@ -96,6 +98,7 @@ export default function AddTradeForm() {
       setLot("");
 
       setProfit("");
+      setTradeDate("");
 
     } catch (err) {
       console.error(err);
@@ -262,6 +265,14 @@ export default function AddTradeForm() {
         }
         className={inputStyles}
       />
+      <input
+  type="date"
+  value={tradeDate}
+  onChange={(e) =>
+    setTradeDate(e.target.value)
+  }
+  className={inputStyles}
+/>
 
       {/* BUTTON */}
       <button

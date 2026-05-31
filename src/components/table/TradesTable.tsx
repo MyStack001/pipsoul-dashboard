@@ -247,6 +247,60 @@ export default function TradesTable({
           No trades found
         </p>
       )}
+      {totalPages > 1 && (
+  <div className="flex items-center justify-center gap-4 mt-6">
+
+    <button
+      disabled={currentPage === 1}
+      onClick={() =>
+        setCurrentPage((p) => Math.max(1, p - 1))
+      }
+      className="
+  px-4 py-2 rounded-xl
+  bg-white/10
+  backdrop-blur-md
+  border border-white/20
+  text-white
+  font-medium
+  hover:bg-white/20
+  transition-all duration-200
+  disabled:opacity-40
+  disabled:cursor-not-allowed
+"
+    >
+      Previous
+    </button>
+
+    <span className="text-gray-700 dark:text-gray-300 font-medium">
+      Page {currentPage} of {totalPages}
+    </span>
+
+    <button
+      disabled={currentPage === totalPages}
+      onClick={() =>
+        setCurrentPage((p) =>
+          Math.min(totalPages, p + 1)
+        )
+      }
+      className="
+  px-4 py-2 rounded-xl
+  bg-white/10
+  backdrop-blur-md
+  border border-white/20
+  text-white
+  font-medium
+  hover:bg-white/20
+  transition-all duration-200
+  disabled:opacity-40
+  disabled:cursor-not-allowed
+"
+    >
+      Next
+    </button>
+
+  </div>
+)}
+
     </motion.div>
   );
 }

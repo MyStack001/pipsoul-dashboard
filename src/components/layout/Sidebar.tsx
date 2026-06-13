@@ -11,6 +11,7 @@ import {
   Users,
   BookOpen,
 } from "lucide-react";
+import Image from "next/image";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -57,7 +58,19 @@ export default function Sidebar() {
     <div className="w-60 h-screen backdrop-blur-xl bg-white/40 dark:bg-white/5 border-r border-gray-200/70 dark:border-white/10 p-4 flex flex-col text-black dark:text-white shadow-sm">
 
       {/* Logo */}
-      <h2 className="text-xl font-bold mb-6">Pipsoul</h2>
+<div className="flex items-center gap-3 mb-8">
+  <Image
+    src="/Logo.png"
+    alt="Pipsoul Logo"
+    width={40}
+    height={40}
+    priority
+  />
+
+  <h2 className="text-xl font-bold">
+    Pipsoul
+  </h2>
+</div>
 
       {/* Navigation */}
       <nav className="flex flex-col gap-2 mb-6">

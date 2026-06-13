@@ -18,7 +18,7 @@ import { getStats } from "@/lib/calcStats";
 import type { Trade } from "@/types/trade";
 
 type Props = {
-  pair: string;
+  pair?: string;
   trades: Trade[];
   onStats?: (stats: {
     totalProfit: number;
@@ -39,31 +39,30 @@ export default function EquityChart({
 }: Props)
 
 {
-  const { session } = useAuth();
+ 
+   const { session } = useAuth();
 
-  // AUTH GUARD
-  if (!session) return null;
+// FILTERED TRADES
+const filteredTrades = useMemo(() => {
+  const safeTrades = Array.isArray(trades)
+    ? trades
+    : [];
 
-  // FILTERED TRADES
-  const filteredTrades = useMemo(() => {
-    if (!Array.isArray(trades)) return [];
-
-    if (pair === "ALL") {
-      return trades;
-    }
-
-    return trades.filter(
-      (t) => t?.pair === pair
+  if (pair && pair !== "ALL") {
+    return safeTrades.filter(
+      (t) => t.pair === pair
     );
-  }, [trades, pair]);
+  }
 
-   const stats = useMemo(() => {
+  return safeTrades;
+}, [trades, pair]);
+
+const stats = useMemo(() => {
   return getStats(filteredTrades);
 }, [filteredTrades]);
-    
 
-  // EQUITY DATA
-  const data = useMemo(() => {
+// EQUITY DATA
+const data = useMemo(() => {
   return stats.equityCurve.map(
     (point, index) => ({
       trade: index + 1,
@@ -72,13 +71,16 @@ export default function EquityChart({
     })
   );
 }, [stats]);
-      
-  // SEND STATS TO DASHBOARD
-  useEffect(() => {
-    if (onStats) {
-      onStats(stats);
-    }
-  }, [stats, onStats]);
+
+// SEND STATS TO DASHBOARD
+useEffect(() => {
+  if (onStats) {
+    onStats(stats);
+  }
+}, [stats, onStats]);
+
+// AUTH GUARD
+if (!session) return null; 
 
   // EMPTY STATE
   if (filteredTrades.length === 0) {

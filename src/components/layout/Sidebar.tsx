@@ -62,8 +62,8 @@ export default function Sidebar() {
   <Image
     src="/Logo.png"
     alt="Pipsoul Logo"
-    width={40}
-    height={40}
+    width={36}
+    height={36}
     priority
   />
 

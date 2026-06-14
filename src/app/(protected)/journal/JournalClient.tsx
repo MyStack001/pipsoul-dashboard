@@ -201,7 +201,7 @@ export default function JournalClient() {
   if (!tradeId) {
     return (
       <div className="p-6">
-        <h1 className="text-2xl font-semibold text-white">
+        <h1 className="text-2xl font-semibold text-black dark:text-white">
           All Journals
         </h1>
 
@@ -212,7 +212,8 @@ export default function JournalClient() {
             <a
               key={j.trade_id}
               href={`/journal?id=${j.trade_id}`}
-              className="block p-4 mt-3 rounded-lg border border-white/10 text-white hover:bg-white/10"
+             className="block p-4 mt-3 rounded-lg border border-gray-200 dark:border-white/10 text-black 
+             dark:text-white hover:bg-gray-50 dark:hover:bg-white/10"
             >
               {j.pair} Journal
             </a>
@@ -228,13 +229,13 @@ export default function JournalClient() {
   return (
     <div className="p-6 space-y-6">
 
-      <h1 className="text-xl font-bold text-white">
+      <h1 className="text-xl font-bold text-black dark:text-white">
         {trade ? `${trade.pair} Trade Journal` : "Trade Journal"}
       </h1>
 
       {/* TRADE INFO */}
       {trade && (
-        <div className="p-4 rounded-xl border border-white/10 bg-[#111827]">
+        <div className="p-4 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#111827] text-black dark:text-white">
           <div className="flex gap-3">
             <span className={trade.bias === "BUY" ? "text-green-500" : "text-red-500"}>
               {trade.bias}

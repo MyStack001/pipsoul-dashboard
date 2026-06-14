@@ -268,10 +268,12 @@ const [tradeDate, setTradeDate] = useState("");
       <input
   type="date"
   value={tradeDate}
-  onChange={(e) =>
-    setTradeDate(e.target.value)
-  }
- className={`${inputStyles} dark:[color-scheme:dark]`}
+  onChange={(e) => setTradeDate(e.target.value)}
+  className={`
+    ${inputStyles}
+    [color-scheme:light] dark:[color-scheme:dark]
+    appearance-none
+  `}
 />
 
       {/* BUTTON */}

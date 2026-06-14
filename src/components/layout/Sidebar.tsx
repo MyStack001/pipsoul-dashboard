@@ -79,7 +79,7 @@ export default function Sidebar({
 </div>
 
       {/* Navigation */}
-      <nav className="flex flex-col gap-2 mb-6">
+      <nav className="flex-1 flex flex-col gap-2">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
 
@@ -108,18 +108,24 @@ export default function Sidebar({
       </nav>
 
       {/* Theme Toggle */}
-      <button
-        onClick={toggleTheme}
-        className="mt-auto flex items-center justify-between w-full px-3 py-2 rounded-lg bg-white/60 dark:bg-white/10 border border-gray-200/70 dark:border-white/10 shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md active:scale-95"
-      >
-        <span className="font-medium">
-          {isDark ? "Light Mode" : "Dark Mode"}
-        </span>
+      <div className="pt-4 mt-4 border-t border-gray-200/70 dark:border-white/10">
+  <button
+    onClick={toggleTheme}
+    className="flex items-center justify-between w-full px-3 py-2 rounded-lg bg-white/60 dark:bg-white/10 border border-gray-200/70 dark:border-white/10 shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md active:scale-95"
+  >
+    <span className="font-medium">
+      {isDark ? "Light Mode" : "Dark Mode"}
+    </span>
 
-        <span className="text-cyan-500 dark:text-cyan-400 transition-all duration-300 hover:rotate-12">
-          {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-        </span>
-      </button>
+    <span className="text-cyan-500 dark:text-cyan-400 transition-all duration-300 hover:rotate-12">
+      {isDark ? (
+        <Sun className="w-5 h-5" />
+      ) : (
+        <Moon className="w-5 h-5" />
+      )}
+    </span>
+  </button>
+</div>
 
     </div>
   );

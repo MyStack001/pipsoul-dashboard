@@ -13,7 +13,11 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 
-export default function Sidebar() {
+export default function Sidebar({
+  onClose,
+}: {
+  onClose?: () => void;
+}) {
   const pathname = usePathname();
   const [isDark, setIsDark] = useState(false);
 
@@ -79,9 +83,10 @@ export default function Sidebar() {
 
           return (
             <a
-              key={item.name}
-              href={item.href}
-              className={`
+  key={item.name}
+  href={item.href}
+  onClick={onClose}
+  className={`
                 flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200
 
                 ${

@@ -110,33 +110,33 @@ export default function TradesTable({
 "
       />
 
-      {/* TABLE */}
-
-  {/* TABLE */}
-<table className="w-full text-sm border-collapse">
+    
+{/* TABLE */}
+<div className="overflow-x-auto rounded-xl">
+  <table className="w-full min-w-[900px] text-sm border-collapse">
   <thead>
     <tr className="border-b border-gray-200 dark:border-white/10">
-      <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
+      <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">
         Pair
       </th>
-      <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
+      <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">
         Bias
       </th>
-      <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
+      <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">
         Entry
       </th>
-      <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
+      <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">
         Exit
       </th>
-      <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
+      <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">
         Lot
       </th>
-      <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
+      <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">
         Profit
       </th>
-      <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
+      <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">
         Date</th>
-      <th className="px-4 py-3 text-left text-gray-900 dark:text-white">
+      <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">
         Journal
       </th>
     </tr>
@@ -148,12 +148,12 @@ export default function TradesTable({
         key={trade.id}
         className="border-b border-gray-200 dark:border-white/10"
       >
-        <td className="px-4 py-3 text-gray-900 dark:text-white">
+        <td className="px-4 py-3 whitespace-nowrap text-gray-900 dark:text-white">
           {trade.pair}
         </td>
 
         <td
-          className={`px-4 py-3 font-medium ${
+          className={`px-4 py-3 whitespace-nowrap font-medium ${
             trade.bias === "BUY"
               ? "text-green-500"
               : "text-red-500"
@@ -162,20 +162,20 @@ export default function TradesTable({
           {trade.bias}
         </td>
 
-        <td className="px-4 py-3 text-gray-900 dark:text-white">
+        <td className="px-4 py-3 whitespace-nowrap text-gray-900 dark:text-white">
           {trade.entry}
         </td>
 
-        <td className="px-4 py-3 text-gray-900 dark:text-white">
+        <td className="px-4 py-3 whitespace-nowrap text-gray-900 dark:text-white">
           {trade.exit}
         </td>
 
-        <td className="px-4 py-3 text-gray-900 dark:text-white">
+        <td className="px-4 py-3 whitespace-nowrap text-gray-900 dark:text-white">
           {trade.lot}
         </td>
 
         <td
-          className={`px-4 py-3 font-semibold ${
+          className={`px-4 py-3 whitespace-nowrap font-semibold ${
             Number(trade.profit) >= 0
               ? "text-green-500"
               : "text-red-500"
@@ -183,7 +183,7 @@ export default function TradesTable({
         >
           ${trade.profit}
         </td>
-        <td className= "px-4 py-3 text-gray-900 dark:text-white">
+        <td className= "px-4 py-3 whitespace-nowrap text-gray-900 dark:text-white">
   {trade.tradeDate
     ? new Date(trade.tradeDate).toLocaleDateString(
         "en-GB",
@@ -196,7 +196,7 @@ export default function TradesTable({
     : "-"}
 </td>
 
-        <td className="px-4 py-3">
+        <td className="px-4 py-3 whitespace-nowrap" >
           <div className="flex items-center gap-3">
             <button
               onClick={() =>
@@ -242,6 +242,7 @@ export default function TradesTable({
     ))}
   </tbody>
 </table>
+</div>
       {sortedTrades.length === 0 && (
         <p className="text-center text-gray-500 mt-5">
           No trades found

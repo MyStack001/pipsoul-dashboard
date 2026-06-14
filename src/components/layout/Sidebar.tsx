@@ -59,74 +59,62 @@ export default function Sidebar({
   ];
 
   return (
-    <div className="w-60 h-screen border-4 border-red-500 backdrop-blur-xl bg-white/40 dark:bg-white/5 
-    border-r border-gray-200/70 dark:border-white/10 p-4 flex flex-col 
+    <div className="w-60 h-full flex flex-col bg-white/40 dark:bg-white/5 
+    backdrop-blur-xl border-r border-gray-200/70 dark:border-white/10 
     text-black dark:text-white shadow-sm">
 
-      {/* Logo */}
-<div className="flex items-center gap-3 mb-8">
-  <Image
-    src="/Logo.png"
-    alt="Pipsoul Logo"
-    width={36}
-    height={36}
-    priority
-  />
+      {/* TOP SECTION */}
+      <div className="p-4">
+        {/* Logo */}
+        <div className="flex items-center gap-3 mb-8">
+          <Image src="/Logo.png" alt="Pipsoul Logo" width={36} height={36} priority />
+          <h2 className="text-xl font-bold">Pipsoul</h2>
+        </div>
 
-  <h2 className="text-xl font-bold">
-    Pipsoul
-  </h2>
-</div>
+        {/* Navigation */}
+        <nav className="flex flex-col gap-2">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
 
-      {/* Navigation */}
-      <nav className="flex-1 flex flex-col gap-2">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href;
-
-          return (
-            <a
-  key={item.name}
-  href={item.href}
-  onClick={onClose}
-  className={`
-                flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200
-
-                ${
-                  isActive
+            return (
+              <a
+                key={item.name}
+                href={item.href}
+                onClick={() => onClose?.()}
+                className={`
+                  flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200
+                  ${isActive
                     ? "bg-cyan-100/80 border border-cyan-300 shadow-sm text-black font-semibold"
                     : "text-gray-700 dark:text-gray-300 hover:bg-cyan-50 hover:text-black hover:shadow-sm"
-                }
+                  }
+                  dark:hover:bg-white/10 dark:hover:text-white
+                `}
+              >
+                <item.icon className="w-5 h-5" />
+                {item.name}
+              </a>
+            );
+          })}
+        </nav>
+      </div>
 
-                dark:hover:bg-white/10 dark:hover:text-white
-              `}
-            >
-              <item.icon className="w-5 h-5" />
-              {item.name}
-            </a>
-          );
-        })}
-      </nav>
+      {/* BOTTOM SECTION (THIS IS THE KEY FIX) */}
+      <div className="mt-auto p-4 border-t border-gray-200/70 dark:border-white/10">
+        <button
+          onClick={toggleTheme}
+          className="flex items-center justify-between w-full px-3 py-2 rounded-lg 
+          bg-white/60 dark:bg-white/10 border border-gray-200/70 dark:border-white/10 
+          shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md active:scale-95"
+        >
+          <span className="font-medium">
+            {isDark ? "Light Mode" : "Dark Mode"}
+          </span>
 
-      {/* Theme Toggle */}
-      <div className="pt-4 mt-4 border-t border-gray-200/70 dark:border-white/10">
-  <button
-    onClick={toggleTheme}
-    className="flex items-center justify-between w-full px-3 py-2 rounded-lg bg-white/60 dark:bg-white/10 border border-gray-200/70 dark:border-white/10 shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md active:scale-95"
-  >
-    <span className="font-medium">
-      {isDark ? "Light Mode" : "Dark Mode"}
-    </span>
-
-    <span className="text-cyan-500 dark:text-cyan-400 transition-all duration-300 hover:rotate-12">
-      {isDark ? (
-        <Sun className="w-5 h-5" />
-      ) : (
-        <Moon className="w-5 h-5" />
-      )}
-    </span>
-  </button>
-</div>
-
+          <span className="text-cyan-500 dark:text-cyan-400 transition-all duration-300 hover:rotate-12">
+            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </span>
+        </button>
+      </div>
     </div>
   );
 }

@@ -59,7 +59,9 @@ export default function Sidebar({
   ];
 
   return (
-    <div className="w-60 h-screen backdrop-blur-xl bg-white/40 dark:bg-white/5 border-r border-gray-200/70 dark:border-white/10 p-4 flex flex-col text-black dark:text-white shadow-sm">
+    <div className="w-60 h-screen border-4 border-red-500 backdrop-blur-xl bg-white/40 dark:bg-white/5 
+    border-r border-gray-200/70 dark:border-white/10 p-4 flex flex-col 
+    text-black dark:text-white shadow-sm">
 
       {/* Logo */}
 <div className="flex items-center gap-3 mb-8">

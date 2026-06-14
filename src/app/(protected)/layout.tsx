@@ -16,7 +16,7 @@ export default function DashboardLayout({
     <div className="flex h-screen overflow-hidden">
 
       {/* Desktop Sidebar */}
-      <aside className="hidden md:block fixed left-0 top-0 h-screen w-60">
+      <aside className="hidden md:block fixed left-0 inset-y-0 w-60">
         <Sidebar />
       </aside>
 
@@ -35,7 +35,7 @@ export default function DashboardLayout({
       {/* Mobile Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 z-50 h-screen w-60
+          fixed inset-y-0 left-0 z-50 w-60
           transform transition-transform duration-300 ease-in-out
           md:hidden
 

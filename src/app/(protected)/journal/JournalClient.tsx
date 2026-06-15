@@ -273,19 +273,35 @@ export default function JournalClient() {
             placeholder="Management..."
           />
 
-          {/* UPLOAD */}
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={async (e) => {
-  const files = Array.from(e.target.files || []);
+         {/* UPLOAD */}
+<div className="flex flex-col gap-2">
+  <label
+    className="
+      inline-flex w-fit cursor-pointer
+      px-4 py-3 rounded-lg
+      bg-white dark:bg-[#111827]
+      border border-gray-200 dark:border-white/10
+      text-black dark:text-white
+    "
+  >
+    Choose Images
 
-  for (const file of files) {
-    await uploadImage(file);
-  }
-}}
-          />
+    <input
+      type="file"
+      accept="image/*"
+      multiple
+      className="hidden"
+      onChange={async (e) => {
+        const files = Array.from(e.target.files || []);
+
+        for (const file of files) {
+          await uploadImage(file);
+        }
+      }}
+    />
+  </label>
+</div>
+
         {uploading && (
   <p className="text-cyan-500 text-sm">
     Uploading image...

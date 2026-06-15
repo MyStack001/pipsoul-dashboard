@@ -200,7 +200,7 @@ export default function JournalClient() {
   // =========================
   if (!tradeId) {
     return (
-      <div className="p-6">
+      <div className="space-y-6">
         <h1 className="text-2xl font-semibold text-black dark:text-white">
           All Journals
         </h1>
@@ -227,7 +227,7 @@ export default function JournalClient() {
   // EDIT MODE
   // =========================
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
 
       <h1 className="text-xl font-bold text-black dark:text-white">
         {trade ? `${trade.pair} Trade Journal` : "Trade Journal"}

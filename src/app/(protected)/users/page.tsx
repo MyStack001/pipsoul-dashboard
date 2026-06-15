@@ -88,7 +88,7 @@ async function updateUser() {
 }
 
   return (
-    <div className="p-6 space-y-6 text-black dark:text-white">
+    <div className="space-y-6 text-black dark:text-white">
 
       {/* HEADER */}
       <div>

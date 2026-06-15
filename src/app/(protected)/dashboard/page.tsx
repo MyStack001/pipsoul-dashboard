@@ -82,7 +82,7 @@ const { trades } = useTradesStore();
   if (!session) return null;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
 
       <div>
         <h1 className="text-2xl font-semibold text-black dark:text-white">

@@ -187,7 +187,12 @@ async function updateUser() {
           users.map((user) => (
             <div
               key={user.id}
-              className="p-5 rounded-2xl border bg-white/60 dark:bg-white/5 flex justify-between items-center"
+             className="
+  p-5 rounded-2xl border
+  bg-white/60 dark:bg-white/5
+  flex flex-col gap-4
+  sm:flex-row sm:justify-between sm:items-center
+"
             >
               <div>
                 <h2 className="font-bold text-lg">{user.name}</h2>
@@ -206,7 +211,7 @@ async function updateUser() {
                 </div>
               </div>
 
-             <div className="flex gap-2">
+             <div className="flex flex-wrap gap-2">
 
   <button
     onClick={() => {

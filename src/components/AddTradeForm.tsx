@@ -272,7 +272,7 @@ const [tradeDate, setTradeDate] = useState("");
   className={`
     ${inputStyles}
     [color-scheme:light] dark:[color-scheme:dark]
-    appearance-none
+    
   `}
 />
 

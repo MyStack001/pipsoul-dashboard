@@ -4,13 +4,14 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -63,7 +64,7 @@ export default function LoginPage() {
   />
 </div>
 
-        <div className="relative">
+       <div className="relative">
   <Lock
     size={18}
     className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"
@@ -72,16 +73,33 @@ export default function LoginPage() {
   <input
     className="
       w-full rounded-lg bg-zinc-800
-      py-3 pl-10 pr-3
+      py-3 pl-10 pr-10
       outline-none
       border border-zinc-700
       focus:border-cyan-500
     "
-    type="password"
+    type={showPassword ? "text" : "password"}
     placeholder="Password"
     value={password}
     onChange={(e) => setPassword(e.target.value)}
   />
+
+  <button
+    type="button"
+    onClick={() => setShowPassword(!showPassword)}
+    className="
+      absolute right-3 top-1/2
+      -translate-y-1/2
+      text-zinc-400
+      hover:text-white
+    "
+  >
+    {showPassword ? (
+      <EyeOff size={18} />
+    ) : (
+      <Eye size={18} />
+    )}
+  </button>
 </div>
 
         {error && <p className="text-red-500 text-sm">{error}</p>}

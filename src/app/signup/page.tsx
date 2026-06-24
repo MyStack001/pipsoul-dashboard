@@ -4,6 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Mail, Lock } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -42,22 +43,46 @@ export default function SignupPage() {
       >
         <h1 className="text-2xl font-bold">Create Pipsoul Account</h1>
 
-        <input
-          className="w-full rounded bg-zinc-800 p-3 outline-none"
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <div className="relative">
+  <Mail
+    size={18}
+    className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"
+  />
 
-        <input
-          className="w-full rounded bg-zinc-800 p-3 outline-none"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+  <input
+    className="
+      w-full rounded-lg bg-zinc-800
+      py-3 pl-10 pr-3
+      outline-none
+      border border-zinc-700
+      focus:border-cyan-500
+    "
+    type="email"
+    placeholder="Email"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+  />
+</div>
+        <div className="relative">
+  <Lock
+    size={18}
+    className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"
+  />
 
+  <input
+    className="
+      w-full rounded-lg bg-zinc-800
+      py-3 pl-10 pr-3
+      outline-none
+      border border-zinc-700
+      focus:border-cyan-500
+    "
+    type="password"
+    placeholder="Password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+  />
+</div>
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <button

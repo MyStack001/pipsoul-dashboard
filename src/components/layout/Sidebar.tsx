@@ -8,7 +8,7 @@ import {
   LayoutDashboard,
   BarChart3,
   LineChart,
-  Users,
+  CircleUserRound,
   BookOpen,
 } from "lucide-react";
 import Image from "next/image";
@@ -54,7 +54,7 @@ export default function Sidebar({
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Trades", href: "/trades", icon: BarChart3 },
     { name: "Analytics", href: "/analytics", icon: LineChart },
-    { name: "Users", href: "/users", icon: Users },
+    { name: "Profile", href: "/profile", icon: CircleUserRound },
     { name: "Journal", href: "/journal", icon: BookOpen },
   ];
 

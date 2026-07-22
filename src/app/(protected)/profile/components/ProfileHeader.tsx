@@ -1,39 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { useMemo } from "react";
+import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/components/AuthProvider";
 
-type Profile = {
-  name: string | null;
-  trading_style: string | null;
-  account_type: string | null;
-  experience: string | null;
-};
 
 export default function ProfileHeader() {
-  const { session, loading } = useAuth();
+  const { session} = useAuth();
 
-  const [profile, setProfile] = useState<Profile | null>(null);
-
-  useEffect(() => {
-    if (!session?.user) return;
-    const userId = session.user.id;
-
-    async function fetchProfile() {
-      const { data } = await supabase
-        .from("users")
-        .select("name, trading_style, account_type, experience")
-        .eq("id", userId)
-        .single();
-
-      if (data) {
-        setProfile(data);
-      }
-    }
-
-    fetchProfile();
-  }, [session]);
+  const { profile, loading } = useProfile();
 
   const initials = useMemo(() => {
     if (profile?.name?.trim()) {

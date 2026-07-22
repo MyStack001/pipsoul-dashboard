@@ -55,11 +55,14 @@ export default function ProfileForm() {
       })
       .eq("id", session.user.id);
 
-    setSaving(false);
+   setSaving(false);
 
-    if (!error) {
-      alert("Profile updated successfully!");
-    }
+if (error) {
+  console.error(error);
+  alert(error.message);
+} else {
+  alert("Profile updated successfully!");
+}
   }
 
   return (

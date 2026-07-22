@@ -40,30 +40,38 @@ export default function ProfileForm() {
 }, [session]);
 
   async function saveProfile() {
-    if (!session?.user) return;
+  if (!session?.user) return;
 
-    setSaving(true);
+  console.log({
+    name,
+    bio,
+    tradingStyle,
+    accountType,
+    experience,
+  });
 
-    const { error } = await supabase
-      .from("users")
-      .update({
-        name,
-        bio,
-        trading_style: tradingStyle,
-        account_type: accountType,
-        experience,
-      })
-      .eq("id", session.user.id);
+  setSaving(true);
 
-   setSaving(false);
+  const { error } = await supabase
+    .from("users")
+    .update({
+      name,
+      bio,
+      trading_style: tradingStyle,
+      account_type: accountType,
+      experience,
+    })
+    .eq("id", session.user.id);
 
-if (error) {
-  console.error(error);
-  alert(error.message);
-} else {
-  alert("Profile updated successfully!");
-}
+  setSaving(false);
+
+  if (error) {
+    console.error(error);
+    alert(error.message);
+  } else {
+    alert("Profile updated successfully!");
   }
+}
 
   return (
     <div className="rounded-3xl border border-gray-200 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur-xl p-8 space-y-6">

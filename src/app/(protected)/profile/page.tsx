@@ -53,9 +53,10 @@ async function loadProfile() {
   return (
     <div className="mx-auto max-w-6xl space-y-8">
       <ProfileHeader
-        profile={profile}
-        email={session?.user.email ?? ""}
-      />
+  profile={profile}
+  email={session?.user.email ?? ""}
+  setProfile={setProfile}
+/>
 
       <ProfileStats profile={profile} />
 

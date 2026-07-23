@@ -64,7 +64,8 @@ export function ProfileProvider({
 
   useEffect(() => {
     refreshProfile();
-  }, [session]);
+}, [session?.user?.id]);
+
 
   return (
     <ProfileContext.Provider

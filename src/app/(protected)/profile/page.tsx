@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
+import { useProfile } from "@/components/ProfileProvider";
 
 import ProfileHeader from "./components/ProfileHeader";
 import ProfileStats from "./components/ProfileStats";
@@ -21,35 +20,10 @@ export type Profile = {
 export default function ProfilePage() {
   const { session } = useAuth();
 
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { profile, setProfile } = useProfile();
 
-  useEffect(() => {
-    if (!session?.user) return;
-
-const userId = session.user.id;
-
-async function loadProfile() {
-  const { data } = await supabase
-    .from("users")
-    .select("*")
-    .eq("id", userId)
-    .single();
-
-      if (data) {
-        setProfile(data);
-      }
-
-      setLoading(false);
-    }
-
-    loadProfile();
-  }, [session]);
-
-  if (loading || !profile) {
-    return <p>Loading profile...</p>;
-  }
-
+  
+  if (!profile) return null;
   return (
     <div className="mx-auto max-w-6xl space-y-8">
       <ProfileHeader

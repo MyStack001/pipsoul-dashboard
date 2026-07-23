@@ -29,7 +29,6 @@ export default function ProfileHeader({
   if (!file) return;
 
   const fileExt = file.name.split(".").pop();
-
   const fileName = `${profile.id}.${fileExt}`;
 
   const { error: uploadError } = await supabase.storage
@@ -65,6 +64,10 @@ export default function ProfileHeader({
     ...profile,
     avatar_url: publicUrl,
   });
+
+  event.target.value = "";
+
+  alert("Profile picture updated successfully!");
 }
 
   const initials = useMemo(() => {

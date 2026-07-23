@@ -3,7 +3,7 @@ import JournalClient from "./JournalClient";
 
 export default function Page() {
   return (
-    <Suspense fallback={<p className="p-6">Loading journal...</p>}>
+    <Suspense fallback={null}>
       <JournalClient />
     </Suspense>
   );

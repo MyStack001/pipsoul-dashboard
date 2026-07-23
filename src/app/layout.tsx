@@ -1,6 +1,7 @@
 import "./globals.css";
 import ThemeClient from "./theme-client";
 import { AuthProvider } from "@/components/AuthProvider";
+import { ProfileProvider } from "@/components/ProfileProvider";
 
 export default function RootLayout({
   children,
@@ -24,11 +25,13 @@ export default function RootLayout({
         "
       >
         <AuthProvider>
-          <ThemeClient>
-            <div>
-              {children}
-            </div>
-          </ThemeClient>
+          <ProfileProvider>
+            <ThemeClient>
+              <div>
+                {children}
+              </div>
+            </ThemeClient>
+          </ProfileProvider>
         </AuthProvider>
       </body>
     </html>

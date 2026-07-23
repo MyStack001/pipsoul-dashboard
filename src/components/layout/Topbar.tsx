@@ -1,14 +1,14 @@
 "use client";
 
 import { Menu } from "lucide-react";
-import { useProfile } from "@/hooks/useProfile";
+import { useProfile } from "@/components/ProfileProvider";
 
 export default function Topbar({
   onMenuClick,
 }: {
   onMenuClick?: () => void;
 }) {
-  const { profile } = useProfile();
+  const { profile, loading  } = useProfile();
 
   const hour = new Date().getHours();
 
@@ -40,7 +40,7 @@ export default function Topbar({
 
         <div>
           <h2 className="text-lg font-semibold text-black dark:text-white">
-            {greeting}, {profile?.name || "Trader"} 👋
+            {greeting}, {loading ? "Trader" : profile?.name || "Trader"} 👋
           </h2>
 
           <p className="text-sm text-gray-500 dark:text-gray-400">

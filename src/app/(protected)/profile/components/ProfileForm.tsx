@@ -1,10 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState,
+  type Dispatch,
+  type SetStateAction,
+ } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
+import type { Profile } from "../page";
 
-export default function ProfileForm() {
+type ProfileFormProps = {
+  profile: Profile;
+  setProfile: Dispatch<SetStateAction<Profile | null>>;
+};
+
+export default function ProfileForm({
+  profile,
+  setProfile,
+}: ProfileFormProps) {
   const { session } = useAuth();
 
   const [name, setName] = useState("");
@@ -16,28 +28,12 @@ export default function ProfileForm() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-  if (!session?.user) return;
-
-  const userId = session.user.id;
-
-  async function loadProfile() {
-    const { data } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", userId)
-      .single();
-
-    if (data) {
-      setName(data.name || "");
-      setBio(data.bio || "");
-      setTradingStyle(data.trading_style || "Intraday");
-      setAccountType(data.account_type || "Demo");
-      setExperience(data.experience || "Beginner");
-    }
-  }
-
-  loadProfile();
-}, [session]);
+  setName(profile.name || "");
+  setBio(profile.bio || "");
+  setTradingStyle(profile.trading_style || "Intraday");
+  setAccountType(profile.account_type || "Demo");
+  setExperience(profile.experience || "Beginner");
+}, [profile]);
 
   async function saveProfile() {
   if (!session?.user) return;
@@ -69,8 +65,17 @@ export default function ProfileForm() {
     console.error(error);
     alert(error.message);
   } else {
-    alert("Profile updated successfully!");
-  }
+  setProfile({
+    ...profile,
+    name,
+    bio,
+    trading_style: tradingStyle,
+    account_type: accountType,
+    experience,
+  });
+
+  alert("Profile updated successfully!");
+}
 }
 
   return (

@@ -8,6 +8,7 @@ import { useEffect, useState,
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
 import type { Profile } from "../page";
+import CustomSelect from "@/components/ui/CustomSelect";
 
 
 type ProfileFormProps = {
@@ -120,27 +121,16 @@ export default function ProfileForm({
       Trading Style
     </label>
 
-    <select
-      className="
-        w-full
-        rounded-xl
-        border
-        border-gray-300 dark:border-white/10
-        bg-white dark:bg-[#111827]
-        text-black dark:text-white
-        p-3
-        focus:outline-none
-        focus:ring-2
-        focus:ring-cyan-500
-      "
-      value={tradingStyle}
-      onChange={(e) => setTradingStyle(e.target.value)}
-    >
-      <option>Scalping</option>
-      <option>Intraday</option>
-      <option>Swing</option>
-      <option>Position</option>
-    </select>
+    <CustomSelect
+  value={tradingStyle}
+  onChange={setTradingStyle}
+  options={[
+    "Scalping",
+    "Intraday",
+    "Swing",
+    "Position",
+  ]}
+/>
   </div>
 
   <div className="space-y-2">

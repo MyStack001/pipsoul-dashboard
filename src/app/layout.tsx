@@ -2,6 +2,7 @@ import "./globals.css";
 import ThemeClient from "./theme-client";
 import { AuthProvider } from "@/components/AuthProvider";
 import { ProfileProvider } from "@/components/ProfileProvider";
+import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -33,6 +34,11 @@ export default function RootLayout({
             </ThemeClient>
           </ProfileProvider>
         </AuthProvider>
+        <Toaster
+  richColors
+  position="top-right"
+  theme="system"
+/>
       </body>
     </html>
   );

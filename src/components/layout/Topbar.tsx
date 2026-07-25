@@ -1,6 +1,7 @@
 "use client";
 
 import { Menu } from "lucide-react";
+import Notifications from "./Notifications";
 import { useProfile } from "@/components/ProfileProvider";
 
 export default function Topbar({
@@ -49,25 +50,27 @@ export default function Topbar({
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
-        <div className="text-right hidden sm:block">
-          <p className="font-medium text-black dark:text-white">
-            {profile?.name || "Trader"}
-          </p>
-        </div>
+      <div className="flex items-center gap-4">
+  <Notifications />
 
-        <div className="w-10 h-10 rounded-full overflow-hidden bg-cyan-500 flex items-center justify-center text-white font-bold">
-          {profile?.avatar_url ? (
-            <img
-              src={profile.avatar_url}
-              alt="Avatar"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            profile?.name?.charAt(0).toUpperCase() || "T"
-          )}
-        </div>
-      </div>
+  <div className="text-right hidden sm:block">
+    <p className="font-medium text-black dark:text-white">
+      {profile?.name || "Trader"}
+    </p>
+  </div>
+
+  <div className="w-10 h-10 rounded-full overflow-hidden bg-cyan-500 flex items-center justify-center text-white font-bold">
+    {profile?.avatar_url ? (
+      <img
+        src={profile.avatar_url}
+        alt="Avatar"
+        className="w-full h-full object-cover"
+      />
+    ) : (
+      profile?.name?.charAt(0).toUpperCase() || "T"
+    )}
+  </div>
+</div>
     </div>
   );
 }

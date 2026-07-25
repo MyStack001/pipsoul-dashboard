@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import {
   Sun,
   Moon,
@@ -11,6 +12,7 @@ import {
   LineChart,
   CircleUserRound,
   BookOpen,
+  LogOut,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -21,6 +23,7 @@ export default function Sidebar({
   onClose?: () => void;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
@@ -51,7 +54,17 @@ export default function Sidebar({
       setIsDark(true);
     }
   };
+async function handleLogout() {
+  const { error } = await supabase.auth.signOut();
 
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  onClose?.();
+  router.push("/login");
+}
   const navItems = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Trades", href: "/trades", icon: BarChart3 },
@@ -102,22 +115,43 @@ export default function Sidebar({
       </div>
 
       {/* BOTTOM SECTION (THIS IS THE KEY FIX) */}
-      <div className="mt-auto p-4 border-t border-gray-200/70 dark:border-white/10">
-        <button
-          onClick={toggleTheme}
-          className="flex items-center justify-between w-full px-3 py-2 rounded-lg 
-          bg-white/60 dark:bg-white/10 border border-gray-200/70 dark:border-white/10 
-          shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md active:scale-95"
-        >
-          <span className="font-medium">
-            {isDark ? "Light Mode" : "Dark Mode"}
-          </span>
+      <div className="mt-auto p-4 border-t border-gray-200/70 dark:border-white/10 space-y-3">
 
-          <span className="text-cyan-500 dark:text-cyan-400 transition-all duration-300 hover:rotate-12">
-            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </span>
-        </button>
-      </div>
+  <button
+    onClick={toggleTheme}
+    className="flex items-center justify-between w-full px-3 py-2 rounded-lg
+    bg-white/60 dark:bg-white/10 border border-gray-200/70 dark:border-white/10
+    shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-md active:scale-95"
+  >
+    <span className="font-medium">
+      {isDark ? "Light Mode" : "Dark Mode"}
+    </span>
+
+    <span className="text-cyan-500 dark:text-cyan-400">
+      {isDark ? (
+        <Sun className="w-5 h-5" />
+      ) : (
+        <Moon className="w-5 h-5" />
+      )}
+    </span>
+  </button>
+
+  <button
+    onClick={handleLogout}
+    className="flex items-center gap-3 w-full px-3 py-2 rounded-lg
+    border border-red-200 dark:border-red-500/20
+    bg-red-50 dark:bg-red-500/10
+    text-red-600 dark:text-red-400
+    transition-all duration-300
+    hover:bg-red-100 dark:hover:bg-red-500/20
+    hover:scale-[1.02]
+    active:scale-95"
+  >
+    <LogOut className="w-5 h-5" />
+    <span className="font-medium">Logout</span>
+  </button>
+
+</div>
     </div>
   );
 }

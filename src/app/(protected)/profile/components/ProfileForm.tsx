@@ -9,6 +9,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
 import type { Profile } from "../page";
 import CustomSelect from "@/components/ui/CustomSelect";
+import { createNotification } from "@/lib/notifications";
 
 
 type ProfileFormProps = {
@@ -62,6 +63,7 @@ export default function ProfileForm({
     console.error(error);
 
     toast.error(error.message);
+  
   } else {
   setProfile({
     ...profile,
@@ -72,7 +74,15 @@ export default function ProfileForm({
     experience,
   });
 
+  await createNotification(
+    session.user.id,
+    "Profile Updated",
+    "Your trading profile has been updated successfully.",
+    "success"
+  );
+
   toast.success("Profile updated successfully!");
+
 }
 }
 

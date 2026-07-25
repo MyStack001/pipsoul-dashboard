@@ -3,6 +3,7 @@ import ThemeClient from "./theme-client";
 import { AuthProvider } from "@/components/AuthProvider";
 import { ProfileProvider } from "@/components/ProfileProvider";
 import { Toaster } from "sonner";
+import { NotificationProvider } from "@/components/NotificationProvider";
 
 export default function RootLayout({
   children,
@@ -26,14 +27,16 @@ export default function RootLayout({
         "
       >
         <AuthProvider>
-          <ProfileProvider>
-            <ThemeClient>
-              <div>
-                {children}
-              </div>
-            </ThemeClient>
-          </ProfileProvider>
-        </AuthProvider>
+  <ProfileProvider>
+    <NotificationProvider>
+      <ThemeClient>
+        <div>
+          {children}
+        </div>
+      </ThemeClient>
+    </NotificationProvider>
+  </ProfileProvider>
+</AuthProvider>
         <Toaster
   richColors
   position="top-right"

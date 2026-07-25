@@ -3,35 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 import { Bell } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useNotifications } from "@/components/NotificationProvider";
 
-const notifications = [
-  {
-    id: 1,
-    title: "Welcome to Pipsoul 🎉",
-    message: "Your trading dashboard is ready.",
-    time: "Just now",
-    read: false,
-  },
-  {
-    id: 2,
-    title: "Profile Updated",
-    message: "Your profile was saved successfully.",
-    time: "5 min ago",
-    read: false,
-  },
-  {
-    id: 3,
-    title: "Trading Reminder",
-    message: "Remember to journal today's trades.",
-    time: "Yesterday",
-    read: true,
-  },
-];
 
 export default function Notifications() {
   const [open, setOpen] = useState(false);
 
-  const unread = notifications.filter((n) => !n.read).length;
+ const {
+  notifications,
+  unreadCount,
+  markAsRead,
+} = useNotifications();
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -51,14 +33,21 @@ export default function Notifications() {
   return (
     <div className="relative" ref={ref}>
       <button
-        onClick={() => setOpen(!open)}
+        onClick={async () => {
+  const next = !open;
+  setOpen(next);
+
+  if (next) {
+    await markAsRead();
+  }
+}}
         className="relative p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition"
       >
         <Bell className="w-6 h-6 text-gray-700 dark:text-gray-300" />
 
-        {unread > 0 && (
+        {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-cyan-500 text-white text-[10px] font-bold flex items-center justify-center">
-            {unread}
+            {unreadCount}
           </span>
         )}
       </button>
@@ -79,13 +68,18 @@ export default function Notifications() {
             </div>
 
             <div className="max-h-96 overflow-y-auto">
-              {notifications.map((item) => (
+              {notifications.length === 0 ? (
+  <div className="p-6 text-center text-sm text-gray-500 dark:text-gray-400">
+    No notifications yet.
+  </div>
+) : (
+  notifications.map((item) => (
                 <div
                   key={item.id}
                   className="px-5 py-4 border-b border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5 transition"
                 >
                   <div className="flex items-start gap-3">
-                    {!item.read && (
+                    {!item.is_read && (
                       <div className="mt-2 h-2 w-2 rounded-full bg-cyan-500" />
                     )}
 
@@ -99,12 +93,12 @@ export default function Notifications() {
                       </p>
 
                       <p className="text-xs text-gray-400 mt-2">
-                        {item.time}
+                        {new Date(item.created_at).toLocaleString()}
                       </p>
                     </div>
                   </div>
                 </div>
-              ))}
+              )))}
             </div>
 
             <button className="w-full py-3 text-sm font-medium text-cyan-500 hover:bg-gray-50 dark:hover:bg-white/5">

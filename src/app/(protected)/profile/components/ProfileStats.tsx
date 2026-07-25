@@ -40,9 +40,9 @@ export default function ProfileStats({
         </div>
 
         <div className="rounded-xl bg-gray-100 dark:bg-white/5 p-4">
-          <p className="text-sm text-gray-500 dark:text-gray-400">Bio</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Strategy</p>
           <h3 className="text-lg font-bold text-black dark:text-white">
-            {profile.bio || "No bio yet"}
+            {profile.strategy || "No strategy yet"}
           </h3>
         </div>
 

@@ -10,7 +10,7 @@ import ProfileForm from "./components/ProfileForm";
 export type Profile = {
   id: string;
   name: string | null;
-  bio: string | null;
+  strategy: string | null;
   avatar_url: string | null;
   trading_style: string | null;
   account_type: string |null;

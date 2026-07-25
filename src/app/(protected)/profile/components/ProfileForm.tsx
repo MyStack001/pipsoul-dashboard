@@ -23,7 +23,7 @@ export default function ProfileForm({
   const { session } = useAuth();
 
   const [name, setName] = useState("");
-  const [bio, setBio] = useState("");
+  const [strategy, setStrategy] = useState("");
   const [tradingStyle, setTradingStyle] = useState("Intraday");
   const [accountType, setAccountType] = useState("Demo");
   const [experience, setExperience] = useState("Beginner");
@@ -32,7 +32,7 @@ export default function ProfileForm({
 
   useEffect(() => {
   setName(profile.name || "");
-  setBio(profile.bio || "");
+  setStrategy(profile.strategy || "");
   setTradingStyle(profile.trading_style || "Intraday");
   setAccountType(profile.account_type || "Demo");
   setExperience(profile.experience || "Beginner");
@@ -49,7 +49,7 @@ export default function ProfileForm({
     .from("users")
     .update({
       name,
-      bio,
+      strategy,
       trading_style: tradingStyle,
       account_type: accountType,
       experience,
@@ -66,7 +66,7 @@ export default function ProfileForm({
   setProfile({
     ...profile,
     name,
-    bio,
+    strategy,
     trading_style: tradingStyle,
     account_type: accountType,
     experience,
@@ -169,7 +169,7 @@ export default function ProfileForm({
 
       <div className="space-y-2">
   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-    Bio
+    Strategy
   </label>
 
   <textarea
@@ -189,8 +189,8 @@ export default function ProfileForm({
       resize-none
     "
     placeholder="Tell us about yourself..."
-    value={bio}
-    onChange={(e) => setBio(e.target.value)}
+    value={strategy}
+    onChange={(e) => setStrategy(e.target.value)}
   />
 </div>
 

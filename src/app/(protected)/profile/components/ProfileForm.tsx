@@ -114,7 +114,7 @@ export default function ProfileForm({
   />
 </div>
 
-     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
 
   <div className="space-y-2">
     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -122,15 +122,15 @@ export default function ProfileForm({
     </label>
 
     <CustomSelect
-  value={tradingStyle}
-  onChange={setTradingStyle}
-  options={[
-    "Scalping",
-    "Intraday",
-    "Swing",
-    "Position",
-  ]}
-/>
+      value={tradingStyle}
+      onChange={setTradingStyle}
+      options={[
+        "Scalping",
+        "Intraday",
+        "Swing",
+        "Position",
+      ]}
+    />
   </div>
 
   <div className="space-y-2">
@@ -138,55 +138,33 @@ export default function ProfileForm({
       Account Type
     </label>
 
-    <select
-      className="
-        w-full
-        rounded-xl
-        border
-        border-gray-300 dark:border-white/10
-        bg-white dark:bg-[#111827]
-        text-black dark:text-white
-        p-3
-        focus:outline-none
-        focus:ring-2
-        focus:ring-cyan-500
-      "
+    <CustomSelect
       value={accountType}
-      onChange={(e) => setAccountType(e.target.value)}
-    >
-      <option>Demo</option>
-      <option>Live</option>
-      <option>Prop Firm</option>
-    </select>
+      onChange={setAccountType}
+      options={[
+        "Demo",
+        "Live",
+        "Prop Firm",
+      ]}
+    />
   </div>
 
-</div>
+  <div className="space-y-2">
+    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+      Trading Experience
+    </label>
 
-      <div className="space-y-2">
-  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-    Trading Experience
-  </label>
+    <CustomSelect
+      value={experience}
+      onChange={setExperience}
+      options={[
+        "Beginner",
+        "Intermediate",
+        "Advanced",
+      ]}
+    />
+  </div>
 
-  <select
-    className="
-      w-full
-      rounded-xl
-      border
-      border-gray-300 dark:border-white/10
-      bg-white dark:bg-[#111827]
-      text-black dark:text-white
-      p-3
-      focus:outline-none
-      focus:ring-2
-      focus:ring-cyan-500
-    "
-    value={experience}
-    onChange={(e) => setExperience(e.target.value)}
-  >
-    <option>Beginner</option>
-    <option>Intermediate</option>
-    <option>Advanced</option>
-  </select>
 </div>
 
       <div className="space-y-2">

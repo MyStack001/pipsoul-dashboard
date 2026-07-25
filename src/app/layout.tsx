@@ -30,9 +30,9 @@ export default function RootLayout({
   <ProfileProvider>
     <NotificationProvider>
       <ThemeClient>
-        <div>
+      
           {children}
-        </div>
+        
       </ThemeClient>
     </NotificationProvider>
   </ProfileProvider>

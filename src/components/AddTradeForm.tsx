@@ -4,7 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
 import { ChevronDown } from "lucide-react";
-import { useTradesStore } from "@/hooks/useTradesStore";
+import { createNotification } from "@/lib/notifications";
 
 export default function AddTradeForm() {
   const { session } = useAuth();
@@ -86,6 +86,12 @@ const [tradeDate, setTradeDate] = useState("");
         "INSERT SUCCESS:",
         data
       );
+      await createNotification(
+  session.user.id,
+  "Trade Added 📈",
+  `${pair.toUpperCase()} (${bias}) was added to your journal.`,
+  "success"
+);
     
       // ✅ RESET
       setPair("");

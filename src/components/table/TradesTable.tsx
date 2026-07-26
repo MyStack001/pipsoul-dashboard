@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import type { Trade } from "@/types/trade"
+import { toast } from "sonner";
 
 export default function TradesTable({
   pair,
@@ -19,7 +20,7 @@ export default function TradesTable({
   const { session } = useAuth();
   const router = useRouter();
   
-
+  
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -219,19 +220,20 @@ export default function TradesTable({
 
             <button
               onClick={async () => {
-                const confirmDelete = confirm("Delete?");
+  if (!confirm("Delete this trade?")) return;
 
-                if (!confirmDelete) return;
+  const { error } = await supabase
+    .from("trades")
+    .delete()
+    .eq("id", trade.id);
 
-                const { error } = await supabase
-                  .from("trades")
-                  .delete()
-                  .eq("id", trade.id);
+  if (error) {
+    toast.error(error.message);
+    return;
+  }
 
-                if (error) {
-                  alert(error.message);
-                }
-              }}
+  toast.success("Trade deleted successfully.");
+}}
               className="text-red-500 hover:text-red-400"
             >
               Delete

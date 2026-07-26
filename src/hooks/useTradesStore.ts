@@ -48,7 +48,7 @@ export function useTradesStore() {
 
     const userId = session.user.id;
 
-    const fetchTrades = async () => {
+    async function fetchTrades() {
       const { data, error } =
         await supabase
           .from("trades")
@@ -98,5 +98,7 @@ return () => {
 };
   }, [session?.user?.id]);
 
-  return { trades };
+  return {
+  trades,
+}
 }

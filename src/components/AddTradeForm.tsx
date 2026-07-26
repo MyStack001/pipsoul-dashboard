@@ -82,18 +82,14 @@ const [tradeDate, setTradeDate] = useState("");
         return;
       }
 
-      console.log(
-        "INSERT SUCCESS:",
-        data
-      );
-      console.log("About to create trade notification...");
+      
       await createNotification(
   session.user.id,
   "Trade Added 📈",
   `${pair.toUpperCase()} (${bias}) was added to your journal.`,
   "success"
 );
-console.log("Trade notification function finished.");
+
     
       // ✅ RESET
       setPair("");

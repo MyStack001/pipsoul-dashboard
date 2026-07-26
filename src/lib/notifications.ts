@@ -6,16 +6,26 @@ export async function createNotification(
   message: string,
   type: "info" | "success" | "warning" | "error" = "info"
 ) {
-  const { error } = await supabase
+  console.log("Creating notification...", {
+    userId,
+    title,
+    message,
+    type,
+  });
+
+  const { data, error } = await supabase
     .from("notifications")
     .insert({
       user_id: userId,
       title,
       message,
       type,
-    });
+    })
+    .select();
+
+  console.log("Notification insert result:", data);
 
   if (error) {
-    console.error(error);
+    console.error("Notification error:", error);
   }
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import ConfirmLogoutModal from "@/components/ui/ConfirmLogoutModal";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 import { supabase } from "@/lib/supabase";
 import {
   Sun,
@@ -165,11 +165,16 @@ export default function Sidebar({
         </div>
       </div>
 
-      <ConfirmLogoutModal
-        open={showLogoutModal}
-        onClose={() => setShowLogoutModal(false)}
-        onConfirm={confirmLogout}
-      />
+     <ConfirmModal
+  open={showLogoutModal}
+  title="Sign Out of Pipsoul?"
+  description="Are you sure you want to log out of your Pipsoul account?"
+  subtext="You can sign back in at any time."
+  confirmText="Yes, Sign Out"
+  confirmColor="red"
+  onClose={() => setShowLogoutModal(false)}
+  onConfirm={confirmLogout}
+/>
     </>
   );
 }

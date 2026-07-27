@@ -5,17 +5,39 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { TriangleAlert } from "lucide-react";
 
-type ConfirmLogoutModalProps = {
+type ConfirmModalProps = {
   open: boolean;
+  title: string;
+  description: string;
+  subtext?: string;
+
+  confirmText: string;
+  loadingText?: string;
+
+  confirmColor?: "red" | "cyan";
+
+  loading?: boolean;
+
   onClose: () => void;
   onConfirm: () => void;
 };
 
-export default function ConfirmLogoutModal({
+export default function ConfirmModal({
   open,
+  title,
+  description,
+  subtext,
+
+  confirmText,
+  loadingText = "Processing...",
+
+  confirmColor = "red",
+
+  loading = false,
+
   onClose,
   onConfirm,
-}: ConfirmLogoutModalProps) {
+}: ConfirmModalProps) {
     const [mounted, setMounted] = useState(false);
 
 useEffect(() => {
@@ -68,16 +90,18 @@ if (!mounted) return null;
             </div>
 
             <h2 className="text-center text-2xl font-bold text-black dark:text-white">
-              Sign Out of Pipsoul?
+              {title}
             </h2>
 
             <p className="mt-3 text-center text-gray-600 dark:text-gray-400 leading-7">
-              Are you sure you want to log out of your Pipsoul account?
+              {description}
             </p>
 
-            <p className="mt-1 text-center text-sm text-gray-500">
-              You can sign back in at any time.
-            </p>
+            {subtext && (
+  <p className="mt-1 text-center text-sm text-gray-500">
+    {subtext}
+  </p>
+)}
 
             <div className="mt-8 flex gap-3">
               <button
@@ -100,24 +124,28 @@ if (!mounted) return null;
               </button>
 
               <button
-                onClick={onConfirm}
-                className="
-                  flex-1
-                  rounded-xl
-                  bg-red-500
-                  py-3
-                  font-semibold
-                  text-white
-                  transition-all
-                  duration-300
-                  hover:bg-red-600
-                  hover:shadow-lg
-                  hover:shadow-red-500/20
-                  active:scale-95
-                "
-              >
-                Yes, Sign Out
-              </button>
+  onClick={onConfirm}
+  disabled={loading}
+  className={`
+    flex-1
+    rounded-xl
+    py-3
+    font-semibold
+    text-white
+    transition-all
+    duration-300
+    active:scale-95
+    disabled:opacity-60
+    disabled:cursor-not-allowed
+    ${
+      confirmColor === "red"
+        ? "bg-red-500 hover:bg-red-600 hover:shadow-lg hover:shadow-red-500/20"
+        : "bg-cyan-500 hover:bg-cyan-600 hover:shadow-lg hover:shadow-cyan-500/20"
+    }
+  `}
+>
+  {loading ? loadingText : confirmText}
+</button>
             </div>
           </motion.div>
         </div>

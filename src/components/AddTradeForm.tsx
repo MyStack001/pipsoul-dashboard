@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
 import { ChevronDown } from "lucide-react";
 import { createNotification } from "@/lib/notifications";
+import { toast } from "sonner";
 
 export default function AddTradeForm() {
   const { session } = useAuth();
@@ -78,17 +79,18 @@ const [tradeDate, setTradeDate] = useState("");
 
       if (error) {
         console.error(error);
-        alert(error.message);
+        toast.error(error.message);
         return;
       }
 
-      
-      await createNotification(
+     await createNotification(
   session.user.id,
-  "Trade Added 📈",
-  `${pair.toUpperCase()} (${bias}) was added to your journal.`,
+  "Trade Added",
+  `${pair} trade has been added successfully.`,
   "success"
 );
+
+toast.success("Trade added successfully!");
 
     
       // ✅ RESET
@@ -106,7 +108,7 @@ const [tradeDate, setTradeDate] = useState("");
 
     } catch (err) {
       console.error(err);
-      alert("Something crashed");
+      toast.error("Something went wrong.");
     } finally {
       setLoading(false);
     }

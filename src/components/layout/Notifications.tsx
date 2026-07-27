@@ -33,14 +33,7 @@ export default function Notifications() {
   return (
     <div className="relative" ref={ref}>
       <button
-        onClick={async () => {
-  const next = !open;
-  setOpen(next);
-
-  if (next) {
-    await markAsRead();
-  }
-}}
+       onClick={() => setOpen(!open)}
         className="relative p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition"
       >
         <Bell className="w-6 h-6 text-gray-700 dark:text-gray-300" />
@@ -75,9 +68,23 @@ export default function Notifications() {
 ) : (
   notifications.map((item) => (
                 <div
-                  key={item.id}
-                  className="px-5 py-4 border-b border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5 transition"
-                >
+  key={item.id}
+  onClick={async () => {
+  if (!item.is_read) {
+    await markAsRead(item.id);
+  }
+}}
+  className={`
+    px-5 py-4
+    border-b
+    border-gray-100
+    dark:border-white/5
+    hover:bg-gray-50
+    dark:hover:bg-white/5
+    transition
+    cursor-pointer
+  `}
+>
                   <div className="flex items-start gap-3">
                     {!item.is_read && (
                       <div className="mt-2 h-2 w-2 rounded-full bg-cyan-500" />

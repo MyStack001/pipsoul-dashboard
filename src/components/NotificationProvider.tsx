@@ -24,7 +24,7 @@ type NotificationContextType = {
   notifications: Notification[];
   unreadCount: number;
   refresh: () => Promise<void>;
-  markAsRead: () => Promise<void>;
+  markAsRead: (id: string) => Promise<void>;
 };
 
 const NotificationContext =
@@ -57,20 +57,17 @@ export function NotificationProvider({
     setNotifications(data ?? []);
   }
 
-  async function markAsRead() {
-    if (!session?.user) return;
+  async function markAsRead(id: string) {
+  await supabase
+    .from("notifications")
+    .update({
+      is_read: true,
+    })
+    .eq("id", id);
 
-    await supabase
-      .from("notifications")
-      .update({
-        is_read: true,
-      })
-      .eq("user_id", session.user.id)
-      .eq("is_read", false);
-
-    refresh();
-  }
-
+  refresh();
+}
+  
   useEffect(() => {
   if (!session?.user) return;
 
@@ -100,13 +97,13 @@ export function NotificationProvider({
   return (
     <NotificationContext.Provider
       value={{
-        notifications,
-        unreadCount: notifications.filter(
-          (n) => !n.is_read
-        ).length,
-        refresh,
-        markAsRead,
-      }}
+  notifications,
+  unreadCount: notifications.filter(
+    (n) => !n.is_read
+  ).length,
+  refresh,
+  markAsRead,
+}}
     >
       {children}
     </NotificationContext.Provider>

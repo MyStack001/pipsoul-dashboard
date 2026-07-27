@@ -90,6 +90,26 @@ const [tradeDate, setTradeDate] = useState("");
   `${pair} trade has been added successfully.`,
   "success"
 );
+// First Winning Trade Achievement
+if (Number(profit) > 0) {
+  const { count } = await supabase
+    .from("trades")
+    .select("*", {
+      count: "exact",
+      head: true,
+    })
+    .eq("user_id", session.user.id)
+    .gt("profit", 0);
+
+  if (count === 1) {
+    await createNotification(
+      session.user.id,
+      "🏆 Achievement Unlocked",
+      "Congratulations! You recorded your first winning trade.",
+      "success"
+    );
+  }
+}
 const { count } = await supabase
   .from("trades")
   .select("*", {

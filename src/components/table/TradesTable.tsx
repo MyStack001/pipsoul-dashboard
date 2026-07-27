@@ -8,6 +8,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import type { Trade } from "@/types/trade"
 import { toast } from "sonner";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 
 export default function TradesTable({
   pair,
@@ -24,6 +25,14 @@ export default function TradesTable({
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+// Delete modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+const [tradeToDelete, setTradeToDelete] =
+  useState<Trade | null>(null);
+
+const [deleting, setDeleting] = useState(false);
 
   const itemsPerPage = 5;
 
@@ -70,8 +79,31 @@ export default function TradesTable({
   if (!session) {
     return <p className="p-6">No session</p>;
   }
+  async function handleDeleteTrade() {
+  if (!tradeToDelete) return;
+
+  setDeleting(true);
+
+  const { error } = await supabase
+    .from("trades")
+    .delete()
+    .eq("id", tradeToDelete.id);
+
+  setDeleting(false);
+
+  if (error) {
+    toast.error(error.message);
+    return;
+  }
+
+  toast.success("Trade deleted successfully.");
+
+  setShowDeleteModal(false);
+  setTradeToDelete(null);
+}
 
   return (
+    <>
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -219,25 +251,14 @@ export default function TradesTable({
             </a>
 
             <button
-              onClick={async () => {
-  if (!confirm("Delete this trade?")) return;
-
-  const { error } = await supabase
-    .from("trades")
-    .delete()
-    .eq("id", trade.id);
-
-  if (error) {
-    toast.error(error.message);
-    return;
-  }
-
-  toast.success("Trade deleted successfully.");
-}}
-              className="text-red-500 hover:text-red-400"
-            >
-              Delete
-            </button>
+  onClick={() => {
+    setTradeToDelete(trade);
+    setShowDeleteModal(true);
+  }}
+  className="text-red-500 hover:text-red-400"
+>
+  Delete
+</button>
           </div>
         </td>
       </tr>
@@ -321,5 +342,21 @@ export default function TradesTable({
 )}
 
     </motion.div>
-  );
+    <ConfirmModal
+  open={showDeleteModal}
+  title="Delete Trade?"
+  description="Are you sure you want to permanently delete this trade?"
+  subtext="This action cannot be undone."
+  confirmText="Delete Trade"
+  loadingText="Deleting..."
+  loading={deleting}
+  confirmColor="red"
+  onClose={() => {
+    setShowDeleteModal(false);
+    setTradeToDelete(null);
+  }}
+  onConfirm={handleDeleteTrade}
+/>
+  </>
+);
 }

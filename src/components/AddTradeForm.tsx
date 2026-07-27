@@ -90,7 +90,10 @@ const [tradeDate, setTradeDate] = useState("");
   `${pair} trade has been added successfully.`,
   "success"
 );
-// First Winning Trade Achievement
+
+// ==============================
+// FIRST WINNING TRADE
+// ==============================
 if (Number(profit) > 0) {
   const { count } = await supabase
     .from("trades")
@@ -110,7 +113,11 @@ if (Number(profit) > 0) {
     );
   }
 }
-const { count } = await supabase
+
+// ==============================
+// TOTAL TRADES
+// ==============================
+const { count: totalTrades } = await supabase
   .from("trades")
   .select("*", {
     count: "exact",
@@ -118,12 +125,33 @@ const { count } = await supabase
   })
   .eq("user_id", session.user.id);
 
-if (count === 1) {
+// First Trade Achievement
+if (totalTrades === 1) {
   await unlockAchievement(
     session.user.id,
     "first_trade",
     "First Trade",
     "You've logged your first trade."
+  );
+}
+
+// 30 Trades Achievement
+if (totalTrades === 30) {
+  await createNotification(
+    session.user.id,
+    "🏅 Achievement Unlocked",
+    "You've completed your first 30 trades. Keep building consistency!",
+    "success"
+  );
+}
+
+// 100 Trades Achievement
+if (totalTrades === 100) {
+  await createNotification(
+    session.user.id,
+    "🏆 Achievement Unlocked",
+    "100 trades completed! You're becoming a disciplined trader.",
+    "success"
   );
 }
 

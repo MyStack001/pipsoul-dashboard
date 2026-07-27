@@ -6,6 +6,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { ChevronDown } from "lucide-react";
 import { createNotification } from "@/lib/notifications";
 import { toast } from "sonner";
+import { unlockAchievement } from "@/lib/achievements";
 
 export default function AddTradeForm() {
   const { session } = useAuth();
@@ -89,6 +90,22 @@ const [tradeDate, setTradeDate] = useState("");
   `${pair} trade has been added successfully.`,
   "success"
 );
+const { count } = await supabase
+  .from("trades")
+  .select("*", {
+    count: "exact",
+    head: true,
+  })
+  .eq("user_id", session.user.id);
+
+if (count === 1) {
+  await unlockAchievement(
+    session.user.id,
+    "first_trade",
+    "First Trade",
+    "You've logged your first trade."
+  );
+}
 
 toast.success("Trade added successfully!");
 

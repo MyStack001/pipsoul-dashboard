@@ -9,6 +9,7 @@ import { supabase } from "@/lib/supabase";
 import type { Trade } from "@/types/trade"
 import { toast } from "sonner";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import { createNotification } from "@/lib/notifications";
 
 export default function TradesTable({
   pair,
@@ -96,10 +97,17 @@ const [deleting, setDeleting] = useState(false);
     return;
   }
 
-  toast.success("Trade deleted successfully.");
+  await createNotification(
+  session!.user.id,
+  "Trade Deleted",
+  `${tradeToDelete.pair} trade has been deleted.`,
+  "warning"
+);
 
-  setShowDeleteModal(false);
-  setTradeToDelete(null);
+toast.success("Trade deleted successfully.");
+
+setShowDeleteModal(false);
+setTradeToDelete(null);
 }
 
   return (

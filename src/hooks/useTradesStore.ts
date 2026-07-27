@@ -78,16 +78,16 @@ export function useTradesStore() {
     // REALTIME
     // =========================
     const channel = supabase
-  .channel(`trades-${userId}`)
+  .channel("trades")
   .on(
     "postgres_changes",
     {
       event: "*",
       schema: "public",
       table: "trades",
-      filter: `user_id=eq.${userId}`,
     },
     () => {
+      
       fetchTrades();
     }
   )

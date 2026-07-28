@@ -7,6 +7,9 @@ import { useAuth } from "@/components/AuthProvider";
 
 import { Trade } from "@/types/trade";
 import { JournalEntry } from "@/types/journal";
+import { createNotification } from "@/lib/notifications";
+import { toast } from "sonner";
+import { unlockAchievement } from "@/lib/achievements";
 
 export default function JournalClient() {
   const searchParams = useSearchParams();
@@ -140,31 +143,112 @@ export default function JournalClient() {
   const saveJournal = async () => {
   if (!journal || !tradeId || !session?.user?.id) return;
 
-  const { error } = await supabase.from("journals").upsert(
-    {
-      trade_id: tradeId,
-      user_id: session.user.id,
-      pair: trade?.pair || journal.pair,
-      reason: journal.reason,
-      confluence: journal.confluence,
-      stop_loss: journal.stopLoss,
-      take_profit: journal.takeProfit,
-      emotions: journal.emotions,
-      regrets: journal.regrets,
-      management: journal.management,
-      images: journal.images,
-    },
-    {
-      onConflict: "trade_id",
-    }
-  );
+  const { error } = await supabase
+    .from("journals")
+    .upsert(
+      {
+        trade_id: tradeId,
+        user_id: session.user.id,
+        pair: trade?.pair || journal.pair,
+        reason: journal.reason,
+        confluence: journal.confluence,
+        stop_loss: journal.stopLoss,
+        take_profit: journal.takeProfit,
+        emotions: journal.emotions,
+        regrets: journal.regrets,
+        management: journal.management,
+        images: journal.images,
+      },
+      {
+        onConflict: "trade_id",
+      }
+    );
 
   if (error) {
     alert(error.message);
     return;
   }
 
-  alert("Journal saved ✅");
+  // =========================
+// JOURNAL ACHIEVEMENTS
+// =========================
+
+const { count: journalCount } = await supabase
+  .from("journals")
+  .select("*", {
+    count: "exact",
+    head: true,
+  })
+  .eq("user_id", session.user.id);
+
+// 📝 First Journal
+if (journalCount === 1) {
+  await unlockAchievement(
+    session.user.id,
+    "first_journal",
+    "📝 First Journal",
+    "Congratulations! You saved your first trade journal."
+  );
+}
+
+// 📚 10 Journaled Trades
+if (journalCount === 10) {
+  await unlockAchievement(
+    session.user.id,
+    "journal_10",
+    "📚 10 Journaled Trades",
+    "You've journaled your first 10 trades. Great consistency!"
+  );
+}
+
+// 📖 50 Journaled Trades
+if (journalCount === 50) {
+await unlockAchievement(
+  session.user.id,
+  "journal_50",
+  "📖 50 Journaled Trades",
+  "50 trade journals completed. Keep learning from every trade."
+); }
+
+// 💯 100 Journaled Trades
+if (journalCount === 100) {
+await unlockAchievement(
+  session.user.id,
+  "journal_100",
+  "💯 100 Journaled Trades",
+  "100 trade journals completed. You're building elite discipline."
+);
+}
+
+// 🔥 5 Trades Journaled Without Skipping
+const { data: firstFiveTrades } = await supabase
+  .from("trades")
+  .select("id")
+  .eq("user_id", session.user.id)
+  .order("created_at", {
+    ascending: true,
+  })
+  .limit(5);
+
+if (firstFiveTrades && firstFiveTrades.length === 5) {
+  const tradeIds = firstFiveTrades.map((t) => t.id);
+
+  const { data: journaledTrades } = await supabase
+    .from("journals")
+    .select("trade_id")
+    .in("trade_id", tradeIds);
+
+  if (journaledTrades?.length === 5) {
+    await unlockAchievement(
+  session.user.id,
+  "journal_no_skip_5",
+  "🔥 No Skip Streak",
+  "You've journaled your first 5 trades without skipping any."
+);
+  }
+}
+
+  toast.success("Journal saved successfully!");
 };
    
   // =========================

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
 
@@ -11,10 +11,13 @@ import { createNotification } from "@/lib/notifications";
 import { toast } from "sonner";
 import { unlockAchievement } from "@/lib/achievements";
 
+
 export default function JournalClient() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const tradeId = searchParams.get("id");
   const { session } = useAuth();
+  
 
   const [trade, setTrade] = useState<Trade | null>(null);
   const [journals, setJournals] = useState<any[]>([]);
@@ -249,6 +252,10 @@ if (firstFiveTrades && firstFiveTrades.length === 5) {
 }
 
   toast.success("Journal saved successfully!");
+
+setTimeout(() => {
+  router.push("/journal");
+}, 1000);
 };
    
   // =========================

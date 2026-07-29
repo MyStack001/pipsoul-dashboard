@@ -254,7 +254,8 @@ if (firstFiveTrades && firstFiveTrades.length === 5) {
   toast.success("Journal saved successfully!");
 
 setTimeout(() => {
-  router.push("/journal");
+  router.replace("/journal");
+  router.refresh();
 }, 1000);
 };
    

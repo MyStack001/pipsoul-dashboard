@@ -3,6 +3,7 @@
 import { Menu } from "lucide-react";
 import Notifications from "./Notifications";
 import { useProfile } from "@/components/ProfileProvider";
+import { useEffect, useState } from "react";
 
 export default function Topbar({
   onMenuClick,
@@ -13,12 +14,19 @@ export default function Topbar({
 
   const hour = new Date().getHours();
 
-  const greeting =
+ const [greeting, setGreeting] = useState("Hello");
+
+useEffect(() => {
+  const hour = new Date().getHours();
+
+  setGreeting(
     hour < 12
       ? "Good morning"
       : hour < 18
       ? "Good afternoon"
-      : "Good evening";
+      : "Good evening"
+  );
+}, []);
 
   return (
     <div
@@ -40,14 +48,14 @@ export default function Topbar({
         </button>
 
         <div>
-          <h2 className="text-lg font-semibold text-black dark:text-white">
-            {greeting}, {loading ? "Trader" : profile?.name || "Trader"} 👋
-          </h2>
+  <h2 className="text-lg font-semibold text-black dark:text-white">
+    {greeting}, {profile?.name ?? "Trader"} 👋
+  </h2>
 
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Ready to conquer the markets today?
-          </p>
-        </div>
+  <p className="text-sm text-gray-500 dark:text-gray-400">
+    Ready to conquer the markets today?
+  </p>
+</div>
       </div>
 
       <div className="flex items-center gap-4">

@@ -10,6 +10,7 @@ import { JournalEntry } from "@/types/journal";
 import { createNotification } from "@/lib/notifications";
 import { toast } from "sonner";
 import { unlockAchievement } from "@/lib/achievements";
+import Link from "next/link";
 
 
 export default function JournalClient() {
@@ -250,12 +251,15 @@ if (firstFiveTrades && firstFiveTrades.length === 5) {
 );
   }
 }
+toast.success("Journal saved successfully!");
 
-  toast.success("Journal saved successfully!");
+console.log("Before redirect:", {
+  current: window.location.pathname + window.location.search,
+});
 
 setTimeout(() => {
+  console.log("Redirecting...");
   router.replace("/journal");
-  router.refresh();
 }, 1000);
 };
    
@@ -301,14 +305,13 @@ setTimeout(() => {
           <p className="text-gray-400 mt-4">No journals yet</p>
         ) : (
           journals.map((j: any) => (
-            <a
-              key={j.trade_id}
-              href={`/journal?id=${j.trade_id}`}
-             className="block p-4 mt-3 rounded-lg border border-gray-200 dark:border-white/10 text-black 
-             dark:text-white hover:bg-gray-50 dark:hover:bg-white/10"
-            >
-              {j.pair} Journal
-            </a>
+            <Link
+  key={j.trade_id}
+  href={`/journal?id=${j.trade_id}`}
+  className="..."
+>
+  {j.pair} Journal
+</Link>
           ))
         )}
       </div>

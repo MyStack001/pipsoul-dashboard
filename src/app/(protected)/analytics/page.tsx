@@ -160,21 +160,14 @@ export default function AnalyticsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left border-b">
-                <th className="py-2 text-black
-                dark: text-white font-medium">Pair</th>
-                <th className="py-2 text-black
-                dark: text-white font-medium">Trades</th>
-                <th className="py-2 text-black
-                dark: text-white font-medium">Win %</th>
+                <th className="py-2 text-black dark:text-white font-medium">Pair</th>
+                <th className="py-2 text-black dark:text-white font-medium">Trades</th>
+                <th className="py-2 text-black dark:text-white font-medium">Win %</th>
 
-                <th className="py-2 text-black
-                dark: text-white font-medium">Profit</th>
-                <th className="py-2 text-black
-                dark: text-white font-medium">Avg</th>
-                <th className="py-2 text-black
-                dark: text-white font-medium">Best</th>
-                <th className="py-2 text-black
-                dark: text-white font-medium">Worst</th>
+                <th className="py-2 text-black dark:text-white font-medium">Profit</th>
+                <th className="py-2 text-black dark:text-white font-medium">Avg</th>
+                <th className="py-2 text-black dark:text-white font-medium">Best</th>
+                <th className="py-2 text-black dark:text-white font-medium">Worst</th>
               </tr>
             </thead>
 
@@ -218,22 +211,34 @@ function Card({
   data,
 }: any) {
   return (
-    <div className="rounded-2xl p-5 bg-white/60 dark:bg-white/5 border">
+    <div
+      className="
+        rounded-2xl
+        p-5
+        bg-white/60
+        dark:bg-[#111827]
+        border
+        border-gray-200/70
+        dark:border-white/10
+        backdrop-blur-xl
+      "
+    >
       <h2
-  className={`text-lg font-semibold mb-3 ${
-    color === "green"
-      ? "text-green-500 dark:text-green-400"
-      : "text-red-500 dark:text-red-400"
-  }`}
->
+        className={`text-lg font-semibold mb-3 ${
+          color === "green"
+            ? "text-green-500 dark:text-green-400"
+            : "text-red-500 dark:text-red-400"
+        }`}
+      >
         {title}
       </h2>
 
-      <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+      <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
         <p>Total Trades: {data.total}</p>
         <p>Wins: {data.wins}</p>
         <p>Win Rate: {data.winRate}%</p>
-        <p className={`font-semibold text-${color}-500`}>
+
+        <p className={color === "green" ? "font-semibold text-green-500" : "font-semibold text-red-500"}>
           Total Profit: ${data.totalProfit.toFixed(2)}
         </p>
       </div>
@@ -249,8 +254,22 @@ function StatCard({
   value: string | number;
 }) {
   return (
-    <div className="rounded-2xl p-5 bg-white/60 dark:bg-white/5 border border-gray-200/70 dark:border-white/10 backdrop-blur-xl">
-      
+    <div
+  className="
+    rounded-2xl
+    p-5
+    border
+    border-gray-200/70
+    dark:border-white/10
+    bg-white/60
+    dark:bg-[#111827]
+    backdrop-blur-xl
+    transition-all
+    duration-300
+    hover:border-cyan-400/40
+    hover:shadow-lg
+  "
+>
       <p className="text-sm text-gray-500 dark:text-gray-400">
         {title}
       </p>

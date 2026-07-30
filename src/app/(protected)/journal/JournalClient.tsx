@@ -375,20 +375,19 @@ export default function JournalClient() {
                 key={j.trade_id}
                 href={`/journal?id=${j.trade_id}`}
                 className="
-                  block
-                  rounded-2xl
-                  border
-                  border-white/20
-                  bg-white/40
-                  dark:bg-white/5
-                  backdrop-blur-xl
-                  p-5
-                  transition-all
-                  duration-300
-                  hover:scale-[1.02]
-                  hover:border-cyan-400/40
-                  hover:shadow-xl
-                "
+  block
+  rounded-2xl
+  border
+  border-gray-200
+  dark:border-white/10
+  bg-white
+  dark:bg-[#111827]
+  p-5
+  transition-all
+  duration-300
+  hover:border-cyan-500
+  hover:shadow-lg
+"
               >
                 <span
                   className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold ${

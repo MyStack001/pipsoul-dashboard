@@ -369,7 +369,7 @@ export default function JournalClient() {
             No journals yet
           </p>
         ) : (
-          <div className="grid gap-5">
+          <div className="grid grid-cols-1 md: grid-cols-2 gap-5">
             {journals.map((j: any) => (
               <Link
                 key={j.trade_id}

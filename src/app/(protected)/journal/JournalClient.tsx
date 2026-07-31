@@ -32,7 +32,7 @@ export default function JournalClient() {
   const [zoom, setZoom] = useState(1);
 
   const inputStyles =
-    "w-full h-28 p-3 rounded-lg border bg-white dark:bg-[#111827] text-black dark:text-white";
+  "w-full h-28 rounded-2xl p-4 bg-white dark:bg-[#111827] border border-gray-200 dark:border-white/10 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 backdrop-blur-xl transition-all duration-300 focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20";
 
   // =========================
   // LOAD DATA
@@ -465,53 +465,73 @@ export default function JournalClient() {
 
       {journal && (
         <>
-          <textarea
-            className={inputStyles}
-            value={journal.reason}
-            onChange={(e) =>
-              setJournal({
-                ...journal,
-                reason: e.target.value,
-              })
-            }
-            placeholder="Reason..."
-          />
+          <div className="space-y-2">
+  <div>
+    <h3 className="text-base font-semibold text-black dark:text-white">
+      Reason
+    </h3>
 
-          <textarea
-            className={inputStyles}
-            value={journal.confluence}
-            onChange={(e) =>
-              setJournal({
-                ...journal,
-                confluence: e.target.value,
-              })
-            }
-            placeholder="Confluence..."
-          />
+    <p className="text-sm text-gray-500 dark:text-gray-400">
+      Why did you enter this trade?
+    </p>
+  </div>
 
-          <textarea
-            className={inputStyles}
-            value={journal.emotions}
-            onChange={(e) =>
-              setJournal({
-                ...journal,
-                emotions: e.target.value,
-              })
-            }
-            placeholder="Emotions..."
-          />
+  <textarea
+    className={inputStyles}
+    placeholder="e.g. London breakout after liquidity sweep..."
+  />
+</div>
 
-          <textarea
-            className={inputStyles}
-            value={journal.management}
-            onChange={(e) =>
-              setJournal({
-                ...journal,
-                management: e.target.value,
-              })
-            }
-            placeholder="Management..."
-          />
+          <div className="space-y-2">
+  <div>
+    <h3 className="text-base font-semibold text-black dark:text-white">
+      Confluence
+    </h3>
+
+    <p className="text-sm text-gray-500 dark:text-gray-400">
+      List the confirmations that supported your entry.
+    </p>
+  </div>
+
+  <textarea
+    className={inputStyles}
+    placeholder="e.g. Psychological level..."
+  />
+</div>
+
+          <div className="space-y-2">
+  <div>
+    <h3 className="text-base font-semibold text-black dark:text-white">
+      Emotions
+    </h3>
+
+    <p className="text-sm text-gray-500 dark:text-gray-400">
+      How did you feel before, during and after the trade?
+    </p>
+  </div>
+
+  <textarea
+    className={inputStyles}
+    placeholder="e.g. FOMO..."
+  />
+</div>
+
+          <div className="space-y-2">
+  <div>
+    <h3 className="text-base font-semibold text-black dark:text-white">
+      Trade Management
+    </h3>
+
+    <p className="text-sm text-gray-500 dark:text-gray-400">
+      How did you manage the trade? Did you Break-even, move SL or TP?
+    </p>
+  </div>
+
+  <textarea
+    className={inputStyles}
+    placeholder="e.g. Stacked positions or Scaled entries..."
+  />
+</div>
 
           <div className="flex flex-col gap-2">
 

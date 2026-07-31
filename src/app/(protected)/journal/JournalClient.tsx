@@ -465,7 +465,20 @@ export default function JournalClient() {
 
       {journal && (
         <>
-          <div className="space-y-2">
+        <div className="space-y-6 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#111827] p-6">
+
+  <div>
+    <h2 className="text-lg font-semibold text-black dark:text-white">
+      📝 Trade Information
+    </h2>
+
+    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      Document why you entered the trade and the confirmations that supported your decision.
+    </p>
+  </div>
+
+  {/* Reason */}
+  <div className="space-y-2">
   <div>
     <h3 className="text-base font-semibold text-black dark:text-white">
       Reason
@@ -477,12 +490,20 @@ export default function JournalClient() {
   </div>
 
   <textarea
-    className={inputStyles}
-    placeholder="e.g. London breakout after liquidity sweep..."
-  />
+  className={inputStyles}
+  value={journal.reason}
+  onChange={(e) =>
+    setJournal({
+      ...journal,
+      reason: e.target.value,
+    })
+  }
+  placeholder="e.g. London breakout after liquidity sweep..."
+/>
 </div>
 
-          <div className="space-y-2">
+  {/* Confluence */}
+  <div className="space-y-2">
   <div>
     <h3 className="text-base font-semibold text-black dark:text-white">
       Confluence
@@ -494,12 +515,38 @@ export default function JournalClient() {
   </div>
 
   <textarea
-    className={inputStyles}
-    placeholder="e.g. Psychological level..."
-  />
+  className={inputStyles}
+  value={journal.confluence}
+  onChange={(e) =>
+    setJournal({
+      ...journal,
+      confluence: e.target.value,
+    })
+  }
+  placeholder="e.g. Psychological level, bullish FVG, SMT divergence, liquidity sweep..."
+/>
 </div>
 
-          <div className="space-y-2">
+</div>
+          
+
+          
+
+<div className="space-y-6 rounded-2xl border border-gray-200 dark:border-white/10 bg-white 
+dark:bg-[#111827] p-6">
+
+  <div>
+    <h2 className="text-lg font-semibold text-black dark:text-white">
+      🧠 Psychology & Execution
+    </h2>
+
+    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      Reflect on your emotions and how you managed the trade from entry to exit.
+    </p>
+  </div>
+
+  {/* Emotions */}
+   <div className="space-y-2">
   <div>
     <h3 className="text-base font-semibold text-black dark:text-white">
       Emotions
@@ -511,12 +558,20 @@ export default function JournalClient() {
   </div>
 
   <textarea
-    className={inputStyles}
-    placeholder="e.g. FOMO..."
-  />
+  className={inputStyles}
+  value={journal.emotions}
+  onChange={(e) =>
+    setJournal({
+      ...journal,
+      emotions: e.target.value,
+    })
+  }
+  placeholder="e.g. Calm before entry, slight fear during retracement, confident after confirmation..."
+/>
 </div>
 
-          <div className="space-y-2">
+  {/* Trade Management */}
+  <div className="space-y-2">
   <div>
     <h3 className="text-base font-semibold text-black dark:text-white">
       Trade Management
@@ -528,12 +583,39 @@ export default function JournalClient() {
   </div>
 
   <textarea
-    className={inputStyles}
-    placeholder="e.g. Stacked positions or Scaled entries..."
-  />
+  className={inputStyles}
+  value={journal.management}
+  onChange={(e) =>
+    setJournal({
+      ...journal,
+      management: e.target.value,
+    })
+  }
+  placeholder="e.g. Moved stop loss to break-even after 1R, scaled out 50% at TP1..."
+/>
 </div>
 
-          <div className="flex flex-col gap-2">
+</div>
+
+         
+
+          
+
+<div className="rounded-2xl border border-gray-200 
+dark:border-white/10 bg-white dark:bg-[#111827] p-6 space-y-4">
+
+  <div>
+    <h2 className="text-lg font-semibold text-black dark:text-white">
+      📷 Trade Screenshots
+    </h2>
+
+    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      Upload screenshots showing your setup, entry, management and exit.
+    </p>
+  </div>
+
+  {/* Choose Images */}
+  <div className="flex flex-col gap-2">
 
             <label
   className="
@@ -579,7 +661,8 @@ export default function JournalClient() {
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-3 mt-4">
+  {/* Image Grid */}
+  <div className="grid grid-cols-2 gap-3 mt-4">
             {journal.images?.map((img, i) => (
               <div
                 key={i}
@@ -593,6 +676,7 @@ export default function JournalClient() {
                     setZoom(1);
                   }}
                 />
+                
 
                 <button
                   onClick={() =>
@@ -606,7 +690,13 @@ export default function JournalClient() {
             ))}
           </div>
 
-          <div className="flex flex-wrap gap-3">
+</div>
+
+          
+
+          
+
+          <div className="flex justify-end gap-3 pt-2">
 
             <button
               onClick={saveJournal}

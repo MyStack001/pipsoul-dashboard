@@ -516,38 +516,41 @@ export default function JournalClient() {
           <div className="flex flex-col gap-2">
 
             <label
-              className="
-                inline-flex
-                w-fit
-                cursor-pointer
-                px-4
-                py-3
-                rounded-lg
-                bg-white
-                dark:bg-[#111827]
-                border
-                border-gray-200
-                dark:border-white/10
-              "
-            >
-              Choose Images
+  className="
+    inline-flex
+    w-fit
+    cursor-pointer
+    items-center
+    px-4
+    py-3
+    rounded-lg
+    bg-white
+    dark:bg-[#111827]
+    border
+    border-gray-200
+    dark:border-white/10
+    text-gray-900
+    dark:text-white
+    hover:border-cyan-500
+    transition-all
+  "
+>
+  Choose Images
 
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={async (e) => {
-                  const files = Array.from(
-                    e.target.files || []
-                  );
+  <input
+    type="file"
+    accept="image/*"
+    multiple
+    className="hidden"
+    onChange={async (e) => {
+      const files = Array.from(e.target.files || []);
 
-                  for (const file of files) {
-                    await uploadImage(file);
-                  }
-                }}
-              />
-            </label>
+      for (const file of files) {
+        await uploadImage(file);
+      }
+    }}
+  />
+</label>
 
             {uploading && (
               <p className="text-cyan-500 text-sm">

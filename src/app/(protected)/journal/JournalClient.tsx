@@ -432,36 +432,102 @@ export default function JournalClient() {
       <h1 className="text-xl font-bold text-black dark:text-white">
         {trade ? `${trade.pair} Trade Journal` : "Trade Journal"}
       </h1>
+{trade && (
+  <div
+    className="
+      rounded-2xl
+      border
+      border-gray-200
+      dark:border-white/10
+      bg-white
+      dark:bg-[#111827]
+      p-6
+      space-y-5
+    "
+  >
+    <div>
+      <h2 className="text-lg font-semibold text-black dark:text-white">
+        Trade Summary
+      </h2>
 
-      {trade && (
-        <div className="p-4 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#111827] text-black dark:text-white">
-          <div className="flex gap-3">
+      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        Review the key details of this trade before writing your journal.
+      </p>
+    </div>
 
-            <span
-              className={
-                trade.bias === "BUY"
-                  ? "text-green-500"
-                  : "text-red-500"
-              }
-            >
-              {trade.bias}
-            </span>
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-5">
 
-            <span className="text-gray-400">•</span>
+      {/* Pair */}
+      <div>
+        <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          Pair
+        </p>
 
-            <span
-              className={
-                Number(trade.profit) >= 0
-                  ? "text-green-500"
-                  : "text-red-500"
-              }
-            >
-              ${trade.profit}
-            </span>
+        <p className="mt-1 text-lg font-semibold text-black dark:text-white">
+          {trade.pair}
+        </p>
+      </div>
 
-          </div>
-        </div>
-      )}
+      {/* Bias */}
+      <div>
+        <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          Direction
+        </p>
+
+        <p
+          className={`mt-1 text-lg font-semibold ${
+            trade.bias === "BUY"
+              ? "text-green-500"
+              : "text-red-500"
+          }`}
+        >
+          {trade.bias === "BUY" ? "🟢 BUY" : "🔴 SELL"}
+        </p>
+      </div>
+
+      {/* Profit */}
+      <div>
+        <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          Profit
+        </p>
+
+        <p
+          className={`mt-1 text-lg font-semibold ${
+            Number(trade.profit) >= 0
+              ? "text-green-500"
+              : "text-red-500"
+          }`}
+        >
+          {Number(trade.profit) >= 0 ? "+" : ""}
+          ${Number(trade.profit).toFixed(2)}
+        </p>
+      </div>
+
+      {/* Entry */}
+      <div>
+        <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          Entry
+        </p>
+
+        <p className="mt-1 text-lg font-semibold text-black dark:text-white">
+          {trade.entry}
+        </p>
+      </div>
+
+      {/* Exit */}
+      <div>
+        <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          Exit
+        </p>
+
+        <p className="mt-1 text-lg font-semibold text-black dark:text-white">
+          {trade.exit}
+        </p>
+      </div>
+
+    </div>
+  </div>
+)}
 
       {journal && (
         <>

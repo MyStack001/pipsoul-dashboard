@@ -156,39 +156,49 @@ export default function AnalyticsPage() {
   Pair Performance
 </h2>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-xl">
+          <table className="w-full min-w-[900px] text-sm border-collapse">
             <thead>
-              <tr className="text-left border-b">
-                <th className="py-2 text-black dark:text-white font-medium">Pair</th>
-                <th className="py-2 text-black dark:text-white font-medium">Trades</th>
-                <th className="py-2 text-black dark:text-white font-medium">Win %</th>
+              <tr className="border-b border-gray-200 dark:border-white/10">
+                <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">Pair</th>
+                <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">Trades</th>
+                <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">Win %</th>
 
-                <th className="py-2 text-black dark:text-white font-medium">Profit</th>
-                <th className="py-2 text-black dark:text-white font-medium">Avg</th>
-                <th className="py-2 text-black dark:text-white font-medium">Best</th>
-                <th className="py-2 text-black dark:text-white font-medium">Worst</th>
+                <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">Profit</th>
+                <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">Avg</th>
+                <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">Best</th>
+                <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">Worst</th>
               </tr>
             </thead>
 
             <tbody>
               {pairStats.map((p: any) => (
-                <tr key={p.pair} className="border-b">
-                  <td className="font-medium text-black dark:text-white">
+                <tr
+  key={p.pair}
+  className="border-b border-gray-200 dark:border-white/10"
+>
+                  <td className="px-4 py-3 whitespace-nowrap font-medium text-gray-900 dark:text-white">
   {p.pair}
 </td>
-                  <td className="text-black
-                  dark: text-white">{p.totalTrades}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-gray-900 dark:text-white">
+  {p.totalTrades}
+</td>
 
-                  <td className="text-cyan-500">{p.winRate}%</td>
-                  <td className={Number(p.totalProfit) >= 0 ? "text-green-500" : "text-red-500"}>
-                    ${p.totalProfit.toFixed(2)}
-                  </td>
-                  <td className="text-black
-                  dark: text-white">{p.avgProfit}</td>
-
-                  <td className="text-green-500">${p.bestTrade.toFixed(2)}</td>
-                  <td className="text-red-500">${p.worstTrade.toFixed(2)}</td>
+                  <td className="px-4 py-3 whitespace-nowrap font-medium text-cyan-500">{p.winRate}%</td>
+                  <td
+  className={`px-4 py-3 whitespace-nowrap font-semibold ${
+    Number(p.totalProfit) >= 0
+      ? "text-green-500"
+      : "text-red-500"
+  }`}
+>
+  ${p.totalProfit.toFixed(2)}
+</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-gray-900 dark:text-white">
+  {p.avgProfit}
+</td>
+                  <td className="px-4 py-3 whitespace-nowrap font-semibold text-green-500">${p.bestTrade.toFixed(2)}</td>
+                  <td className="px-4 py-3 whitespace-nowrap font-semibold text-red-500">${p.worstTrade.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>

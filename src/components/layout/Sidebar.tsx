@@ -92,8 +92,9 @@ export default function Sidebar({
             <Image
               src="/Logo.png"
               alt="Pipsoul Logo"
-              width={36}
-              height={36}
+              width={40}
+              height={40}
+              className="rounded-full object-cover"
               priority
             />
             <h2 className="text-xl font-bold">Pipsoul</h2>

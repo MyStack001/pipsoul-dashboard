@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -334,6 +334,12 @@ const paginatedJournals = journals.slice(
   (currentPage - 1) * journalsPerPage,
   currentPage * journalsPerPage
 );
+useEffect(() => {
+  if (currentPage > totalPages && totalPages > 0) {
+    setCurrentPage(totalPages);
+  }
+}, [currentPage, totalPages]);
+
   // =========================
   // LOADING
   // =========================

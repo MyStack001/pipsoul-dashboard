@@ -56,21 +56,23 @@ const [tradeDate, setTradeDate] = useState("");
 
     try {
       const payload = {
-        user_id: session.user.id,
+  user_id: session.user.id,
 
-        pair,
-        bias,
+  pair,
+  bias,
 
-        entry: Number(entry),
-        exit: Number(exit),
+  entry: Number(entry),
+  exit: Number(exit),
 
-        lot: Number(lot),
+  entry_display: entry.trim(),
+  exit_display: exit.trim(),
 
-        // ✅ MANUAL PROFIT
-        profit: Number(profit),
+  lot: Number(lot),
 
-        tradeDate,
-      };
+  profit: Number(profit),
+
+  tradeDate,
+};
 
       const { data, error } =
         await supabase
@@ -290,28 +292,24 @@ toast.success("Trade added successfully!");
       </div>
 
       {/* ENTRY */}
-      <input
-        type="number"
-        step="0.0001"
-        placeholder="Entry"
-        value={entry}
-        onChange={(e) =>
-          setEntry(e.target.value)
-        }
-        className={inputStyles}
-      />
+<input
+  type="number"
+  step="any"
+  placeholder="Entry"
+  value={entry}
+  onChange={(e) => setEntry(e.target.value)}
+  className={inputStyles}
+/>
 
       {/* EXIT */}
-      <input
-        type="number"
-        step="0.0001"
-        placeholder="Exit"
-        value={exit}
-        onChange={(e) =>
-          setExit(e.target.value)
-        }
-        className={inputStyles}
-      />
+<input
+  type="number"
+  step="any"
+  placeholder="Exit"
+  value={exit}
+  onChange={(e) => setExit(e.target.value)}
+  className={inputStyles}
+/>
 
       {/* LOT SIZE */}
       <input

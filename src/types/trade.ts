@@ -6,6 +6,10 @@ export type Trade = {
 
   entry: number;
   exit: number;
+
+  entry_display: string;
+  exit_display: string;
+
   lot: number;
 
   profit: number;

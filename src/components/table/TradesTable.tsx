@@ -204,11 +204,11 @@ setTradeToDelete(null);
         </td>
 
         <td className="px-4 py-3 whitespace-nowrap text-gray-900 dark:text-white">
-          {trade.entry}
+          {trade.entry_display ?? trade.entry}
         </td>
 
         <td className="px-4 py-3 whitespace-nowrap text-gray-900 dark:text-white">
-          {trade.exit}
+          {trade.exit_display ?? trade.exit}
         </td>
 
         <td className="px-4 py-3 whitespace-nowrap text-gray-900 dark:text-white">

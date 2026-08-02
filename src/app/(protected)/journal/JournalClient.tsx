@@ -27,6 +27,9 @@ export default function JournalClient() {
 
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+const journalsPerPage = 6;
 
   const [previewImg, setPreviewImg] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
@@ -325,6 +328,12 @@ export default function JournalClient() {
 
     router.replace("/journal");
   };
+  const totalPages = Math.ceil(journals.length / journalsPerPage);
+
+const paginatedJournals = journals.slice(
+  (currentPage - 1) * journalsPerPage,
+  currentPage * journalsPerPage
+);
   // =========================
   // LOADING
   // =========================
@@ -369,8 +378,9 @@ export default function JournalClient() {
             No journals yet
           </p>
         ) : (
-          <div className="grid grid-cols-1 md: grid-cols-2 gap-5">
-            {journals.map((j: any) => (
+          <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {paginatedJournals.map((j: any) => (
               <Link
                 key={j.trade_id}
                 href={`/journal?id=${j.trade_id}`}
@@ -418,10 +428,78 @@ export default function JournalClient() {
               </Link>
             ))}
           </div>
-        )}
-      </div>
+          {totalPages > 1 && (
+  <div className="flex items-center justify-center gap-4 mt-6">
+
+    <button
+      disabled={currentPage === 1}
+      onClick={() =>
+        setCurrentPage((p) => Math.max(1, p - 1))
+      }
+      className="
+        px-4 py-2 rounded-xl
+        font-medium
+        transition-all duration-200
+
+        bg-gray-100
+        border border-gray-300
+        text-gray-800
+
+        dark:bg-white/10
+        dark:border-white/20
+        dark:text-white
+        dark:hover:bg-white/20
+
+        hover:bg-gray-200
+
+        disabled:opacity-40
+        disabled:cursor-not-allowed
+      "
+    >
+      Previous
+    </button>
+
+    <span className="text-gray-700 dark:text-gray-300 font-medium">
+      Page {currentPage} of {totalPages}
+    </span>
+
+    <button
+      disabled={currentPage === totalPages}
+      onClick={() =>
+        setCurrentPage((p) =>
+          Math.min(totalPages, p + 1)
+        )
+      }
+      className="
+        px-4 py-2 rounded-xl
+        font-medium
+        transition-all duration-200
+
+        bg-gray-100
+        border border-gray-300
+        text-gray-800
+
+        dark:bg-white/10
+        dark:border-white/20
+        dark:text-white
+        dark:hover:bg-white/20
+
+        hover:bg-gray-200
+
+        disabled:opacity-40
+        disabled:cursor-not-allowed
+      "
+    >
+      Next
+    </button>
+
+  </div>
+)} 
+</>
+  )}
+  </div>
     );
-  }
+}
 
   // =========================
   // EDIT MODE

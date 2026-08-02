@@ -30,6 +30,9 @@ export default function JournalClient() {
   const [currentPage, setCurrentPage] = useState(1);
 
 const journalsPerPage = 6;
+const [search, setSearch] = useState("");
+const [biasFilter, setBiasFilter] = useState("ALL");
+const [dateFilter, setDateFilter] = useState("");
 
   const [previewImg, setPreviewImg] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
@@ -328,9 +331,36 @@ const journalsPerPage = 6;
 
     router.replace("/journal");
   };
-  const totalPages = Math.ceil(journals.length / journalsPerPage);
+  const filteredJournals = useMemo(() => {
+  return journals.filter((j: any) => {
+    const matchesSearch =
+      search === "" ||
+      j.trade?.pair
+        ?.toLowerCase()
+        .includes(search.toLowerCase());
 
-const paginatedJournals = journals.slice(
+    const matchesBias =
+      biasFilter === "ALL" ||
+      j.trade?.bias === biasFilter;
+
+    const matchesDate =
+      dateFilter === "" ||
+      (j.updated_at ?? j.created_at)
+        .startsWith(dateFilter);
+
+    return (
+      matchesSearch &&
+      matchesBias &&
+      matchesDate
+    );
+  });
+}, [journals, search, biasFilter, dateFilter]);
+
+const totalPages = Math.ceil(
+  filteredJournals.length / journalsPerPage
+);
+
+const paginatedJournals = filteredJournals.slice(
   (currentPage - 1) * journalsPerPage,
   currentPage * journalsPerPage
 );
@@ -378,6 +408,82 @@ useEffect(() => {
         <h1 className="text-2xl font-semibold text-black dark:text-white">
           All Journals
         </h1>
+
+        <div className="flex flex-col md:flex-row gap-4">
+
+  {/* Search */}
+  <input
+    type="text"
+    placeholder="Search by pair..."
+    value={search}
+    onChange={(e) => {
+      setSearch(e.target.value);
+      setCurrentPage(1);
+    }}
+    className="
+      flex-1
+      rounded-xl
+      border
+      border-gray-200
+      dark:border-white/10
+      bg-white
+      dark:bg-[#111827]
+      px-4
+      py-3
+      text-black
+      dark:text-white
+      placeholder:text-gray-400
+    "
+  />
+
+  {/* BUY / SELL */}
+  <select
+    value={biasFilter}
+    onChange={(e) => {
+      setBiasFilter(e.target.value);
+      setCurrentPage(1);
+    }}
+    className="
+      rounded-xl
+      border
+      border-gray-200
+      dark:border-white/10
+      bg-white
+      dark:bg-[#111827]
+      px-4
+      py-3
+      text-black
+      dark:text-white
+    "
+  >
+    <option value="ALL">All Trades</option>
+    <option value="BUY">BUY</option>
+    <option value="SELL">SELL</option>
+  </select>
+
+  {/* Date */}
+  <input
+    type="date"
+    value={dateFilter}
+    onChange={(e) => {
+      setDateFilter(e.target.value);
+      setCurrentPage(1);
+    }}
+    className="
+      rounded-xl
+      border
+      border-gray-200
+      dark:border-white/10
+      bg-white
+      dark:bg-[#111827]
+      px-4
+      py-3
+      text-black
+      dark:text-white
+    "
+  />
+
+</div>
 
         {journals.length === 0 ? (
           <p className="text-gray-400">

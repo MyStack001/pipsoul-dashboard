@@ -17,6 +17,7 @@ import { createNotification } from "@/lib/notifications";
 type ProfileFormProps = {
   profile: Profile;
   setProfile: Dispatch<SetStateAction<Profile | null>>;
+  highlight?: boolean;
 };
 
 const ProfileForm = forwardRef<HTMLDivElement, ProfileFormProps>(
@@ -24,6 +25,7 @@ const ProfileForm = forwardRef<HTMLDivElement, ProfileFormProps>(
     {
       profile,
       setProfile,
+      highlight,
     },
     ref
   ) => {
@@ -95,8 +97,23 @@ const ProfileForm = forwardRef<HTMLDivElement, ProfileFormProps>(
   return (
     <div
   ref={ref}
-  className="rounded-3xl border border-gray-200 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur-xl p-8 space-y-8">
-
+  className={`
+    rounded-3xl
+    border
+    p-8
+    space-y-8
+    bg-white/70
+    dark:bg-white/5
+    backdrop-blur-xl
+    transition-all
+    duration-700
+    ${
+      highlight
+        ? "border-cyan-500 shadow-[0_0_30px_rgba(6,182,212,0.35)]"
+        : "border-gray-200 dark:border-white/10"
+    }
+  `}
+>
       <div className="space-y-2">
   <h2 className="text-2xl font-bold text-black dark:text-white">
     Personal Information

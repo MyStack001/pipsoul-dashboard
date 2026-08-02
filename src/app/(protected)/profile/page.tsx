@@ -1,8 +1,8 @@
 "use client";
 
+import { useRef, useState, useEffect } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useProfile } from "@/components/ProfileProvider";
-import { useRef } from "react";
 
 import ProfileHeader from "./components/ProfileHeader";
 import ProfileStats from "./components/ProfileStats";
@@ -22,6 +22,28 @@ export default function ProfilePage() {
   const { session } = useAuth();
 
   const { profile, setProfile } = useProfile();
+
+const [highlight, setHighlight] = useState(false);
+
+const handleEditProfile = () => {
+  profileFormRef.current?.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+
+  setHighlight(true);
+};
+
+useEffect(() => {
+  if (!highlight) return;
+
+  const timer = setTimeout(() => {
+    setHighlight(false);
+  }, 1000);
+
+  return () => clearTimeout(timer);
+}, [highlight]);
+
   const profileFormRef = useRef<HTMLDivElement>(null);
 
   
@@ -32,12 +54,7 @@ export default function ProfilePage() {
   profile={profile}
   email={session?.user.email ?? ""}
   setProfile={setProfile}
-  onEditProfile={() =>
-    profileFormRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    })
-  }
+  onEditProfile={handleEditProfile}
 />
 
       <ProfileStats profile={profile} />
@@ -46,6 +63,7 @@ export default function ProfilePage() {
   ref={profileFormRef}
   profile={profile}
   setProfile={setProfile}
+  highlight={highlight}
 />
     </div>
   );

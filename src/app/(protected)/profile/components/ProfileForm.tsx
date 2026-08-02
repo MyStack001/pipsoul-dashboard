@@ -1,9 +1,11 @@
 "use client";
-
-import { useEffect, useState,
+import {
+  forwardRef,
+  useEffect,
+  useState,
   type Dispatch,
   type SetStateAction,
- } from "react";
+} from "react";
  import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
@@ -17,10 +19,14 @@ type ProfileFormProps = {
   setProfile: Dispatch<SetStateAction<Profile | null>>;
 };
 
-export default function ProfileForm({
-  profile,
-  setProfile,
-}: ProfileFormProps) {
+const ProfileForm = forwardRef<HTMLDivElement, ProfileFormProps>(
+  (
+    {
+      profile,
+      setProfile,
+    },
+    ref
+  ) => {
   const { session } = useAuth();
 
   const [name, setName] = useState("");
@@ -87,7 +93,9 @@ export default function ProfileForm({
 }
 
   return (
-    <div className="rounded-3xl border border-gray-200 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur-xl p-8 space-y-8">
+    <div
+  ref={ref}
+  className="rounded-3xl border border-gray-200 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur-xl p-8 space-y-8">
 
       <div className="space-y-2">
   <h2 className="text-2xl font-bold text-black dark:text-white">
@@ -234,4 +242,5 @@ export default function ProfileForm({
 
     </div>
   );
-}
+});
+export default ProfileForm

@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/components/AuthProvider";
 import { useProfile } from "@/components/ProfileProvider";
+import { useRef } from "react";
 
 import ProfileHeader from "./components/ProfileHeader";
 import ProfileStats from "./components/ProfileStats";
@@ -21,6 +22,7 @@ export default function ProfilePage() {
   const { session } = useAuth();
 
   const { profile, setProfile } = useProfile();
+  const profileFormRef = useRef<HTMLDivElement>(null);
 
   
   if (!profile) return null;
@@ -30,14 +32,21 @@ export default function ProfilePage() {
   profile={profile}
   email={session?.user.email ?? ""}
   setProfile={setProfile}
+  onEditProfile={() =>
+    profileFormRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    })
+  }
 />
 
       <ProfileStats profile={profile} />
 
       <ProfileForm
-        profile={profile}
-        setProfile={setProfile}
-      />
+  ref={profileFormRef}
+  profile={profile}
+  setProfile={setProfile}
+/>
     </div>
   );
 }

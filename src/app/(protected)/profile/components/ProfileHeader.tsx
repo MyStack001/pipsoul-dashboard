@@ -14,11 +14,13 @@ type ProfileHeaderProps = {
   profile: Profile;
   email: string;
   setProfile: Dispatch<SetStateAction<Profile | null>>;
+  onEditProfile: () => void;
 };
 export default function ProfileHeader({
   profile,
   email,
   setProfile,
+  onEditProfile,
 }: ProfileHeaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   async function uploadAvatar(
@@ -175,7 +177,8 @@ export default function ProfileHeader({
 
   {/* Right Side */}
   <button
-    className="
+  onClick={onEditProfile}
+  className="
       self-start
       md:self-center
       px-5

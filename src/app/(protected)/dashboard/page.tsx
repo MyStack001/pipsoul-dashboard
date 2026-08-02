@@ -124,18 +124,20 @@ const { trades } = useTradesStore();
         </button>
 
         <div
-          className={`
-            absolute mt-2 w-full z-50
-            bg-white dark:bg-[#111827]
-            border border-gray-200/70 dark:border-white/10
-            rounded-lg shadow-lg overflow-hidden
-            ${
-              open
-                ? "opacity-100 scale-100"
-                : "opacity-0 scale-95 pointer-events-none"
-            }
-          `}
-        >
+  className={`
+    absolute mt-2 w-full z-50
+    bg-white dark:bg-[#111827]
+    border border-gray-200/70 dark:border-white/10
+    rounded-lg shadow-lg
+    max-h-64
+    overflow-y-auto
+    ${
+      open
+        ? "opacity-100 scale-100"
+        : "opacity-0 scale-95 pointer-events-none"
+    }
+  `}
+>
           {pairs.map((p) => (
             <div
               key={p}

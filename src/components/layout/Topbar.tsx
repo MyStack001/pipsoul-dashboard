@@ -3,7 +3,7 @@
 import { Menu, ChevronDown } from "lucide-react";
 import Notifications from "./Notifications";
 import { useProfile } from "@/components/ProfileProvider";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAccount } from "@/components/AccountProvider";
 
 export default function Topbar({
@@ -21,6 +21,7 @@ const [accountOpen, setAccountOpen] = useState(false);
 
 const [showAddAccountModal, setShowAddAccountModal] = useState(false);
 const [newAccountName, setNewAccountName] = useState("");
+const modalRef = useRef<HTMLDivElement>(null);
 
   const hour = new Date().getHours();
 
@@ -37,6 +38,25 @@ useEffect(() => {
       : "Good evening"
   );
 }, []);
+
+useEffect(() => {
+  if (!showAddAccountModal) return;
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      modalRef.current &&
+      !modalRef.current.contains(event.target as Node)
+    ) {
+      setShowAddAccountModal(false);
+      setNewAccountName("");
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () =>
+    document.removeEventListener("mousedown", handleClickOutside);
+}, [showAddAccountModal]);
 
   return (
     <>
@@ -184,6 +204,7 @@ useEffect(() => {
         "
       >
         <div
+        ref={modalRef}
           className="
             w-full
             max-w-[420px]

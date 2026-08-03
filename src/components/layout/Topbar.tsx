@@ -19,6 +19,9 @@ export default function Topbar({
 } = useAccount();
 const [accountOpen, setAccountOpen] = useState(false);
 
+const [showAddAccountModal, setShowAddAccountModal] = useState(false);
+const [newAccountName, setNewAccountName] = useState("");
+
   const hour = new Date().getHours();
 
  const [greeting, setGreeting] = useState("Hello");
@@ -36,6 +39,7 @@ useEffect(() => {
 }, []);
 
   return (
+    <>
     <div
       className="
         h-16
@@ -125,19 +129,25 @@ useEffect(() => {
     <div className="border-t border-gray-200 dark:border-white/10" />
 
     <div
-      className="
-        px-4 py-3
-        cursor-pointer
-        text-cyan-500
-        hover:bg-cyan-50
-        dark:hover:bg-white/10
-        text-sm
-      "
-    >
-      + Add Account
-    </div>
+  onClick={() => {
+    setAccountOpen(false);
+    setShowAddAccountModal(true);
+  }}
+  className="
+    px-4 py-3
+    cursor-pointer
+    text-cyan-500
+    hover:bg-cyan-50
+    dark:hover:bg-white/10
+    text-sm
+  "
+>
+  + Add Account
+</div>
+
   </div>
 )}
+
 </div>
 
       <div className="flex items-center gap-4">
@@ -162,5 +172,103 @@ useEffect(() => {
   </div>
 </div>
     </div>
-  );
+
+    {showAddAccountModal && (
+      <div
+        className="
+          fixed inset-0
+          z-[100]
+          flex items-center justify-center
+          bg-black/40
+          backdrop-blur-sm
+        "
+      >
+        <div
+          className="
+            w-full
+            max-w-[420px]
+            rounded-2xl
+            border border-gray-200 dark:border-white/10
+            bg-white/80 dark:bg-[#111827]/90
+            backdrop-blur-xl
+            px-8 py-7
+            shadow-2xl
+          "
+        >
+          <h2 className="text-2xl font-bold text-black dark:text-white">
+  Add Trading Account
+</h2>
+
+<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+  Create a separate account to track your performance independently.
+</p>
+
+<div className="mt-6">
+  <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+    Account Name
+  </label>
+
+  <input
+    type="text"
+    placeholder="e.g. FTMO 100K"
+    value={newAccountName}
+    onChange={(e) => setNewAccountName(e.target.value)}
+    className="
+      w-full
+      px-4 py-3
+      rounded-xl
+      bg-white dark:bg-[#0f172a]
+      border border-gray-200 dark:border-white/10
+      text-black dark:text-white
+      placeholder:text-gray-400
+      focus:outline-none
+      focus:ring-2
+      focus:ring-cyan-500
+    "
+  />
+</div>
+
+<div className="mt-8 flex justify-end gap-3">
+  <button
+    type="button"
+    onClick={() => {
+      setShowAddAccountModal(false);
+      setNewAccountName("");
+    }}
+    className="
+      px-5 py-2.5
+      rounded-xl
+      border border-gray-200 dark:border-white/10
+      text-gray-700 dark:text-gray-300
+      hover:bg-gray-100
+      dark:hover:bg-white/10
+      transition
+    "
+  >
+    Cancel
+  </button>
+
+  <button
+    type="button"
+    onClick={() => {
+      // We'll wire this next
+    }}
+    className="
+      px-5 py-2.5
+      rounded-xl
+      bg-cyan-500
+      hover:bg-cyan-600
+      text-white
+      transition
+    "
+  >
+    Add Account
+  </button>
+</div>
+        </div>
+      </div>
+    )}
+
+  </>
+);
 }

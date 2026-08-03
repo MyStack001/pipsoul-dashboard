@@ -1,9 +1,10 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { Menu, ChevronDown } from "lucide-react";
 import Notifications from "./Notifications";
 import { useProfile } from "@/components/ProfileProvider";
 import { useEffect, useState } from "react";
+import { useAccount } from "@/components/AccountProvider";
 
 export default function Topbar({
   onMenuClick,
@@ -11,6 +12,11 @@ export default function Topbar({
   onMenuClick?: () => void;
 }) {
   const { profile, loading  } = useProfile();
+  const {
+  accounts,
+  currentAccount,
+  setCurrentAccount,
+} = useAccount();
 
   const hour = new Date().getHours();
 
@@ -57,6 +63,29 @@ useEffect(() => {
   </p>
 </div>
       </div>
+
+      <div className="hidden md:flex flex-col items-center">
+  <span className="text-xs text-gray-500 dark:text-gray-400">
+    Trading Account
+  </span>
+
+  <div
+  onClick={() => {}}
+  className="
+    mt-1
+    flex items-center gap-1
+    cursor-pointer
+    text-sm font-medium
+    text-black dark:text-white
+    hover:text-cyan-500
+    transition-colors
+  "
+>
+  <span>Trading Account</span>
+
+  <ChevronDown className="w-4 h-4" />
+</div>
+</div>
 
       <div className="flex items-center gap-4">
   <Notifications />

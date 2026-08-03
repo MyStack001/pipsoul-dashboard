@@ -58,6 +58,22 @@ useEffect(() => {
     document.removeEventListener("mousedown", handleClickOutside);
 }, [showAddAccountModal]);
 
+useEffect(() => {
+  if (!showAddAccountModal) return;
+
+  const handleEscape = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      setShowAddAccountModal(false);
+      setNewAccountName("");
+    }
+  };
+
+  document.addEventListener("keydown", handleEscape);
+
+  return () =>
+    document.removeEventListener("keydown", handleEscape);
+}, [showAddAccountModal]);
+
   return (
     <>
     <div

@@ -7,9 +7,12 @@ import { ChevronDown } from "lucide-react";
 import { createNotification } from "@/lib/notifications";
 import { toast } from "sonner";
 import { unlockAchievement } from "@/lib/achievements";
+import { useAccount } from "@/components/AccountProvider";
+
 
 export default function AddTradeForm() {
   const { session } = useAuth();
+  const { currentAccount } = useAccount();
 
   const [pair, setPair] = useState("");
 
@@ -51,12 +54,17 @@ const [tradeDate, setTradeDate] = useState("");
       alert("No session found");
       return;
     }
+    if (!currentAccount) { 
+      toast.error("Please select a trading account first.");
+      return;
+    }
 
     setLoading(true);
 
     try {
       const payload = {
   user_id: session.user.id,
+  account_id: currentAccount.id,
 
   pair,
   bias,

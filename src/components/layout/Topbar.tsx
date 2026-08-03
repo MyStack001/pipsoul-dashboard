@@ -16,6 +16,7 @@ export default function Topbar({
   accounts,
   currentAccount,
   setCurrentAccount,
+  addAccount,
 } = useAccount();
 const [accountOpen, setAccountOpen] = useState(false);
 
@@ -122,7 +123,9 @@ useEffect(() => {
     transition-colors
   "
 >
-  <span>Trading Account</span>
+  <span>
+  {currentAccount?.name || "Trading Account"}
+</span>
 
   <ChevronDown className="w-4 h-4" />
 </div>
@@ -287,9 +290,16 @@ useEffect(() => {
 
   <button
     type="button"
-    onClick={() => {
-      // We'll wire this next
-    }}
+    onClick={async () => {
+  if (!newAccountName.trim()) return;
+
+  const account = await addAccount(newAccountName.trim());
+
+  if (!account) return;
+
+  setShowAddAccountModal(false);
+  setNewAccountName("");
+}}
     className="
       px-5 py-2.5
       rounded-xl

@@ -24,6 +24,7 @@ type AccountContextType = {
   currentAccount: TradingAccount | null;
   setCurrentAccount: (account: TradingAccount) => void;
   refreshAccounts: () => Promise<void>;
+  addAccount: (name: string) => Promise<TradingAccount | null>;
 };
 
 const AccountContext = createContext<AccountContextType | undefined>(
@@ -62,6 +63,30 @@ export function AccountProvider({
     }
   }
 
+async function addAccount(name: string) {
+  if (!session?.user) return null;
+
+  const { data, error } = await supabase
+    .from("accounts")
+    .insert({
+      user_id: session.user.id,
+      name,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error(error);
+    return null;
+  }
+
+  await refreshAccounts();
+
+  setCurrentAccount(data);
+
+  return data;
+}
+
   useEffect(() => {
     refreshAccounts();
   }, [session]);
@@ -73,6 +98,7 @@ export function AccountProvider({
         currentAccount,
         setCurrentAccount,
         refreshAccounts,
+        addAccount,
       }}
     >
       {children}

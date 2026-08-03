@@ -17,6 +17,7 @@ export default function Topbar({
   currentAccount,
   setCurrentAccount,
 } = useAccount();
+const [accountOpen, setAccountOpen] = useState(false);
 
   const hour = new Date().getHours();
 
@@ -64,13 +65,13 @@ useEffect(() => {
 </div>
       </div>
 
-      <div className="hidden md:flex flex-col items-center">
+      <div className="relative hidden md:flex flex-col items-center">
   <span className="text-xs text-gray-500 dark:text-gray-400">
     Trading Account
   </span>
 
   <div
-  onClick={() => {}}
+  onClick={() => setAccountOpen(!accountOpen)}
   className="
     mt-1
     flex items-center gap-1
@@ -85,6 +86,58 @@ useEffect(() => {
 
   <ChevronDown className="w-4 h-4" />
 </div>
+{accountOpen && (
+  <div
+    className="
+      absolute
+      mt-2
+      w-56
+      rounded-xl
+      border border-gray-200/70 dark:border-white/10
+      bg-white dark:bg-[#111827]
+      shadow-xl
+      overflow-hidden
+      z-50
+    "
+  >
+    {accounts.map((account) => (
+      <div
+  key={account.id}
+  onClick={() => {
+    setCurrentAccount(account);
+    setAccountOpen(false);
+  }}
+  className="
+    px-4 py-3
+    cursor-pointer
+    hover:bg-cyan-50
+    dark:hover:bg-white/10
+    text-sm
+    text-black
+    dark:text-white
+  "
+>
+        {account.id === currentAccount?.id ? "✓ " : ""}
+        {account.name}
+      </div>
+    ))}
+
+    <div className="border-t border-gray-200 dark:border-white/10" />
+
+    <div
+      className="
+        px-4 py-3
+        cursor-pointer
+        text-cyan-500
+        hover:bg-cyan-50
+        dark:hover:bg-white/10
+        text-sm
+      "
+    >
+      + Add Account
+    </div>
+  </div>
+)}
 </div>
 
       <div className="flex items-center gap-4">

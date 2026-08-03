@@ -1,6 +1,7 @@
 export type Trade = {
   id: string;
   user_id: string;
+  account_id: string;
 
   pair: string;
 

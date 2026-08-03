@@ -3,9 +3,17 @@
 import AddTradeForm from "@/components/AddTradeForm";
 import TradesTable from "@/components/table/TradesTable";
 import { useTradesStore } from "@/hooks/useTradesStore";
+import { useAccount } from "@/components/AccountProvider";
 
 export default function TradesPage() {
   const { trades } = useTradesStore();
+  const { currentAccount } = useAccount();
+
+const filteredTrades = currentAccount
+  ? trades.filter(
+      (trade) => trade.account_id === currentAccount.id
+    )
+  : trades;
   return (
     <div className="space-y-6">
       {/* HEADER */}
@@ -23,7 +31,7 @@ export default function TradesPage() {
       <AddTradeForm />
 
       {/* LIVE TRADES TABLE */}
-      <TradesTable pair="ALL" trades={trades} />
+      <TradesTable pair="ALL" trades={filteredTrades} />
     </div>
   );
 }

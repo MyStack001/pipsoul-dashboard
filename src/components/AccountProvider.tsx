@@ -10,6 +10,7 @@ import {
 
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "./AuthProvider";
+import { toast } from "sonner";
 
 export type TradingAccount = {
   id: string;
@@ -65,12 +66,26 @@ export function AccountProvider({
 
 async function addAccount(name: string) {
   if (!session?.user) return null;
+  const trimmedName = name.trim();
+
+  const existing = accounts.find(
+    (account) =>
+      account.name.toLowerCase() === trimmedName.toLowerCase()
+  );
+
+  if (existing) {
+    toast.error("Account already exists", {
+  description: "Choose a different account name.",
+});
+
+return null;
+  }
 
   const { data, error } = await supabase
     .from("accounts")
     .insert({
       user_id: session.user.id,
-      name,
+      name: trimmedName,
     })
     .select()
     .single();

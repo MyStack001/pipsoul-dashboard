@@ -19,6 +19,8 @@ export default function Topbar({
   addAccount,
 } = useAccount();
 const [accountOpen, setAccountOpen] = useState(false);
+const [showManageAccountsModal, setShowManageAccountsModal] =
+  useState(false);
 
 const [showAddAccountModal, setShowAddAccountModal] = useState(false);
 const [newAccountName, setNewAccountName] = useState("");
@@ -165,9 +167,13 @@ useEffect(() => {
       </div>
     ))}
 
+
+
+
+
     <div className="border-t border-gray-200 dark:border-white/10" />
 
-    <div
+<div
   onClick={() => {
     setAccountOpen(false);
     setShowAddAccountModal(true);
@@ -183,6 +189,27 @@ useEffect(() => {
 >
   + Add Account
 </div>
+
+<div
+  onClick={() => {
+    setAccountOpen(false);
+    setShowManageAccountsModal(true);
+  }}
+  className="
+    px-4 py-3
+    cursor-pointer
+    hover:bg-cyan-50
+    dark:hover:bg-white/10
+    text-sm
+    text-black
+    dark:text-white
+  "
+>
+  ⚙ Manage Accounts
+</div>
+
+
+
 
   </div>
 )}

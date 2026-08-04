@@ -144,7 +144,17 @@ async function deleteAccount(id: string): Promise<boolean> {
   if (accounts.length <= 1) {
     return false;
   }
+const { count } = await supabase
+  .from("trades")
+  .select("*", {
+    count: "exact",
+    head: true,
+  })
+  .eq("account_id", id);
 
+if ((count ?? 0) > 0) {
+  return false;
+}
   const { error } = await supabase
     .from("accounts")
     .delete()

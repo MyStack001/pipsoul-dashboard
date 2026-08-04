@@ -167,10 +167,6 @@ useEffect(() => {
       </div>
     ))}
 
-
-
-
-
     <div className="border-t border-gray-200 dark:border-white/10" />
 
 <div
@@ -207,9 +203,6 @@ useEffect(() => {
 >
   ⚙ Manage Accounts
 </div>
-
-
-
 
   </div>
 )}
@@ -342,6 +335,80 @@ useEffect(() => {
         </div>
       </div>
     )}
+
+    {showManageAccountsModal && (
+  <div
+    onClick={() => setShowManageAccountsModal(false)}
+    className="
+      fixed inset-0
+      z-[100]
+      flex items-center justify-center
+      bg-black/40
+      backdrop-blur-sm
+    "
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="
+        w-full
+        max-w-lg
+        rounded-2xl
+        border border-gray-200 dark:border-white/10
+        bg-white/80 dark:bg-[#111827]/90
+        backdrop-blur-xl
+        px-8 py-7
+        shadow-2xl
+      "
+    >
+      <h2 className="text-2xl font-bold text-black dark:text-white">
+        Manage Trading Accounts
+      </h2>
+
+      <div className="mt-6 space-y-3">
+        {accounts.map((account) => (
+          <div
+            key={account.id}
+            className="
+              flex items-center justify-between
+              rounded-xl
+              border border-gray-200 dark:border-white/10
+              px-4 py-3
+            "
+          >
+            <span className="font-medium text-black dark:text-white">
+              {account.name}
+            </span>
+
+            <div className="flex items-center gap-4">
+              <button className="hover:scale-110 transition">
+                ✏️
+              </button>
+
+              <button className="hover:scale-110 transition">
+                🗑️
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-8 flex justify-end">
+        <button
+          onClick={() => setShowManageAccountsModal(false)}
+          className="
+            px-5 py-2.5
+            rounded-xl
+            border border-gray-200 dark:border-white/10
+            hover:bg-gray-100
+            dark:hover:bg-white/10
+          "
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
   </>
 );

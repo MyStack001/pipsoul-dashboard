@@ -123,18 +123,20 @@ async function renameAccount(id: string, name: string) {
     .eq("user_id", session.user.id);
 
   if (error) {
-    console.error(error);
-    return;
-  }
+  console.error(error);
+  return;
+}
 
-  await refreshAccounts();
+await refreshAccounts();
 
-  if (currentAccount?.id === id) {
-    setCurrentAccount({
-      ...currentAccount,
-      name: trimmedName,
-    });
-  }
+if (currentAccount?.id === id) {
+  setCurrentAccount({
+    ...currentAccount,
+    name: trimmedName,
+  });
+}
+
+toast.success("Account renamed successfully.");
 }
 
 async function deleteAccount(id: string): Promise<boolean> {
@@ -142,8 +144,9 @@ async function deleteAccount(id: string): Promise<boolean> {
 
   // Don't allow deleting the last account
   if (accounts.length <= 1) {
-    return false;
-  }
+  toast.error("You must have at least one trading account.");
+  return false;
+}
 const { count } = await supabase
   .from("trades")
   .select("*", {
@@ -153,6 +156,9 @@ const { count } = await supabase
   .eq("account_id", id);
 
 if ((count ?? 0) > 0) {
+  toast.error(
+    "This account contains trades. Move or delete them before deleting the account."
+  );
   return false;
 }
   const { error } = await supabase

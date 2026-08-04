@@ -5,6 +5,7 @@ import Notifications from "./Notifications";
 import { useProfile } from "@/components/ProfileProvider";
 import { useEffect, useRef, useState } from "react";
 import { useAccount } from "@/components/AccountProvider";
+import { toast } from "sonner";
 
 export default function Topbar({
   onMenuClick,
@@ -539,11 +540,13 @@ useEffect(() => {
 
   const deleted = await deleteAccount(accountToDelete);
 
-  if (!deleted) return;
+if (!deleted) return;
 
-  setAccountToDelete(null);
-  setAccountToDeleteName("");
-  setShowManageAccountsModal(false);
+toast.success("Trading account deleted successfully.");
+
+setAccountToDelete(null);
+setAccountToDeleteName("");
+setShowManageAccountsModal(false);
 }}
             // We'll wire the delete logic next
           

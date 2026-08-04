@@ -26,6 +26,11 @@ type AccountContextType = {
   setCurrentAccount: (account: TradingAccount) => void;
   refreshAccounts: () => Promise<void>;
   addAccount: (name: string) => Promise<TradingAccount | null>;
+  renameAccount: (
+    id: string,
+    name: string
+  ) => Promise<void>;
+  deleteAccount: (id: string) => Promise<boolean>;
 };
 
 const AccountContext = createContext<AccountContextType | undefined>(
@@ -102,6 +107,74 @@ return null;
   return data;
 }
 
+async function renameAccount(id: string, name: string) {
+  if (!session?.user) return;
+
+  const trimmedName = name.trim();
+
+  if (!trimmedName) return;
+
+  const { error } = await supabase
+    .from("accounts")
+    .update({
+      name: trimmedName,
+    })
+    .eq("id", id)
+    .eq("user_id", session.user.id);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  await refreshAccounts();
+
+  if (currentAccount?.id === id) {
+    setCurrentAccount({
+      ...currentAccount,
+      name: trimmedName,
+    });
+  }
+}
+
+async function deleteAccount(id: string): Promise<boolean> {
+  if (!session?.user) return false;
+
+  // Don't allow deleting the last account
+  if (accounts.length <= 1) {
+    return false;
+  }
+
+  const { error } = await supabase
+    .from("accounts")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", session.user.id);
+
+  if (error) {
+    console.error(error);
+    return false;
+  }
+
+  await refreshAccounts();
+
+  // If the deleted account was selected,
+  // switch to another remaining account.
+  if (currentAccount?.id === id) {
+    const remainingAccounts = accounts.filter(
+      (account) => account.id !== id
+    );
+
+    if (remainingAccounts.length > 0) {
+      setCurrentAccount(remainingAccounts[0]);
+    } else {
+      setCurrentAccount(null);
+    }
+  }
+
+  return true;
+}
+
   useEffect(() => {
     refreshAccounts();
   }, [session]);
@@ -114,6 +187,8 @@ return null;
         setCurrentAccount,
         refreshAccounts,
         addAccount,
+        renameAccount,
+        deleteAccount,
       }}
     >
       {children}

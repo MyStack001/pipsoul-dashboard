@@ -12,18 +12,30 @@ export default function Topbar({
   onMenuClick?: () => void;
 }) {
   const { profile, loading  } = useProfile();
+
   const {
   accounts,
   currentAccount,
   setCurrentAccount,
   addAccount,
+  renameAccount,
+  deleteAccount,
 } = useAccount();
+
 const [accountOpen, setAccountOpen] = useState(false);
 const [showManageAccountsModal, setShowManageAccountsModal] =
   useState(false);
 
 const [showAddAccountModal, setShowAddAccountModal] = useState(false);
 const [newAccountName, setNewAccountName] = useState("");
+const [editingAccountId, setEditingAccountId] = useState<string | null>(null);
+const [editingName, setEditingName] = useState("");
+const [accountToDelete, setAccountToDelete] =
+  useState<string | null>(null);
+
+const [accountToDeleteName, setAccountToDeleteName] =
+  useState("");
+
 const modalRef = useRef<HTMLDivElement>(null);
 
   const hour = new Date().getHours();
@@ -375,18 +387,68 @@ useEffect(() => {
               px-4 py-3
             "
           >
-            <span className="font-medium text-black dark:text-white">
-              {account.name}
-            </span>
+            {editingAccountId === account.id ? (
+  <input
+    autoFocus
+    value={editingName}
+    onChange={(e) => setEditingName(e.target.value)}
+    onBlur={async () => {
+  await renameAccount(account.id, editingName);
+
+  setEditingAccountId(null);
+  setEditingName("");
+}}
+    onKeyDown={async (e) => {
+      if (e.key === "Enter") {
+        await renameAccount(account.id, editingName);
+
+        setEditingAccountId(null);
+        setEditingName("");
+      }
+
+      if (e.key === "Escape") {
+        setEditingAccountId(null);
+        setEditingName("");
+      }
+    }}
+    className="
+      flex-1
+      rounded-lg
+      border border-gray-200 dark:border-white/10
+      bg-transparent
+      px-2 py-1
+      text-black dark:text-white
+      focus:outline-none
+      focus:ring-2
+      focus:ring-cyan-500
+    "
+  />
+) : (
+  <span className="font-medium text-black dark:text-white">
+    {account.name}
+  </span>
+)}
 
             <div className="flex items-center gap-4">
-              <button className="hover:scale-110 transition">
-                ✏️
-              </button>
+              <button
+  onClick={() => {
+    setEditingAccountId(account.id);
+    setEditingName(account.name);
+  }}
+  className="hover:scale-110 transition"
+>
+  ✏️
+</button>
 
-              <button className="hover:scale-110 transition">
-                🗑️
-              </button>
+              <button
+  onClick={() => {
+    setAccountToDelete(account.id);
+    setAccountToDeleteName(account.name);
+  }}
+  className="hover:scale-110 transition"
+>
+  🗑️
+</button>
             </div>
           </div>
         ))}
@@ -404,6 +466,96 @@ useEffect(() => {
           "
         >
           Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+{accountToDelete && (
+  <div
+    onClick={() => {
+      setAccountToDelete(null);
+      setAccountToDeleteName("");
+    }}
+    className="
+      fixed inset-0
+      z-[110]
+      flex items-center justify-center
+      bg-black/40
+      backdrop-blur-sm
+    "
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="
+        w-full
+        max-w-md
+        rounded-2xl
+        border border-gray-200 dark:border-white/10
+        bg-white/80 dark:bg-[#111827]/90
+        backdrop-blur-xl
+        px-8 py-7
+        shadow-2xl
+      "
+    >
+      <h2 className="text-2xl font-bold text-black dark:text-white">
+        Delete Trading Account
+      </h2>
+
+      <p className="mt-4 text-gray-600 dark:text-gray-300">
+        Are you sure you want to delete
+        <span className="font-semibold">
+          {" "}
+          "{accountToDeleteName}"
+        </span>
+        ?
+      </p>
+
+      <p className="mt-2 text-sm text-red-500">
+        This action cannot be undone.
+      </p>
+
+      <div className="mt-8 flex justify-end gap-3">
+        <button
+          onClick={() => {
+            setAccountToDelete(null);
+            setAccountToDeleteName("");
+          }}
+          className="
+            px-5 py-2.5
+            rounded-xl
+            border border-gray-200 dark:border-white/10
+            hover:bg-gray-100
+            dark:hover:bg-white/10
+          "
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={async () => {
+  if (!accountToDelete) return;
+
+  const deleted = await deleteAccount(accountToDelete);
+
+  if (!deleted) return;
+
+  setAccountToDelete(null);
+  setAccountToDeleteName("");
+  setShowManageAccountsModal(false);
+}}
+            // We'll wire the delete logic next
+          
+          className="
+            px-5 py-2.5
+            rounded-xl
+            bg-red-500
+            hover:bg-red-600
+            text-white
+          "
+        >
+          Delete
         </button>
       </div>
     </div>

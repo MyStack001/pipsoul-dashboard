@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useTradesStore } from "@/hooks/useTradesStore";
 import EquityChart from "@/components/charts/EquityChart";
 import PageSection from "@/components/PageSection";
+import AnimatedCard from "@/components/AnimatedCard";
 
 export default function AnalyticsPage() {
   const { trades } = useTradesStore();
@@ -139,24 +140,40 @@ export default function AnalyticsPage() {
 </PageSection>
 
       {/* BUY vs SELL */}
-      <PageSection delay={0.08}>
-  <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2">
+  
     <Card title="BUY Trades" color="green" data={buyStats} />
+
     <Card title="SELL Trades" color="red" data={sellStats} />
-  </div>
-</PageSection>
+  
+</div>
 
       {/* MAIN STATS */}
-      <PageSection delay={0.16}>
-  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <StatCard title="Total Trades" value={totalTrades} />
-        <StatCard title="Win Rate" value={`${winRate}%`} />
-        <StatCard title="Total P/L" value={`$${totalProfit.toFixed(2)}`} />
-        <StatCard title="Average Trade" value={`$${averageProfit}`} />
-        <StatCard title="Best Trade" value={`$${bestTrade}`} />
-        <StatCard title="Worst Trade" value={`$${worstTrade}`} />
-      </div>
-      </PageSection>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+  <AnimatedCard delay={0}>
+    <StatCard title="Total Trades" value={totalTrades} />
+  </AnimatedCard>
+
+  <AnimatedCard delay={0.05}>
+    <StatCard title="Win Rate" value={`${winRate}%`} />
+  </AnimatedCard>
+
+  <AnimatedCard delay={0.10}>
+    <StatCard title="Total P/L" value={`$${totalProfit.toFixed(2)}`} />
+  </AnimatedCard>
+
+  <AnimatedCard delay={0.15}>
+    <StatCard title="Average Trade" value={`$${averageProfit}`} />
+  </AnimatedCard>
+
+  <AnimatedCard delay={0.20}>
+    <StatCard title="Best Trade" value={`$${bestTrade}`} />
+  </AnimatedCard>
+
+  <AnimatedCard delay={0.25}>
+    <StatCard title="Worst Trade" value={`$${worstTrade}`} />
+  </AnimatedCard>
+</div>
 
        {/* EQUITY */}
       <PageSection delay={0.32}>

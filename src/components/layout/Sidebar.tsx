@@ -67,7 +67,7 @@ export default function Sidebar({
 
     setShowLogoutModal(false);
     onClose?.();
-    router.push("/login");
+    router.replace("/login");
   }
 
   const navItems = [

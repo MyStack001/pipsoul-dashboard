@@ -13,6 +13,7 @@ import { JournalEntry } from "@/types/journal";
 import { toast } from "sonner";
 import { unlockAchievement } from "@/lib/achievements";
 import { createNotification } from "@/lib/notifications";
+import PageSection from "@/components/PageSection";
 
 export default function JournalClient() {
   const searchParams = useSearchParams();
@@ -405,11 +406,13 @@ useEffect(() => {
     return (
       <div className="space-y-6">
 
-        <h1 className="text-2xl font-semibold text-black dark:text-white">
-          All Journals
-        </h1>
+        <PageSection>
+  <h1 className="text-2xl font-semibold text-black dark:text-white">
+    All Journals
+  </h1>
+</PageSection>
 
-        <div className="flex flex-col md:flex-row gap-4">
+        <PageSection delay={0.08}><div className="flex flex-col md:flex-row gap-4">
 
   {/* Search */}
   <input
@@ -484,6 +487,7 @@ useEffect(() => {
   />
 
 </div>
+</PageSection>
 
         {journals.length === 0 ? (
           <p className="text-gray-400">
@@ -491,7 +495,9 @@ useEffect(() => {
           </p>
         ) : (
           <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <PageSection delay={0.16}>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {paginatedJournals.map((j: any) => (
               <Link
                 key={j.trade_id}
@@ -540,9 +546,11 @@ useEffect(() => {
               </Link>
             ))}
           </div>
-          {totalPages > 1 && (
-  <div className="flex items-center justify-center gap-4 mt-6">
+          </PageSection>
 
+          {totalPages > 1 && (
+  <PageSection delay={0.24}>
+    <div className="flex items-center justify-center gap-4 mt-6">
     <button
       disabled={currentPage === 1}
       onClick={() =>
@@ -606,6 +614,7 @@ useEffect(() => {
     </button>
 
   </div>
+  </PageSection>
 )} 
 </>
   )}
@@ -619,10 +628,13 @@ useEffect(() => {
   return (
     <div className="space-y-6">
 
+      <PageSection>
       <h1 className="text-xl font-bold text-black dark:text-white">
         {trade ? `${trade.pair} Trade Journal` : "Trade Journal"}
       </h1>
+      </PageSection>
 {trade && (
+   <PageSection delay={0.08}>
   <div
     className="
       rounded-2xl
@@ -635,6 +647,7 @@ useEffect(() => {
       space-y-5
     "
   >
+   
     <div>
       <h2 className="text-lg font-semibold text-black dark:text-white">
         Trade Summary
@@ -644,6 +657,7 @@ useEffect(() => {
         Review the key details of this trade before writing your journal.
       </p>
     </div>
+    
 
     <div className="grid grid-cols-2 md:grid-cols-5 gap-5">
 
@@ -717,11 +731,14 @@ useEffect(() => {
 
     </div>
   </div>
+  </PageSection>
 )}
 
       {journal && (
         <>
+        <PageSection delay={0.16}>
         <div className="space-y-6 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#111827] p-6">
+
 
   <div>
     <h2 className="text-lg font-semibold text-black dark:text-white">
@@ -784,10 +801,10 @@ useEffect(() => {
 </div>
 
 </div>
-          
+  </PageSection>        
 
           
-
+<PageSection delay={0.24}>
 <div className="space-y-6 rounded-2xl border border-gray-200 dark:border-white/10 bg-white 
 dark:bg-[#111827] p-6">
 
@@ -852,10 +869,11 @@ dark:bg-[#111827] p-6">
 </div>
 
 </div>
+</PageSection>
 
          
 
-          
+  <PageSection delay={0.32}>       
 
 <div className="rounded-2xl border border-gray-200 
 dark:border-white/10 bg-white dark:bg-[#111827] p-6 space-y-4">
@@ -947,11 +965,11 @@ dark:border-white/10 bg-white dark:bg-[#111827] p-6 space-y-4">
           </div>
 
 </div>
-
+</PageSection> 
           
 
           
-
+<PageSection delay={0.40}>
           <div className="flex justify-end gap-3 pt-2">
 
             <button
@@ -969,6 +987,7 @@ dark:border-white/10 bg-white dark:bg-[#111827] p-6 space-y-4">
             </button>
 
           </div>
+          </PageSection>
         </>
       )}
 

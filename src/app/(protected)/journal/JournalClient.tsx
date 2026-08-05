@@ -391,14 +391,7 @@ useEffect(() => {
   return updated.toLocaleDateString();
 };
 
-  if (loading) {
-    return (
-      <p className="p-6 text-gray-900 dark:text-white">
-        Loading...
-      </p>
-    );
-  }
-
+  
   // =========================
   // LIST PAGE
   // =========================
@@ -487,7 +480,7 @@ useEffect(() => {
 
 </div>
 
-        {journals.length === 0 ? (
+        {!loading && journals.length === 0 ? (
           <p className="text-gray-400">
             No journals yet
           </p>

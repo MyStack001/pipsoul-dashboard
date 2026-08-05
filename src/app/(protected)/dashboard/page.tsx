@@ -17,7 +17,7 @@ const TradesTable = dynamic(
   () => import("@/components/table/TradesTable"),
   { ssr: false }
 );
-import PageSection from "@/components/PageSection"
+
 
 export default function DashboardPage() {
   const { session, loading } = useAuth();
@@ -83,11 +83,11 @@ const { trades } = useTradesStore();
   if (!session) return null;
 
   return (
-    <PageSection>
+    
     <div className="space-y-6">
 
 
-<PageSection delay={0}>
+
       <div>
         <h1 className="text-2xl font-semibold text-black dark:text-white">
           Trading Overview
@@ -100,11 +100,10 @@ const { trades } = useTradesStore();
         <p className="text-xs text-cyan-600 dark:text-cyan-400 mt-1">
           Logged in as: {session.user.email}
         </p>
-      </div></PageSection>
+      </div>
 
-      <PageSection delay={0.08}><KPI stats={stats} /></PageSection>
+      <KPI stats={stats} />
 
-      <PageSection delay={0.16}>
         <div ref={dropdownRef} className="relative w-fit">
 
         <button
@@ -161,23 +160,16 @@ const { trades } = useTradesStore();
           ))}
         </div>
       </div>
-      </PageSection>
 
-      <PageSection delay={0.24}>
-        <EquityChart
+<EquityChart
   pair={pair}
   trades={trades}
   onStats={setStats}
 />
-</PageSection>
-
-<PageSection delay={0.32}>
   <TradesTable
   pair={pair}
   trades={trades}
 />
-</PageSection>
     </div>
-    </PageSection>
   );
 }

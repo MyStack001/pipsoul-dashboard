@@ -127,7 +127,7 @@ export default function AnalyticsPage() {
   // ========================
   return (
     <div className="space-y-6">
-      <PageSection>
+      
   <div>
     <h1 className="text-2xl font-semibold text-black dark:text-white">
       Analytics
@@ -137,7 +137,6 @@ export default function AnalyticsPage() {
       Insights into your trading performance
     </p>
   </div>
-</PageSection>
 
       {/* BUY vs SELL */}
       <div className="grid gap-4 md:grid-cols-2">
@@ -176,12 +175,11 @@ export default function AnalyticsPage() {
 </div>
 
        {/* EQUITY */}
-      <PageSection delay={0.32}>
+      
   <EquityChart trades={trades} />
-</PageSection>
 
       {/* PAIR TABLE */}
-      <PageSection delay={0.24}>
+  
   <div className="rounded-2xl p-5 bg-white/60 dark:bg-white/5 border border-gray-200/70 dark:border-white/10">
         <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">
   Pair Performance
@@ -236,7 +234,6 @@ export default function AnalyticsPage() {
           </table>
         </div>
         </div>
-      </PageSection>
       
 
      

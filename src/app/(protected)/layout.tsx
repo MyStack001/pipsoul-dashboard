@@ -78,38 +78,20 @@ export default function DashboardLayout({
     bg-gray-50 dark:bg-[#0B0F19]
   "
 >
-  <motion.div
-    initial={{ opacity: 0, y: 12 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{
-      duration: 0.3,
-      ease: "easeOut",
-    }}
-  >
-    <AnimatePresence mode="wait">
+  <AnimatePresence mode="wait">
   <motion.div
     key={pathname}
-    initial={{
-      opacity: 0,
-      y: 18,
-    }}
-    animate={{
-      opacity: 1,
-      y: 0,
-    }}
-    exit={{
-      opacity: 0,
-      y: -18,
-    }}
+    initial={{ opacity: 0, y: 12 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -12 }}
     transition={{
-      duration: 0.3,
+      duration: 0.25,
       ease: "easeOut",
     }}
   >
     {children}
   </motion.div>
 </AnimatePresence>
-  </motion.div>
 </main>
       </div>
     </div>

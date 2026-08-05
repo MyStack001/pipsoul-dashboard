@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
-import   { motion } from "framer-motion";
 
 
 export default function DashboardLayout({
@@ -13,6 +14,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -84,7 +86,29 @@ export default function DashboardLayout({
       ease: "easeOut",
     }}
   >
+    <AnimatePresence mode="wait">
+  <motion.div
+    key={pathname}
+    initial={{
+      opacity: 0,
+      y: 18,
+    }}
+    animate={{
+      opacity: 1,
+      y: 0,
+    }}
+    exit={{
+      opacity: 0,
+      y: -18,
+    }}
+    transition={{
+      duration: 0.3,
+      ease: "easeOut",
+    }}
+  >
     {children}
+  </motion.div>
+</AnimatePresence>
   </motion.div>
 </main>
       </div>

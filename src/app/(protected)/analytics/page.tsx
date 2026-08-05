@@ -158,6 +158,11 @@ export default function AnalyticsPage() {
       </div>
       </PageSection>
 
+       {/* EQUITY */}
+      <PageSection delay={0.32}>
+  <EquityChart trades={trades} />
+</PageSection>
+
       {/* PAIR TABLE */}
       <PageSection delay={0.24}>
   <div className="rounded-2xl p-5 bg-white/60 dark:bg-white/5 border border-gray-200/70 dark:border-white/10">
@@ -217,10 +222,7 @@ export default function AnalyticsPage() {
       </PageSection>
       
 
-      {/* EQUITY */}
-      <PageSection delay={0.32}>
-  <EquityChart trades={trades} />
-</PageSection>
+     
     </div>
    
   );

@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
+import   { motion } from "framer-motion";
 
 
 export default function DashboardLayout({
@@ -66,18 +67,26 @@ export default function DashboardLayout({
 
         {/* Main Content */}
         <main
-          className="
-            mt-16
-            h-[calc(100vh-4rem)]
-            overflow-y-auto
-            overflow-x-hidden
-            p-4 md:p-6
-            bg-gray-50 dark:bg-[#0B0F19]
-          "
-        >
-          {children}
-        </main>
-
+  className="
+    mt-16
+    h-[calc(100vh-4rem)]
+    overflow-y-auto
+    overflow-x-hidden
+    p-4 md:p-6
+    bg-gray-50 dark:bg-[#0B0F19]
+  "
+>
+  <motion.div
+    initial={{ opacity: 0, y: 12 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{
+      duration: 0.3,
+      ease: "easeOut",
+    }}
+  >
+    {children}
+  </motion.div>
+</main>
       </div>
     </div>
   );

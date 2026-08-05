@@ -7,6 +7,7 @@ import { useProfile } from "@/components/ProfileProvider";
 import ProfileHeader from "./components/ProfileHeader";
 import ProfileStats from "./components/ProfileStats";
 import ProfileForm from "./components/ProfileForm";
+import PageSection from "@/components/PageSection";
 
 export type Profile = {
   id: string;
@@ -58,21 +59,26 @@ useEffect(() => {
 }
   return (
     <div className="mx-auto max-w-6xl space-y-8">
+      <PageSection>
       <ProfileHeader
   profile={profile}
   email={session?.user.email ?? ""}
   setProfile={setProfile}
   onEditProfile={handleEditProfile}
 />
+</PageSection>
 
+      <PageSection delay={0.08}>
       <ProfileStats profile={profile} />
+      </PageSection>
 
-      <ProfileForm
+      <PageSection delay={0.16}><ProfileForm
   ref={profileFormRef}
   profile={profile}
   setProfile={setProfile}
   highlight={highlight}
 />
+</PageSection>
     </div>
   );
 }

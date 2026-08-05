@@ -20,7 +20,7 @@ export default function JournalClient() {
   const router = useRouter();
 
   const tradeId = searchParams.get("id");
-  const { session } = useAuth();
+  const { session, loading: authLoading } = useAuth();
 
   const [trade, setTrade] = useState<Trade | null>(null);
   const [journals, setJournals] = useState<any[]>([]);
@@ -42,39 +42,57 @@ const [dateFilter, setDateFilter] = useState("");
   "w-full h-28 rounded-2xl p-4 bg-white dark:bg-[#111827] border border-gray-200 dark:border-white/10 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 backdrop-blur-xl transition-all duration-300 focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20";
 
   // =========================
-  // LOAD DATA
-  // =========================
-  useEffect(() => {
-    const load = async () => {
-      try {
-        if (!session?.user?.id) return;
+// LOAD DATA
+// =========================
+useEffect(() => {
+  const load = async () => {
+    console.log("load() started");
+    console.log("Session:", session);
+
+    try {
+      if (authLoading) {
+        console.log("Auth still loading...");
+        return;
+      }
+
+      if (!session?.user?.id) {
+        console.log("No session yet");
+        return;
+      }
+
+      console.log("Session found:", session.user.id);
+
+      // Your existing code continues here...
 
         // Load all journals
-        const { data: journalsData, error: journalsError } = await supabase
-          .from("journals")
-          .select("*")
-          .eq("user_id", session.user.id)
-          .order("updated_at", { ascending: false });
+       const {
+  data: journalsData,
+  error: journalsError,
+} = await supabase
+  .from("journals")
+  .select(`
+    *,
+    trades (
+      pair,
+      bias
+    )
+  `)
+  .eq("user_id", session.user.id)
+  .order("updated_at", { ascending: false });
 
-        if (!journalsError && journalsData) {
-          // Fetch the trade for each journal so BUY/SELL and pair always work
-          const enriched = await Promise.all(
-            journalsData.map(async (journal) => {
-              const { data: trade } = await supabase
-                .from("trades")
-                .select("pair,bias")
-                .eq("id", journal.trade_id)
-                .maybeSingle();
+ console.log("Journals returned:", journalsData);
 
-              return {
-                ...journal,
-                trade,
-              };
-            })
-          );
+if (journalsError) {
+  console.error("Journals error:", journalsError);
+  console.log("Error message:", journalsError.message);
+  console.log("Error details:", journalsError.details);
+  console.log("Error hint:", journalsError.hint);
+  console.log("Error code:", journalsError.code);
+} else {
+  setJournals(journalsData ?? []);
+  console.log("State journals:", journalsData);
+}
 
-          setJournals(enriched);
-        }
 
         if (!tradeId) {
           setLoading(false);
@@ -126,7 +144,7 @@ const [dateFilter, setDateFilter] = useState("");
     };
 
     load();
-  }, [tradeId, session?.user?.id]);
+  }, [tradeId, session?.user?.id, authLoading]);
 
   // =========================
   // UPLOAD IMAGE
@@ -333,16 +351,17 @@ const [dateFilter, setDateFilter] = useState("");
     router.replace("/journal");
   };
   const filteredJournals = useMemo(() => {
+    console.log("Rendering journals:", journals);
   return journals.filter((j: any) => {
     const matchesSearch =
       search === "" ||
-      j.trade?.pair
-        ?.toLowerCase()
-        .includes(search.toLowerCase());
+      (j.trades?.pair ?? "")
+  .toLowerCase()
+  .includes(search.toLowerCase());
 
     const matchesBias =
       biasFilter === "ALL" ||
-      j.trade?.bias === biasFilter;
+      j.trades?.bias === biasFilter;
 
     const matchesDate =
       dateFilter === "" ||
@@ -510,18 +529,18 @@ useEffect(() => {
               >
                 <span
                   className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold ${
-                    j.trade?.bias === "BUY"
+                    j.trades?.bias === "BUY"
                       ? "bg-green-500/15 text-green-500"
                       : "bg-red-500/15 text-red-500"
                   }`}
                 >
-                  {j.trade?.bias === "BUY"
+                  {j.trades?.bias === "BUY"
                     ? "🟢 BUY"
                     : "🔴 SELL"}
                 </span>
 
                 <h2 className="mt-4 text-xl font-bold text-black dark:text-white">
-                  {j.trade?.pair}
+                  {j.trades?.pair}
                 </h2>
 
                 <p className="text-gray-500 dark:text-gray-400">

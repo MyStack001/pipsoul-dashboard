@@ -23,25 +23,30 @@ export function AuthProvider({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      setSession(session);
-      setLoading(false);
-    };
-
-    getSession();
-
+  const getSession = async () => {
     const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+      data: { session },
+    } = await supabase.auth.getSession();
 
-    return () => subscription.unsubscribe();
-  }, []);
+    console.log("getSession returned:", session);
+
+    setSession(session);
+    setLoading(false);
+  };
+
+  getSession();
+
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((_event, session) => {
+    console.log("Auth event:", _event);
+    console.log("Session from auth event:", session);
+
+    setSession(session);
+  });
+
+  return () => subscription.unsubscribe();
+}, []);
 
   return (
     <AuthContext.Provider value={{ session, loading }}>

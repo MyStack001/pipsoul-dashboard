@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useTradesStore } from "@/hooks/useTradesStore";
 import EquityChart from "@/components/charts/EquityChart";
+import PageSection from "@/components/PageSection";
 
 export default function AnalyticsPage() {
   const { trades } = useTradesStore();
@@ -125,23 +126,29 @@ export default function AnalyticsPage() {
   // ========================
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-black dark:text-white">
-          Analytics
-        </h1>
-        <p className="text-sm text-gray-600 dark:text-gray-300">
-          Insights into your trading performance
-        </p>
-      </div>
+      <PageSection>
+  <div>
+    <h1 className="text-2xl font-semibold text-black dark:text-white">
+      Analytics
+    </h1>
+
+    <p className="text-sm text-gray-600 dark:text-gray-300">
+      Insights into your trading performance
+    </p>
+  </div>
+</PageSection>
 
       {/* BUY vs SELL */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card title="BUY Trades" color="green" data={buyStats} />
-        <Card title="SELL Trades" color="red" data={sellStats} />
-      </div>
+      <PageSection delay={0.08}>
+  <div className="grid gap-4 md:grid-cols-2">
+    <Card title="BUY Trades" color="green" data={buyStats} />
+    <Card title="SELL Trades" color="red" data={sellStats} />
+  </div>
+</PageSection>
 
       {/* MAIN STATS */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <PageSection delay={0.16}>
+  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <StatCard title="Total Trades" value={totalTrades} />
         <StatCard title="Win Rate" value={`${winRate}%`} />
         <StatCard title="Total P/L" value={`$${totalProfit.toFixed(2)}`} />
@@ -149,9 +156,11 @@ export default function AnalyticsPage() {
         <StatCard title="Best Trade" value={`$${bestTrade}`} />
         <StatCard title="Worst Trade" value={`$${worstTrade}`} />
       </div>
+      </PageSection>
 
       {/* PAIR TABLE */}
-      <div className="rounded-2xl p-5 bg-white/60 dark:bg-white/5 border border-gray-200/70 dark:border-white/10">
+      <PageSection delay={0.24}>
+  <div className="rounded-2xl p-5 bg-white/60 dark:bg-white/5 border border-gray-200/70 dark:border-white/10">
         <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">
   Pair Performance
 </h2>
@@ -204,11 +213,16 @@ export default function AnalyticsPage() {
             </tbody>
           </table>
         </div>
-      </div>
+        </div>
+      </PageSection>
+      
 
       {/* EQUITY */}
-      <EquityChart trades={trades} />
+      <PageSection delay={0.32}>
+  <EquityChart trades={trades} />
+</PageSection>
     </div>
+   
   );
 }
 

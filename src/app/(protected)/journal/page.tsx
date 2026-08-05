@@ -1,10 +1,7 @@
-import { Suspense } from "react";
+"use client";
+
 import JournalClient from "./JournalClient";
 
-export default function Page() {
-  return (
-    <Suspense fallback={null}>
-      <JournalClient />
-    </Suspense>
-  );
+export default function JournalPage() {
+  return <JournalClient />;
 }

@@ -47,7 +47,15 @@ useEffect(() => {
   const profileFormRef = useRef<HTMLDivElement>(null);
 
   
-  if (!profile) return null;
+  if (!profile) {
+  return (
+    <div className="mx-auto max-w-6xl space-y-8 animate-pulse">
+      <div className="h-48 rounded-2xl bg-gray-200 dark:bg-white/5" />
+      <div className="h-32 rounded-2xl bg-gray-200 dark:bg-white/5" />
+      <div className="h-96 rounded-2xl bg-gray-200 dark:bg-white/5" />
+    </div>
+  );
+}
   return (
     <div className="mx-auto max-w-6xl space-y-8">
       <ProfileHeader

@@ -1,7 +1,12 @@
 "use client";
 
+import { Suspense } from "react";
 import JournalClient from "./JournalClient";
 
 export default function JournalPage() {
-  return <JournalClient />;
+  return (
+    <Suspense fallback={<div className="p-6">Loading...</div>}>
+      <JournalClient />
+    </Suspense>
+  );
 }

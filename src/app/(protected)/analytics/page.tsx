@@ -295,7 +295,7 @@ function StatCard({
 }) {
   return (
     <div
-  className="
+ className="
     rounded-2xl
     p-5
     border
@@ -304,11 +304,11 @@ function StatCard({
     bg-white/60
     dark:bg-[#111827]
     backdrop-blur-xl
-    transition-all
+    transition-shadow
     duration-300
     hover:border-cyan-400/40
     hover:shadow-lg
-  "
+"
 >
       <p className="text-sm text-gray-500 dark:text-gray-400">
         {title}

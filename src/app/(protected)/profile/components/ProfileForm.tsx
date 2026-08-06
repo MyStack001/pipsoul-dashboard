@@ -105,8 +105,8 @@ const ProfileForm = forwardRef<HTMLDivElement, ProfileFormProps>(
     bg-white/70
     dark:bg-white/5
     backdrop-blur-xl
-    transition-all
-    duration-700
+    transition-shadow
+    duration-300
     ${
       highlight
         ? "border-cyan-500 shadow-[0_0_30px_rgba(6,182,212,0.35)]"

@@ -243,7 +243,7 @@ const ProfileForm = forwardRef<HTMLDivElement, ProfileFormProps>(
       py-3
       font-semibold
       text-white
-      transition-all
+      transition-shadow
       duration-300
       hover:bg-cyan-600
       hover:shadow-lg

@@ -512,7 +512,7 @@ useEffect(() => {
               <Link
                 key={j.trade_id}
                 href={`/journal?id=${j.trade_id}`}
-                className="
+               className="
   block
   rounded-2xl
   border
@@ -523,8 +523,14 @@ useEffect(() => {
   p-5
   transition-all
   duration-300
+
   hover:border-cyan-500
   hover:shadow-lg
+  hover:-translate-y-1
+
+  dark:hover:border-cyan-400/60
+  dark:hover:bg-[#182338]
+  dark:hover:shadow-[0_0_30px_rgba(34,211,238,0.15)]
 "
               >
                 <span

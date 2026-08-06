@@ -521,15 +521,16 @@ useEffect(() => {
   bg-white
   dark:bg-[#111827]
   p-5
-  transition-[transform,box-shadow,border-color]
-duration-200
 
+  transition-transform
+  transition-shadow
+  duration-200
+
+  hover:-translate-y-1
   hover:border-cyan-500
   hover:shadow-lg
-  hover:-translate-y-1
 
   dark:hover:border-cyan-400/60
-  dark:hover:bg-[#182338]
   dark:hover:shadow-[0_0_30px_rgba(34,211,238,0.15)]
 "
               >

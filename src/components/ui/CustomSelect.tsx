@@ -61,7 +61,7 @@ export default function CustomSelect({
           text-black
           dark:text-white
           shadow-sm
-          transition-all
+          transition-shadow
           hover:border-cyan-400
           focus:outline-none
           focus:ring-2
@@ -96,8 +96,8 @@ export default function CustomSelect({
           shadow-xl
           overflow-hidden
           z-50
-          transition-all
-          duration-200
+          transition-shadow
+          duration-300
           ${
             open
               ? "opacity-100 scale-100"
@@ -118,7 +118,7 @@ export default function CustomSelect({
               text-left
               px-4
               py-3
-              transition-colors
+              transition-shadow
               ${
                 option === value
                   ? "bg-cyan-50 dark:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 font-medium"

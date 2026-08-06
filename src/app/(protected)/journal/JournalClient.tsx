@@ -521,8 +521,8 @@ useEffect(() => {
   bg-white
   dark:bg-[#111827]
   p-5
-  transition-all
-  duration-300
+  transition-[transform,box-shadow,border-color]
+duration-200
 
   hover:border-cyan-500
   hover:shadow-lg

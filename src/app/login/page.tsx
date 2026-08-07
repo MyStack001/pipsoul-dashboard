@@ -4,9 +4,15 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowLeft,
+} from "lucide-react";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -15,12 +21,13 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+
     setLoading(true);
     setError("");
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
     });
@@ -32,96 +39,316 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/dashboard");
+    router.push("/login");
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black text-white">
-      <form
-        onSubmit={handleLogin}
-        className="w-full max-w-md space-y-4 rounded-xl bg-zinc-900 p-6"
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#020817] px-6 py-12 text-white">
+
+      {/* Background Glow */}
+      <div
+        className="
+          pointer-events-none
+          absolute
+          left-1/2
+          top-1/2
+          h-[500px]
+          w-[500px]
+          -translate-x-1/2
+          -translate-y-1/2
+          rounded-full
+          bg-cyan-500/10
+          blur-[140px]
+        "
+      />
+
+      {/* Back to Home */}
+      <Link
+        href="/"
+        className="
+          absolute
+          left-6
+          top-6
+          inline-flex
+          items-center
+          gap-2
+          text-sm
+          text-gray-400
+          transition-colors
+          hover:text-white
+        "
       >
-        <h1 className="text-2xl font-bold">Login to Pipsoul</h1>
+        <ArrowLeft className="h-4 w-4" />
+        Back to Pipsoul
+      </Link>
 
-        <div className="relative">
-  <Mail
-    size={18}
-    className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"
-  />
+      {/* Auth Container */}
+      <div className="relative w-full max-w-md">
 
-  <input
-    className="
-      w-full rounded-lg bg-zinc-800
-      py-3 pl-10 pr-3
-      outline-none
-      border border-zinc-700
-      focus:border-cyan-500
-    "
-    type="email"
-    placeholder="Email"
-    value={email}
-    onChange={(e) => setEmail(e.target.value)}
-  />
-</div>
+        {/* Brand */}
+        <div className="mb-8 text-center">
 
-       <div className="relative">
-  <Lock
-    size={18}
-    className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"
-  />
+          <Link
+            href="/"
+            className="inline-flex items-center gap-3"
+          >
+            <div
+              className="
+                flex
+                h-11
+                w-11
+                items-center
+                justify-center
+                rounded-xl
+                bg-cyan-500
+                text-lg
+                font-bold
+                text-white
+                shadow-[0_0_35px_rgba(6,182,212,0.25)]
+              "
+            >
+              P
+            </div>
 
-  <input
-    className="
-      w-full rounded-lg bg-zinc-800
-      py-3 pl-10 pr-10
-      outline-none
-      border border-zinc-700
-      focus:border-cyan-500
-    "
-    type={showPassword ? "text" : "password"}
-    placeholder="Password"
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-  />
+            <span className="text-2xl font-bold">
+              Pipsoul
+            </span>
+          </Link>
 
-  <button
-    type="button"
-    onClick={() => setShowPassword(!showPassword)}
-    className="
-      absolute right-3 top-1/2
-      -translate-y-1/2
-      text-zinc-400
-      hover:text-white
-    "
-  >
-    {showPassword ? (
-      <EyeOff size={18} />
-    ) : (
-      <Eye size={18} />
-    )}
-  </button>
-</div>
+          <p className="mt-3 text-sm text-gray-500">
+            Trade. Reflect. Improve.
+          </p>
+        </div>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded bg-green-600 p-3 font-semibold hover:bg-green-700"
+        {/* Card */}
+        <div
+          className="
+            rounded-3xl
+            border
+            border-white/10
+            bg-[#0B1220]/90
+            p-7
+            shadow-[0_30px_80px_rgba(0,0,0,0.45)]
+            backdrop-blur-xl
+            sm:p-8
+          "
         >
-          {loading ? "Logging in..." : "Login"}
-        </button>
 
-        <p className="text-sm text-gray-400">
-  Don’t have an account?{" "}
-  <Link
-    href="/signup"
-    className="text-green-400 hover:text-green-300 font-semibold underline underline-offset-4"
-  >
-    Sign up
-  </Link>
-</p>
-      </form>
-    </div>
+          {/* Heading */}
+          <div className="mb-7">
+            <h1 className="text-2xl font-bold tracking-tight">
+              Create your account
+            </h1>
+
+            <p className="mt-2 text-sm leading-6 text-gray-400">
+              Start building better trading habits with Pipsoul.
+            </p>
+          </div>
+
+          <form
+            onSubmit={handleSignup}
+            className="space-y-5"
+          >
+
+            {/* Email */}
+            <div>
+              <label
+                htmlFor="email"
+                className="mb-2 block text-sm font-medium text-gray-300"
+              >
+                Email address
+              </label>
+
+              <div className="relative">
+                <Mail
+                  className="
+                    absolute
+                    left-4
+                    top-1/2
+                    h-5
+                    w-5
+                    -translate-y-1/2
+                    text-gray-500
+                  "
+                />
+
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="
+                    w-full
+                    rounded-xl
+                    border
+                    border-white/10
+                    bg-[#08111F]
+                    py-3.5
+                    pl-12
+                    pr-4
+                    text-sm
+                    text-white
+                    placeholder:text-gray-600
+                    outline-none
+                    transition-all
+                    focus:border-cyan-400/50
+                    focus:ring-2
+                    focus:ring-cyan-400/10
+                  "
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div>
+              <label
+                htmlFor="password"
+                className="mb-2 block text-sm font-medium text-gray-300"
+              >
+                Password
+              </label>
+
+              <div className="relative">
+                <Lock
+                  className="
+                    absolute
+                    left-4
+                    top-1/2
+                    h-5
+                    w-5
+                    -translate-y-1/2
+                    text-gray-500
+                  "
+                />
+
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Create a password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="
+                    w-full
+                    rounded-xl
+                    border
+                    border-white/10
+                    bg-[#08111F]
+                    py-3.5
+                    pl-12
+                    pr-12
+                    text-sm
+                    text-white
+                    placeholder:text-gray-600
+                    outline-none
+                    transition-all
+                    focus:border-cyan-400/50
+                    focus:ring-2
+                    focus:ring-cyan-400/10
+                  "
+                />
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowPassword(!showPassword)
+                  }
+                  className="
+                    absolute
+                    right-4
+                    top-1/2
+                    -translate-y-1/2
+                    text-gray-500
+                    transition-colors
+                    hover:text-gray-300
+                  "
+                  aria-label={
+                    showPassword
+                      ? "Hide password"
+                      : "Show password"
+                  }
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Error */}
+            {error && (
+              <div
+                className="
+                  rounded-xl
+                  border
+                  border-red-400/20
+                  bg-red-400/5
+                  px-4
+                  py-3
+                  text-sm
+                  text-red-400
+                "
+              >
+                {error}
+              </div>
+            )}
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="
+                w-full
+                rounded-xl
+                bg-cyan-500
+                py-3.5
+                text-sm
+                font-semibold
+                text-white
+                shadow-[0_10px_30px_rgba(6,182,212,0.18)]
+                transition-all
+                duration-300
+                hover:bg-cyan-400
+                hover:shadow-[0_15px_40px_rgba(6,182,212,0.25)]
+                disabled:cursor-not-allowed
+                disabled:opacity-60
+              "
+            >
+              {loading
+                ? "Creating account..."
+                : "Create Account"}
+            </button>
+
+          </form>
+
+          {/* Login */}
+          <div className="mt-7 border-t border-white/10 pt-6 text-center">
+            <p className="text-sm text-gray-500">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="
+                  font-semibold
+                  text-cyan-400
+                  transition-colors
+                  hover:text-cyan-300
+                "
+              >
+                Log in
+              </Link>
+            </p>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <p className="mt-6 text-center text-xs text-gray-600">
+          Your trading journey starts here.
+        </p>
+      </div>
+    </main>
   );
 }

@@ -12,7 +12,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 
-export default function SignupPage() {
+export default function LoginPage() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -21,13 +21,13 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     setLoading(true);
     setError("");
 
-    const { error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -39,7 +39,7 @@ export default function SignupPage() {
       return;
     }
 
-    router.push("/login");
+    router.push("/dashboard");
   };
 
   return (
@@ -137,16 +137,16 @@ export default function SignupPage() {
           {/* Heading */}
           <div className="mb-7">
             <h1 className="text-2xl font-bold tracking-tight">
-              Create your account
+              Welcome back
             </h1>
 
             <p className="mt-2 text-sm leading-6 text-gray-400">
-              Start building better trading habits with Pipsoul.
+              Log in to continue managing your trading journey.
             </p>
           </div>
 
           <form
-            onSubmit={handleSignup}
+            onSubmit={handleLogin}
             className="space-y-5"
           >
 
@@ -203,12 +203,27 @@ export default function SignupPage() {
 
             {/* Password */}
             <div>
-              <label
-                htmlFor="password"
-                className="mb-2 block text-sm font-medium text-gray-300"
-              >
-                Password
-              </label>
+              <div className="mb-2 flex items-center justify-between">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-medium text-gray-300"
+                >
+                  Password
+                </label>
+
+                <Link
+                  href="/forgot-password"
+                  className="
+                    text-xs
+                    font-medium
+                    text-cyan-400
+                    transition-colors
+                    hover:text-cyan-300
+                  "
+                >
+                  Forgot password?
+                </Link>
+              </div>
 
               <div className="relative">
                 <Lock
@@ -226,7 +241,7 @@ export default function SignupPage() {
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Create a password"
+                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -319,18 +334,18 @@ export default function SignupPage() {
               "
             >
               {loading
-                ? "Creating account..."
-                : "Create Account"}
+                ? "Logging in..."
+                : "Log In"}
             </button>
 
           </form>
 
-          {/* Login */}
+          {/* Signup */}
           <div className="mt-7 border-t border-white/10 pt-6 text-center">
             <p className="text-sm text-gray-500">
-              Already have an account?{" "}
+              Don't have an account?{" "}
               <Link
-                href="/login"
+                href="/signup"
                 className="
                   font-semibold
                   text-cyan-400
@@ -338,7 +353,7 @@ export default function SignupPage() {
                   hover:text-cyan-300
                 "
               >
-                Log in
+                Create one
               </Link>
             </p>
           </div>
@@ -346,7 +361,7 @@ export default function SignupPage() {
 
         {/* Footer */}
         <p className="mt-6 text-center text-xs text-gray-600">
-          Your trading journey starts here.
+          Welcome back to your trading workspace.
         </p>
       </div>
     </main>

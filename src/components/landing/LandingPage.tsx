@@ -1,6 +1,7 @@
 import Navbar from "./Navbar";
 import Hero from "./Hero";
 import DashboardPreview from "./DashboardPreview";
+import Features from "./Features";
 
 export default function LandingPage() {
   return (
@@ -8,6 +9,7 @@ export default function LandingPage() {
       <Navbar />
       <Hero />
       <DashboardPreview />
+      <Features />
     </main>
   );
 }

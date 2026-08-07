@@ -85,7 +85,7 @@ export default function Features() {
     <section
       ref={sectionRef}
       id="features"
-      className="relative overflow-hidden bg-[#020817] px-6 py-28"
+      className="relative scroll-mt-24 overflow-hidden bg-[#020817] px-6 py-28"
     >
       {/* Background glow */}
       <div

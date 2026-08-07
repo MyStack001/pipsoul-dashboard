@@ -31,7 +31,7 @@ export default function DashboardPreview() {
     <section
   ref={previewRef}
   id="preview"
-  className="relative mx-auto max-w-7xl px-6 pb-28"
+  className="relative mx-auto max-w-7xl scroll-mt-24 px-6 pb-28"
 >
       <div className="relative">
         <div

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import { Bot } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import {
   Sun,
@@ -76,6 +77,7 @@ export default function Sidebar({
     { name: "Analytics", href: "/analytics", icon: LineChart },
     { name: "Profile", href: "/profile", icon: CircleUserRound },
     { name: "Journal", href: "/journal", icon: BookOpen },
+    { name: "Pipsoul AI", href: "/ai", icon: Bot},
   ];
 
   return (

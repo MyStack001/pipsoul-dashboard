@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, ChevronDown } from "lucide-react";
+import { Menu, ChevronDown, Hand } from "lucide-react";
 import Notifications from "./Notifications";
 import { useProfile } from "@/components/ProfileProvider";
 import { useEffect, useRef, useState } from "react";
@@ -111,9 +111,10 @@ useEffect(() => {
         </button>
 
         <div>
-  <h2 className="text-lg font-semibold text-black dark:text-white">
-    {greeting}, {profile?.name ?? "Trader"} 👋
-  </h2>
+  <h2 className="text-lg font-semibold text-black dark:text-white flex items-center gap-2">
+  {greeting}, {profile?.name ?? "Trader"}
+  <Hand className="w-5 h-5 text-cyan-500" />
+</h2>
 
   <p className="text-sm text-gray-500 dark:text-gray-400">
     Ready to conquer the markets today?

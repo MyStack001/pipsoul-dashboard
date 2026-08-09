@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { ClipboardPenLine, Brain, Images, } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -755,9 +756,10 @@ useEffect(() => {
 
 
   <div>
-    <h2 className="text-lg font-semibold text-black dark:text-white">
-      📝 Trade Information
-    </h2>
+    <h2 className="flex items-center gap-2 text-lg font-semibold text-black dark:text-white">
+  <ClipboardPenLine className="w-5 h-5 text-cyan-500" />
+  Trade Information
+</h2>
 
     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
       Document why you entered the trade and the confirmations that supported your decision.
@@ -820,9 +822,10 @@ useEffect(() => {
 dark:bg-[#111827] p-6">
 
   <div>
-    <h2 className="text-lg font-semibold text-black dark:text-white">
-      🧠 Psychology & Execution
-    </h2>
+    <h2 className="flex items-center gap-2 text-lg font-semibold text-black dark:text-white">
+  <Brain className="w-5 h-5 text-cyan-500" />
+  Psychology & Execution
+</h2>
 
     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
       Reflect on your emotions and how you managed the trade from entry to exit.
@@ -885,10 +888,10 @@ dark:bg-[#111827] p-6">
 dark:border-white/10 bg-white dark:bg-[#111827] p-6 space-y-4">
 
   <div>
-    <h2 className="text-lg font-semibold text-black dark:text-white">
-      📷 Trade Screenshots
-    </h2>
-
+    <h2 className="flex items-center gap-2 text-lg font-semibold text-black dark:text-white">
+  <Images className="w-5 h-5 text-cyan-500" />
+  Trade Screenshots
+</h2>
     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
       Upload screenshots showing your setup, entry, management and exit.
     </p>

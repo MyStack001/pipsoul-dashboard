@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { ClipboardPenLine, Brain, Images, } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -12,6 +12,7 @@ import { Trade } from "@/types/trade";
 import { JournalEntry } from "@/types/journal";
 
 import { toast } from "sonner";
+import { ChevronDown } from "lucide-react";
 import { unlockAchievement } from "@/lib/achievements";
 import { createNotification } from "@/lib/notifications";
 
@@ -35,6 +36,26 @@ const journalsPerPage = 6;
 const [search, setSearch] = useState("");
 const [biasFilter, setBiasFilter] = useState("ALL");
 const [dateFilter, setDateFilter] = useState("");
+
+const [tradeFilterOpen, setTradeFilterOpen] = useState(false);
+
+const tradeFilterRef = useRef<HTMLDivElement>(null);
+
+useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      tradeFilterRef.current &&
+      !tradeFilterRef.current.contains(event.target as Node)
+    ) {
+      setTradeFilterOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () =>
+    document.removeEventListener("mousedown", handleClickOutside);
+}, []);
 
   const [previewImg, setPreviewImg] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
@@ -452,29 +473,68 @@ useEffect(() => {
   />
 
   {/* BUY / SELL */}
-  <select
-    value={biasFilter}
-    onChange={(e) => {
-      setBiasFilter(e.target.value);
-      setCurrentPage(1);
-    }}
+  <div ref={tradeFilterRef} className="relative w-fit">
+
+  <button
+    type="button"
+    onClick={() => setTradeFilterOpen(!tradeFilterOpen)}
     className="
-      rounded-xl
-      border
-      border-gray-200
-      dark:border-white/10
-      bg-white
-      dark:bg-[#111827]
-      px-4
-      py-3
-      text-black
-      dark:text-white
+      flex items-center justify-between gap-2
+      px-4 py-3 rounded-lg
+      bg-white dark:bg-[#111827]
+      border border-gray-200/70 dark:border-white/10
+      text-black dark:text-white
     "
   >
-    <option value="ALL">All Trades</option>
-    <option value="BUY">BUY</option>
-    <option value="SELL">SELL</option>
-  </select>
+    <span className="font-medium">
+      {biasFilter === "ALL"
+        ? "All Trades"
+        : biasFilter}
+    </span>
+
+    <ChevronDown
+      className={`w-4 h-4 transition-transform duration-300 ${
+        tradeFilterOpen ? "rotate-180" : ""
+      }`}
+    />
+  </button>
+
+  <div
+    className={`
+      absolute mt-2 w-full z-50
+      bg-white dark:bg-[#111827]
+      border border-gray-200/70 dark:border-white/10
+      rounded-lg shadow-lg
+      overflow-hidden
+      transition-all duration-200 origin-top
+      ${
+        tradeFilterOpen
+          ? "opacity-100 scale-100"
+          : "opacity-0 scale-95 pointer-events-none"
+      }
+    `}
+  >
+
+    {["ALL", "BUY", "SELL"].map((filter) => (
+      <div
+        key={filter}
+        onClick={() => {
+          setBiasFilter(filter);
+          setCurrentPage(1);
+          setTradeFilterOpen(false);
+        }}
+        className="
+          px-4 py-3 cursor-pointer
+          text-black dark:text-white
+          hover:bg-cyan-50 dark:hover:bg-white/10
+        "
+      >
+        {filter === "ALL" ? "All Trades" : filter}
+      </div>
+    ))}
+
+  </div>
+</div>
 
   {/* Date */}
   <input

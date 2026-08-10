@@ -11,7 +11,19 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative overflow-hidden border-t border-white/10 bg-[#020817]">
+    <footer
+      className="
+        relative
+        overflow-hidden
+        border-t
+        border-gray-200
+        dark:border-white/10
+        bg-white
+        dark:bg-[#020817]
+        transition-colors
+        duration-500
+      "
+    >
       {/* Background glow */}
       <div
         className="
@@ -36,7 +48,9 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <button
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              onClick={() =>
+                window.scrollTo({ top: 0, behavior: "smooth" })
+              }
               className="flex items-center gap-3"
             >
               <div
@@ -57,12 +71,12 @@ export default function Footer() {
                 P
               </div>
 
-              <span className="text-xl font-bold text-white">
+              <span className="text-xl font-bold text-gray-900 dark:text-white">
                 Pipsoul
               </span>
             </button>
 
-            <p className="mt-5 max-w-md text-sm leading-6 text-gray-400">
+            <p className="mt-5 max-w-md text-sm leading-6 text-gray-600 dark:text-gray-400">
               Trade. Reflect. Improve.
               <br />
               A focused trading journal built to help you understand your
@@ -79,9 +93,9 @@ export default function Footer() {
                 gap-2
                 text-sm
                 font-medium
-                text-cyan-400
+                text-cyan-500
                 transition-colors
-                hover:text-cyan-300
+                hover:text-cyan-400
               "
             >
               Explore Pipsoul
@@ -91,7 +105,7 @@ export default function Footer() {
 
           {/* Product */}
           <div>
-            <h3 className="text-sm font-semibold text-white">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
               Product
             </h3>
 
@@ -99,7 +113,14 @@ export default function Footer() {
               <li>
                 <button
                   onClick={() => scrollToSection("features")}
-                  className="text-sm text-gray-400 transition-colors hover:text-white"
+                  className="
+                    text-sm
+                    text-gray-600
+                    dark:text-gray-400
+                    transition-colors
+                    hover:text-gray-900
+                    dark:hover:text-white
+                  "
                 >
                   Features
                 </button>
@@ -108,7 +129,14 @@ export default function Footer() {
               <li>
                 <button
                   onClick={() => scrollToSection("why-pipsoul")}
-                  className="text-sm text-gray-400 transition-colors hover:text-white"
+                  className="
+                    text-sm
+                    text-gray-600
+                    dark:text-gray-400
+                    transition-colors
+                    hover:text-gray-900
+                    dark:hover:text-white
+                  "
                 >
                   Why Pipsoul
                 </button>
@@ -117,7 +145,14 @@ export default function Footer() {
               <li>
                 <button
                   onClick={() => scrollToSection("how-it-works")}
-                  className="text-sm text-gray-400 transition-colors hover:text-white"
+                  className="
+                    text-sm
+                    text-gray-600
+                    dark:text-gray-400
+                    transition-colors
+                    hover:text-gray-900
+                    dark:hover:text-white
+                  "
                 >
                   How It Works
                 </button>
@@ -126,7 +161,14 @@ export default function Footer() {
               <li>
                 <button
                   onClick={() => scrollToSection("preview")}
-                  className="text-sm text-gray-400 transition-colors hover:text-white"
+                  className="
+                    text-sm
+                    text-gray-600
+                    dark:text-gray-400
+                    transition-colors
+                    hover:text-gray-900
+                    dark:hover:text-white
+                  "
                 >
                   Preview
                 </button>
@@ -136,7 +178,7 @@ export default function Footer() {
 
           {/* Get Started */}
           <div>
-            <h3 className="text-sm font-semibold text-white">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
               Get Started
             </h3>
 
@@ -144,7 +186,14 @@ export default function Footer() {
               <li>
                 <Link
                   href="/login"
-                  className="text-sm text-gray-400 transition-colors hover:text-white"
+                  className="
+                    text-sm
+                    text-gray-600
+                    dark:text-gray-400
+                    transition-colors
+                    hover:text-gray-900
+                    dark:hover:text-white
+                  "
                 >
                   Login
                 </Link>
@@ -153,7 +202,14 @@ export default function Footer() {
               <li>
                 <Link
                   href="/signup"
-                  className="text-sm text-gray-400 transition-colors hover:text-white"
+                  className="
+                    text-sm
+                    text-gray-600
+                    dark:text-gray-400
+                    transition-colors
+                    hover:text-gray-900
+                    dark:hover:text-white
+                  "
                 >
                   Create Account
                 </Link>
@@ -163,7 +219,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Divider */}
-        <div className="border-t border-white/10" />
+        <div className="border-t border-gray-200 dark:border-white/10" />
 
         {/* Bottom Footer */}
         <div className="flex flex-col gap-4 py-7 text-sm md:flex-row md:items-center md:justify-between">

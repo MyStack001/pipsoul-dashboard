@@ -22,62 +22,78 @@ export default function SignupPage() {
   const [error, setError] = useState("");
 
   const handleSignup = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  setError("");
+    setError("");
 
-  // Email validation
-  if (!email.trim()) {
-    setError("Please enter your email address.");
-    return;
-  }
-
-  if (!/\S+@\S+\.\S+/.test(email)) {
-    setError("Please enter a valid email address.");
-    return;
-  }
-
-  // Password validation
-  if (!password) {
-    setError("Please create a password.");
-    return;
-  }
-
-  if (password.length < 6) {
-    setError("Your password must be at least 6 characters long.");
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    const { error } = await supabase.auth.signUp({
-      email: email.trim(),
-      password,
-    });
-
-    if (error) {
-      if (error.message.toLowerCase().includes("already registered")) {
-        setError("An account with this email already exists.");
-      } else {
-        setError("Unable to create your account. Please try again.");
-      }
-
+    // Email validation
+    if (!email.trim()) {
+      setError("Please enter your email address.");
       return;
     }
 
-    router.push("/login");
-  } catch (err) {
-    console.error(err);
-    setError("Something went wrong. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    // Password validation
+    if (!password) {
+      setError("Please create a password.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Your password must be at least 6 characters long.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+      });
+
+      if (error) {
+        if (error.message.toLowerCase().includes("already registered")) {
+          setError("An account with this email already exists.");
+        } else {
+          setError("Unable to create your account. Please try again.");
+        }
+
+        return;
+      }
+
+      router.push("/login");
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#020817] px-6 py-12 text-white">
-
+    <main
+      className="
+        relative
+        flex
+        min-h-screen
+        items-center
+        justify-center
+        overflow-hidden
+        bg-gray-50
+        px-6
+        py-12
+        text-gray-900
+        transition-colors
+        duration-500
+        dark:bg-[#020817]
+        dark:text-white
+      "
+    >
       {/* Background Glow */}
       <div
         className="
@@ -106,9 +122,11 @@ export default function SignupPage() {
           items-center
           gap-2
           text-sm
-          text-gray-400
+          text-gray-500
           transition-colors
-          hover:text-white
+          hover:text-gray-900
+          dark:text-gray-400
+          dark:hover:text-white
         "
       >
         <ArrowLeft className="h-4 w-4" />
@@ -143,12 +161,26 @@ export default function SignupPage() {
               P
             </div>
 
-            <span className="text-2xl font-bold">
+            <span
+              className="
+                text-2xl
+                font-bold
+                text-gray-900
+                dark:text-white
+              "
+            >
               Pipsoul
             </span>
           </Link>
 
-          <p className="mt-3 text-sm text-gray-500">
+          <p
+            className="
+              mt-3
+              text-sm
+              text-gray-500
+              dark:text-gray-500
+            "
+          >
             Trade. Reflect. Improve.
           </p>
         </div>
@@ -158,22 +190,43 @@ export default function SignupPage() {
           className="
             rounded-3xl
             border
-            border-white/10
-            bg-[#0B1220]/90
+            border-gray-200
+            bg-white/90
             p-7
-            shadow-[0_30px_80px_rgba(0,0,0,0.45)]
+            shadow-[0_30px_80px_rgba(0,0,0,0.12)]
             backdrop-blur-xl
+            transition-all
+            duration-500
+            dark:border-white/10
+            dark:bg-[#0B1220]/90
+            dark:shadow-[0_30px_80px_rgba(0,0,0,0.45)]
             sm:p-8
           "
         >
 
           {/* Heading */}
           <div className="mb-7">
-            <h1 className="text-2xl font-bold tracking-tight">
+            <h1
+              className="
+                text-2xl
+                font-bold
+                tracking-tight
+                text-gray-900
+                dark:text-white
+              "
+            >
               Create your account
             </h1>
 
-            <p className="mt-2 text-sm leading-6 text-gray-400">
+            <p
+              className="
+                mt-2
+                text-sm
+                leading-6
+                text-gray-500
+                dark:text-gray-400
+              "
+            >
               Start building better trading habits with Pipsoul.
             </p>
           </div>
@@ -187,7 +240,14 @@ export default function SignupPage() {
             <div>
               <label
                 htmlFor="email"
-                className="mb-2 block text-sm font-medium text-gray-300"
+                className="
+                  mb-2
+                  block
+                  text-sm
+                  font-medium
+                  text-gray-700
+                  dark:text-gray-300
+                "
               >
                 Email address
               </label>
@@ -201,7 +261,8 @@ export default function SignupPage() {
                     h-5
                     w-5
                     -translate-y-1/2
-                    text-gray-500
+                    text-gray-400
+                    dark:text-gray-500
                   "
                 />
 
@@ -212,24 +273,28 @@ export default function SignupPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={`
-  w-full
-  rounded-xl
-  border
-  bg-[#08111F]
-  py-3.5
-  pl-12
-  pr-4
-  text-sm
-  text-white
-  placeholder:text-gray-600
-  outline-none
-  transition-all
-  border-white/10
-  ${error ? "border-red-400/50" : ""}
-  focus:border-cyan-400/50
-  focus:ring-2
-  focus:ring-cyan-400/10
-`}
+                    w-full
+                    rounded-xl
+                    border
+                    bg-gray-50
+                    py-3.5
+                    pl-12
+                    pr-4
+                    text-sm
+                    text-gray-900
+                    placeholder:text-gray-400
+                    outline-none
+                    transition-all
+                    border-gray-200
+                    focus:border-cyan-400/50
+                    focus:ring-2
+                    focus:ring-cyan-400/10
+                    dark:border-white/10
+                    dark:bg-[#08111F]
+                    dark:text-white
+                    dark:placeholder:text-gray-600
+                    ${error ? "border-red-400/50" : ""}
+                  `}
                 />
               </div>
             </div>
@@ -238,7 +303,14 @@ export default function SignupPage() {
             <div>
               <label
                 htmlFor="password"
-                className="mb-2 block text-sm font-medium text-gray-300"
+                className="
+                  mb-2
+                  block
+                  text-sm
+                  font-medium
+                  text-gray-700
+                  dark:text-gray-300
+                "
               >
                 Password
               </label>
@@ -252,7 +324,8 @@ export default function SignupPage() {
                     h-5
                     w-5
                     -translate-y-1/2
-                    text-gray-500
+                    text-gray-400
+                    dark:text-gray-500
                   "
                 />
 
@@ -263,24 +336,28 @@ export default function SignupPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={`
-  w-full
-  rounded-xl
-  border
-  bg-[#08111F]
-  py-3.5
-  pl-12
-  pr-12
-  text-sm
-  text-white
-  placeholder:text-gray-600
-  outline-none
-  transition-all
-  border-white/10
-  ${error ? "border-red-400/50" : ""}
-  focus:border-cyan-400/50
-  focus:ring-2
-  focus:ring-cyan-400/10
-`}
+                    w-full
+                    rounded-xl
+                    border
+                    bg-gray-50
+                    py-3.5
+                    pl-12
+                    pr-12
+                    text-sm
+                    text-gray-900
+                    placeholder:text-gray-400
+                    outline-none
+                    transition-all
+                    border-gray-200
+                    focus:border-cyan-400/50
+                    focus:ring-2
+                    focus:ring-cyan-400/10
+                    dark:border-white/10
+                    dark:bg-[#08111F]
+                    dark:text-white
+                    dark:placeholder:text-gray-600
+                    ${error ? "border-red-400/50" : ""}
+                  `}
                 />
 
                 <button
@@ -293,9 +370,11 @@ export default function SignupPage() {
                     right-4
                     top-1/2
                     -translate-y-1/2
-                    text-gray-500
+                    text-gray-400
                     transition-colors
-                    hover:text-gray-300
+                    hover:text-gray-700
+                    dark:text-gray-500
+                    dark:hover:text-gray-300
                   "
                   aria-label={
                     showPassword
@@ -314,29 +393,30 @@ export default function SignupPage() {
 
             {/* Error */}
             {error && (
-  <div
-    role="alert"
-    className="
-      flex
-      items-start
-      gap-3
-      rounded-xl
-      border
-      border-red-400/20
-      bg-red-400/5
-      px-4
-      py-3
-      text-sm
-      text-red-400
-    "
-  >
-    <span className="mt-0.5 shrink-0 text-base">
-      !
-    </span>
+              <div
+                role="alert"
+                className="
+                  flex
+                  items-start
+                  gap-3
+                  rounded-xl
+                  border
+                  border-red-400/20
+                  bg-red-400/5
+                  px-4
+                  py-3
+                  text-sm
+                  text-red-500
+                  dark:text-red-400
+                "
+              >
+                <span className="mt-0.5 shrink-0 text-base">
+                  !
+                </span>
 
-    <p>{error}</p>
-  </div>
-)}
+                <p>{error}</p>
+              </div>
+            )}
 
             {/* Submit */}
             <button
@@ -367,16 +447,31 @@ export default function SignupPage() {
           </form>
 
           {/* Login */}
-          <div className="mt-7 border-t border-white/10 pt-6 text-center">
-            <p className="text-sm text-gray-500">
+          <div
+            className="
+              mt-7
+              border-t
+              border-gray-200
+              pt-6
+              text-center
+              dark:border-white/10
+            "
+          >
+            <p
+              className="
+                text-sm
+                text-gray-500
+                dark:text-gray-500
+              "
+            >
               Already have an account?{" "}
               <Link
                 href="/login"
                 className="
                   font-semibold
-                  text-cyan-400
+                  text-cyan-500
                   transition-colors
-                  hover:text-cyan-300
+                  hover:text-cyan-400
                 "
               >
                 Log in
@@ -386,7 +481,15 @@ export default function SignupPage() {
         </div>
 
         {/* Footer */}
-        <p className="mt-6 text-center text-xs text-gray-600">
+        <p
+          className="
+            mt-6
+            text-center
+            text-xs
+            text-gray-400
+            dark:text-gray-600
+          "
+        >
           Your trading journey starts here.
         </p>
       </div>

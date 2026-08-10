@@ -22,52 +22,68 @@ export default function LoginPage() {
   const [error, setError] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  setError("");
+    setError("");
 
-  // Email validation
-  if (!email.trim()) {
-    setError("Please enter your email address.");
-    return;
-  }
-
-  if (!/\S+@\S+\.\S+/.test(email)) {
-    setError("Please enter a valid email address.");
-    return;
-  }
-
-  // Password validation
-  if (!password) {
-    setError("Please enter your password.");
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    });
-
-    if (error) {
-      setError("Incorrect email or password. Please try again.");
+    // Email validation
+    if (!email.trim()) {
+      setError("Please enter your email address.");
       return;
     }
 
-    router.push("/dashboard");
-  } catch (err) {
-    console.error(err);
-    setError("Something went wrong. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    // Password validation
+    if (!password) {
+      setError("Please enter your password.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+
+      if (error) {
+        setError("Incorrect email or password. Please try again.");
+        return;
+      }
+
+      router.push("/dashboard");
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#020817] px-6 py-12 text-white">
-
+    <main
+      className="
+        relative
+        flex
+        min-h-screen
+        items-center
+        justify-center
+        overflow-hidden
+        bg-white
+        px-6
+        py-12
+        text-gray-900
+        transition-colors
+        duration-500
+        dark:bg-[#020817]
+        dark:text-white
+      "
+    >
       {/* Background Glow */}
       <div
         className="
@@ -80,8 +96,9 @@ export default function LoginPage() {
           -translate-x-1/2
           -translate-y-1/2
           rounded-full
-          bg-cyan-500/10
+          bg-cyan-400/10
           blur-[140px]
+          dark:bg-cyan-500/10
         "
       />
 
@@ -96,9 +113,11 @@ export default function LoginPage() {
           items-center
           gap-2
           text-sm
-          text-gray-400
+          text-gray-500
           transition-colors
-          hover:text-white
+          hover:text-gray-900
+          dark:text-gray-400
+          dark:hover:text-white
         "
       >
         <ArrowLeft className="h-4 w-4" />
@@ -110,7 +129,6 @@ export default function LoginPage() {
 
         {/* Brand */}
         <div className="mb-8 text-center">
-
           <Link
             href="/"
             className="inline-flex items-center gap-3"
@@ -133,12 +151,12 @@ export default function LoginPage() {
               P
             </div>
 
-            <span className="text-2xl font-bold">
+            <span className="text-2xl font-bold text-gray-900 dark:text-white">
               Pipsoul
             </span>
           </Link>
 
-          <p className="mt-3 text-sm text-gray-500">
+          <p className="mt-3 text-sm text-gray-500 dark:text-gray-500">
             Trade. Reflect. Improve.
           </p>
         </div>
@@ -148,22 +166,27 @@ export default function LoginPage() {
           className="
             rounded-3xl
             border
-            border-white/10
-            bg-[#0B1220]/90
+            border-gray-200
+            bg-white/90
             p-7
-            shadow-[0_30px_80px_rgba(0,0,0,0.45)]
+            shadow-[0_30px_80px_rgba(15,23,42,0.10)]
             backdrop-blur-xl
+            transition-all
+            duration-500
+            dark:border-white/10
+            dark:bg-[#0B1220]/90
+            dark:shadow-[0_30px_80px_rgba(0,0,0,0.45)]
             sm:p-8
           "
         >
 
           {/* Heading */}
           <div className="mb-7">
-            <h1 className="text-2xl font-bold tracking-tight">
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
               Welcome back
             </h1>
 
-            <p className="mt-2 text-sm leading-6 text-gray-400">
+            <p className="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">
               Log in to continue managing your trading journey.
             </p>
           </div>
@@ -177,7 +200,14 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="email"
-                className="mb-2 block text-sm font-medium text-gray-300"
+                className="
+                  mb-2
+                  block
+                  text-sm
+                  font-medium
+                  text-gray-700
+                  dark:text-gray-300
+                "
               >
                 Email address
               </label>
@@ -191,7 +221,8 @@ export default function LoginPage() {
                     h-5
                     w-5
                     -translate-y-1/2
-                    text-gray-500
+                    text-gray-400
+                    dark:text-gray-500
                   "
                 />
 
@@ -202,24 +233,28 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={`
-  w-full
-  rounded-xl
-  border
-  bg-[#08111F]
-  py-3.5
-  pl-12
-  pr-4
-  text-sm
-  text-white
-  placeholder:text-gray-600
-  outline-none
-  transition-all
-  border-white/10
-  ${error ? "border-red-400/50" : ""}
-  focus:border-cyan-400/50
-  focus:ring-2
-  focus:ring-cyan-400/10
-`}
+                    w-full
+                    rounded-xl
+                    border
+                    border-gray-200
+                    bg-gray-50
+                    py-3.5
+                    pl-12
+                    pr-4
+                    text-sm
+                    text-gray-900
+                    placeholder:text-gray-400
+                    outline-none
+                    transition-all
+                    dark:border-white/10
+                    dark:bg-[#08111F]
+                    dark:text-white
+                    dark:placeholder:text-gray-600
+                    ${error ? "border-red-400/50" : ""}
+                    focus:border-cyan-400/50
+                    focus:ring-2
+                    focus:ring-cyan-400/10
+                  `}
                 />
               </div>
             </div>
@@ -229,7 +264,12 @@ export default function LoginPage() {
               <div className="mb-2 flex items-center justify-between">
                 <label
                   htmlFor="password"
-                  className="text-sm font-medium text-gray-300"
+                  className="
+                    text-sm
+                    font-medium
+                    text-gray-700
+                    dark:text-gray-300
+                  "
                 >
                   Password
                 </label>
@@ -239,9 +279,9 @@ export default function LoginPage() {
                   className="
                     text-xs
                     font-medium
-                    text-cyan-400
+                    text-cyan-500
                     transition-colors
-                    hover:text-cyan-300
+                    hover:text-cyan-400
                   "
                 >
                   Forgot password?
@@ -257,7 +297,8 @@ export default function LoginPage() {
                     h-5
                     w-5
                     -translate-y-1/2
-                    text-gray-500
+                    text-gray-400
+                    dark:text-gray-500
                   "
                 />
 
@@ -268,39 +309,43 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={`
-  w-full
-  rounded-xl
-  border
-  bg-[#08111F]
-  py-3.5
-  pl-12
-  pr-12
-  text-sm
-  text-white
-  placeholder:text-gray-600
-  outline-none
-  transition-all
-  border-white/10
-  ${error ? "border-red-400/50" : ""}
-  focus:border-cyan-400/50
-  focus:ring-2
-  focus:ring-cyan-400/10
-`}
+                    w-full
+                    rounded-xl
+                    border
+                    border-gray-200
+                    bg-gray-50
+                    py-3.5
+                    pl-12
+                    pr-12
+                    text-sm
+                    text-gray-900
+                    placeholder:text-gray-400
+                    outline-none
+                    transition-all
+                    dark:border-white/10
+                    dark:bg-[#08111F]
+                    dark:text-white
+                    dark:placeholder:text-gray-600
+                    ${error ? "border-red-400/50" : ""}
+                    focus:border-cyan-400/50
+                    focus:ring-2
+                    focus:ring-cyan-400/10
+                  `}
                 />
 
                 <button
                   type="button"
-                  onClick={() =>
-                    setShowPassword(!showPassword)
-                  }
+                  onClick={() => setShowPassword(!showPassword)}
                   className="
                     absolute
                     right-4
                     top-1/2
                     -translate-y-1/2
-                    text-gray-500
+                    text-gray-400
                     transition-colors
-                    hover:text-gray-300
+                    hover:text-gray-700
+                    dark:text-gray-500
+                    dark:hover:text-gray-300
                   "
                   aria-label={
                     showPassword
@@ -319,29 +364,30 @@ export default function LoginPage() {
 
             {/* Error */}
             {error && (
-  <div
-    role="alert"
-    className="
-      flex
-      items-start
-      gap-3
-      rounded-xl
-      border
-      border-red-400/20
-      bg-red-400/5
-      px-4
-      py-3
-      text-sm
-      text-red-400
-    "
-  >
-    <span className="mt-0.5 shrink-0 text-base">
-      !
-    </span>
+              <div
+                role="alert"
+                className="
+                  flex
+                  items-start
+                  gap-3
+                  rounded-xl
+                  border
+                  border-red-400/20
+                  bg-red-400/5
+                  px-4
+                  py-3
+                  text-sm
+                  text-red-500
+                  dark:text-red-400
+                "
+              >
+                <span className="mt-0.5 shrink-0 text-base">
+                  !
+                </span>
 
-    <p>{error}</p>
-  </div>
-)}
+                <p>{error}</p>
+              </div>
+            )}
 
             {/* Submit */}
             <button
@@ -364,24 +410,31 @@ export default function LoginPage() {
                 disabled:opacity-60
               "
             >
-              {loading
-                ? "Logging in..."
-                : "Log In"}
+              {loading ? "Logging in..." : "Log In"}
             </button>
 
           </form>
 
           {/* Signup */}
-          <div className="mt-7 border-t border-white/10 pt-6 text-center">
+          <div
+            className="
+              mt-7
+              border-t
+              border-gray-200
+              pt-6
+              text-center
+              dark:border-white/10
+            "
+          >
             <p className="text-sm text-gray-500">
               Don't have an account?{" "}
               <Link
                 href="/signup"
                 className="
                   font-semibold
-                  text-cyan-400
+                  text-cyan-500
                   transition-colors
-                  hover:text-cyan-300
+                  hover:text-cyan-400
                 "
               >
                 Create one
@@ -391,7 +444,7 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <p className="mt-6 text-center text-xs text-gray-600">
+        <p className="mt-6 text-center text-xs text-gray-400 dark:text-gray-600">
           Welcome back to your trading workspace.
         </p>
       </div>

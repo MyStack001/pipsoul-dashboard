@@ -73,7 +73,16 @@ export default function HowItWorks() {
     <section
       ref={sectionRef}
       id="how-it-works"
-      className="relative overflow-hidden bg-[#020817] px-6 py-28"
+      className="
+        relative
+        overflow-hidden
+        bg-white
+        dark:bg-[#020817]
+        px-6
+        py-28
+        transition-colors
+        duration-500
+      "
     >
       {/* Background glow */}
       <div
@@ -112,14 +121,14 @@ export default function HowItWorks() {
             How it works
           </span>
 
-          <h2 className="mt-6 text-4xl font-bold tracking-tight text-white md:text-5xl">
+          <h2 className="mt-6 text-4xl font-bold tracking-tight text-gray-900 dark:text-white md:text-5xl">
             Turn every trade into{" "}
             <span className="text-cyan-400">
               progress
             </span>
           </h2>
 
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-gray-400 md:text-lg">
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-gray-600 dark:text-gray-400 md:text-lg">
             Pipsoul gives you a simple workflow for recording your
             trades, understanding your decisions, and improving with
             every session.
@@ -130,7 +139,7 @@ export default function HowItWorks() {
         <div className="relative mt-20">
 
           {/* Connecting line */}
-          <div className="absolute left-[12.5%] right-[12.5%] top-10 hidden h-px bg-gradient-to-r from-cyan-400/20 via-white/10 to-green-400/20 lg:block" />
+          <div className="absolute left-[12.5%] right-[12.5%] top-10 hidden h-px bg-gradient-to-r from-cyan-400/20 via-gray-300 dark:via-white/10 to-green-400/20 lg:block" />
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {steps.map((step, index) => {
@@ -165,7 +174,8 @@ export default function HowItWorks() {
                         justify-center
                         rounded-full
                         border
-                        bg-[#08111F]
+                        bg-gray-50
+                        dark:bg-[#08111F]
                         shadow-[0_0_30px_rgba(6,182,212,0.08)]
                         transition-all
                         duration-500
@@ -191,16 +201,20 @@ export default function HowItWorks() {
                       mt-6
                       rounded-3xl
                       border
-                      border-white/10
-                      bg-[#0B1220]/80
+                      border-gray-200
+                      dark:border-white/10
+                      bg-gray-50
+                      dark:bg-[#0B1220]/80
                       p-7
                       text-center
                       backdrop-blur-xl
                       transition-all
                       duration-500
                       group-hover:-translate-y-2
-                      group-hover:border-white/20
-                      group-hover:bg-[#0F172A]
+                      group-hover:border-gray-300
+                      dark:group-hover:border-white/20
+                      group-hover:bg-white
+                      dark:group-hover:bg-[#0F172A]
                     "
                   >
                     <span
@@ -222,11 +236,11 @@ export default function HowItWorks() {
                       STEP {step.number}
                     </span>
 
-                    <h3 className="mt-4 text-xl font-semibold text-white">
+                    <h3 className="mt-4 text-xl font-semibold text-gray-900 dark:text-white">
                       {step.title}
                     </h3>
 
-                    <p className="mt-3 text-sm leading-6 text-gray-400">
+                    <p className="mt-3 text-sm leading-6 text-gray-600 dark:text-gray-400">
                       {step.description}
                     </p>
                   </div>
@@ -251,7 +265,7 @@ export default function HowItWorks() {
             }
           `}
         >
-          <p className="text-sm text-gray-500 md:text-base">
+          <p className="text-sm text-gray-500 dark:text-gray-500 md:text-base">
             One trade at a time. One insight at a time.{" "}
             <span className="text-cyan-400">
               Better trading starts with better reflection.

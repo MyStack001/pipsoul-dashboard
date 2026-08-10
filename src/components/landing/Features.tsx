@@ -85,7 +85,17 @@ export default function Features() {
     <section
       ref={sectionRef}
       id="features"
-      className="relative scroll-mt-24 overflow-hidden bg-[#020817] px-6 py-28"
+      className="
+        relative
+        scroll-mt-24
+        overflow-hidden
+        bg-white
+        px-6
+        py-28
+        transition-colors
+        duration-500
+        dark:bg-[#020817]
+      "
     >
       {/* Background glow */}
       <div
@@ -120,18 +130,51 @@ export default function Features() {
             }
           `}
         >
-          <span className="inline-flex items-center rounded-full border border-cyan-400/20 bg-cyan-400/5 px-4 py-2 text-xs font-medium text-cyan-400">
+          <span
+            className="
+              inline-flex
+              items-center
+              rounded-full
+              border
+              border-cyan-400/20
+              bg-cyan-400/5
+              px-4
+              py-2
+              text-xs
+              font-medium
+              text-cyan-400
+            "
+          >
             Everything in one place
           </span>
 
-          <h2 className="mt-6 text-4xl font-bold tracking-tight text-white md:text-5xl">
+          <h2
+            className="
+              mt-6
+              text-4xl
+              font-bold
+              tracking-tight
+              text-gray-900
+              md:text-5xl
+              dark:text-white
+            "
+          >
             Everything you need to{" "}
             <span className="text-cyan-400">
               trade smarter
             </span>
           </h2>
 
-          <p className="mt-5 text-base leading-7 text-gray-400 md:text-lg">
+          <p
+            className="
+              mt-5
+              text-base
+              leading-7
+              text-gray-600
+              md:text-lg
+              dark:text-gray-400
+            "
+          >
             Pipsoul brings your trading performance, journal, psychology,
             and progress into one focused workspace.
           </p>
@@ -151,15 +194,20 @@ export default function Features() {
                   overflow-hidden
                   rounded-3xl
                   border
-                  border-white/10
-                  bg-[#0B1220]/80
+                  border-gray-200
+                  bg-white/80
                   p-7
+                  shadow-sm
                   backdrop-blur-xl
                   transition-all
                   duration-700
                   hover:-translate-y-2
-                  hover:border-white/20
-                  hover:bg-[#0F172A]
+                  hover:border-gray-300
+                  hover:bg-white
+                  dark:border-white/10
+                  dark:bg-[#0B1220]/80
+                  dark:hover:border-white/20
+                  dark:hover:bg-[#0F172A]
                   ${
                     isVisible
                       ? "translate-y-0 opacity-100"
@@ -227,11 +275,26 @@ export default function Features() {
 
                 {/* Content */}
                 <div className="relative mt-6">
-                  <h3 className="text-xl font-semibold text-white">
+                  <h3
+                    className="
+                      text-xl
+                      font-semibold
+                      text-gray-900
+                      dark:text-white
+                    "
+                  >
                     {feature.title}
                   </h3>
 
-                  <p className="mt-3 text-sm leading-6 text-gray-400">
+                  <p
+                    className="
+                      mt-3
+                      text-sm
+                      leading-6
+                      text-gray-600
+                      dark:text-gray-400
+                    "
+                  >
                     {feature.description}
                   </p>
                 </div>

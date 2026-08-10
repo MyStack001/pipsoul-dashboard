@@ -555,6 +555,8 @@ useEffect(() => {
       py-3
       text-black
       dark:text-white
+      [color-scheme:light]
+      dark:[color-scheme:dark]
     "
   />
 

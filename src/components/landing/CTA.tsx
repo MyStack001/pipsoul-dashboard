@@ -9,9 +9,12 @@ export default function FinalCTA() {
       className="
         relative
         overflow-hidden
-        bg-[#020817]
+        bg-white
+        dark:bg-[#020817]
         px-6
         py-32
+        transition-colors
+        duration-500
       "
     >
       {/* Background glow */}
@@ -79,7 +82,8 @@ export default function FinalCTA() {
             font-bold
             leading-tight
             tracking-tight
-            text-white
+            text-gray-900
+            dark:text-white
             md:text-6xl
           "
         >
@@ -95,7 +99,8 @@ export default function FinalCTA() {
             max-w-2xl
             text-base
             leading-7
-            text-gray-400
+            text-gray-600
+            dark:text-gray-400
             md:text-lg
           "
         >
@@ -107,6 +112,7 @@ export default function FinalCTA() {
         {/* CTA */}
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
 
+          {/* Primary CTA */}
           <a
             href="/signup"
             className="
@@ -143,6 +149,7 @@ export default function FinalCTA() {
             />
           </a>
 
+          {/* Secondary CTA */}
           <a
             href="#features"
             className="
@@ -151,19 +158,25 @@ export default function FinalCTA() {
               justify-center
               rounded-xl
               border
-              border-white/10
-              bg-white/[0.03]
+              border-gray-200
+              dark:border-white/10
+              bg-gray-50
+              dark:bg-white/[0.03]
               px-7
               py-3.5
               text-sm
               font-medium
-              text-gray-300
+              text-gray-700
+              dark:text-gray-300
               backdrop-blur-xl
               transition-all
               duration-300
-              hover:border-white/20
-              hover:bg-white/[0.06]
-              hover:text-white
+              hover:border-gray-300
+              dark:hover:border-white/20
+              hover:bg-gray-100
+              dark:hover:bg-white/[0.06]
+              hover:text-gray-900
+              dark:hover:text-white
             "
           >
             Explore Features

@@ -31,8 +31,14 @@ export default function DashboardPreview() {
     <section
   ref={previewRef}
   id="preview"
-  className="relative mx-auto max-w-7xl scroll-mt-24 px-6 pb-28"
+  className="relative 
+  scroll-mt-24
+  bg-[#OB1120]
+  py-28
+  transition-colors
+  duration-500"
 >
+  <div className="mx-auto max-w-7xl px-6">
       <div className="relative">
         <div
   className="
@@ -55,10 +61,10 @@ export default function DashboardPreview() {
   overflow-hidden
   rounded-[32px]
   border
-  border-gray-200
-  dark:border-white/10
-  bg-white
-  dark:bg-[#111827]
+  border-white/10
+dark:border-gray-200
+  bg-[#111827]
+  dark:bg-white
   shadow-2xl
   transition-all
   duration-500
@@ -76,8 +82,8 @@ export default function DashboardPreview() {
               border-b
               border-gray-200
               dark:border-white/10
-              bg-gray-50
-              dark:bg-[#0F172A]
+             bg-[#0F172A]
+dark:bg-gray-50
               px-6
               py-4
             "
@@ -90,8 +96,8 @@ export default function DashboardPreview() {
               className="
                 ml-5
                 rounded-lg
-                bg-white
-                dark:bg-[#111827]
+                bg-[#111827]
+                dark:bg-white
                 px-4
                 py-2
                 text-sm
@@ -104,17 +110,21 @@ export default function DashboardPreview() {
           </div>
 
           {/* Placeholder */}
-          <div
-            className="
-  flex
-  h-[900px]
-  items-start
-  justify-center
-  bg-gradient-to-br
-  from-[#08111F]
-  to-[#0F172A]
-"
-          >
+         <div
+  className="
+    flex
+    h-[900px]
+    items-start
+    justify-center
+    bg-gradient-to-br
+    from-[#08111F]
+    to-[#0F172A]
+    dark:from-gray-50
+    dark:to-white
+    transition-colors
+    duration-500
+  "
+>
            <div className="flex h-full w-full">
 
             {/* Sidebar */}
@@ -124,19 +134,23 @@ export default function DashboardPreview() {
     w-64
     border-r
     border-white/10
+    dark:border-gray-200
     bg-[#08111F]
+    dark:bg-gray-50
     lg:flex
     flex-col
     justify-between
     p-6
+    transition-colors
+    duration-500
   "
 >
 
   <div>
 
-    <h2 className="text-2xl font-bold text-white">
-      Pipsoul
-    </h2>
+    <h2 className="text-2xl font-bold text-white dark:text-gray-900">
+  Pipsoul
+</h2>
 
     <p className="mt-1 text-xs text-cyan-400">
       Trade. Reflect. Improve.
@@ -148,23 +162,23 @@ export default function DashboardPreview() {
         Dashboard
       </div>
 
-      <div className="rounded-xl px-4 py-3 text-gray-400">
+      <div className="rounded-xl px-4 py-3 text-gray-400 dark:text-gray-500">
         Trades
       </div>
 
-      <div className="rounded-xl px-4 py-3 text-gray-400">
+      <div className="rounded-xl px-4 py-3 text-gray-400 dark:text-gray-500">
         Journal
       </div>
 
-      <div className="rounded-xl px-4 py-3 text-gray-400">
+      <div className="rounded-xl px-4 py-3 text-gray-400 dark:text-gray-500">
         Analytics
       </div>
 
-      <div className="rounded-xl px-4 py-3 text-gray-400">
+      <div className="rounded-xl px-4 py-3 text-gray-400 dark:text-gray-500">
         Achievements
       </div>
 
-      <div className="rounded-xl px-4 py-3 text-gray-400">
+      <div className="rounded-xl px-4 py-3 text-gray-400 dark:text-gray-500">
         Profile
       </div>
 
@@ -172,8 +186,8 @@ export default function DashboardPreview() {
 
   </div>
 
-  <div className="rounded-2xl bg-[#0F172A] p-4">
-    <p className="text-sm text-gray-400">
+  <div className="rounded-2xl bg-[#0F172A] dark:bg-white p-4 border border-white/10 dark:border-gray-200">
+    <p className="text-sm text-gray-400 dark:text-gray-500">
       Trading Streak
     </p>
 
@@ -184,15 +198,24 @@ export default function DashboardPreview() {
 
 </div>
 
-<div className="flex-1 bg-[#08111F] p-8">
+<div
+  className="
+    flex-1
+    bg-[#08111F]
+    dark:bg-white
+    p-8
+    transition-colors
+    duration-500
+  "
+>
 
   {/* Greeting */}
   <div className="mb-8">
-    <h3 className="text-3xl font-bold text-white">
+    <h3 className="text-3xl font-bold text-white dark:text-gray-900">
   Good afternoon, Trader 👋
 </h3>
 
-<p className="mt-2 text-gray-400">
+<p className="mt-2 text-gray-400 dark:text-gray-500">
   Ready to conquer the markets today?
 </p>
   </div>
@@ -200,9 +223,10 @@ export default function DashboardPreview() {
   {/* Preview Stat Cards */}
   <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
 
-    <div className="rounded-2xl border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-[#0F172A] p-5 backdrop-blur-xl
+    <div className="rounded-2xl border border-gray-200 dark:border-white/10 
+    bg-[#0F172A] dark:bg-white p-5 backdrop-blur-xl
     animate-[fadeUp_0.7s_ease-out_0.1s_both]">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-gray-400 dark:text-gray-500">
         Total Profit
       </p>
 
@@ -211,9 +235,9 @@ export default function DashboardPreview() {
       </h4>
     </div>
 
-    <div className="rounded-2xl border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-[#0F172A] p-5 backdrop-blur-xl
+    <div className="rounded-2xl border border-gray-200 dark:border-white/10 bg-[#0F172A] dark:bg-white p-5 backdrop-blur-xl
     animate-[fadeUp_0.7s_ease-out_0.2s_both]">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-gray-400 dark:text-gray-500">
         Win Rate
       </p>
 
@@ -222,20 +246,20 @@ export default function DashboardPreview() {
       </h4>
     </div>
 
-    <div className="rounded-2xl border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-[#0F172A] p-5 backdrop-blur-xl
+    <div className="rounded-2xl border border-gray-200 dark:border-white/10 bg-[#0F172A] dark:bg-white p-5 backdrop-blur-xl
     animate-[fadeUp_0.7s_ease-out_0.3s_both]">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-gray-400 dark:text-gray-500">
         Total Trades
       </p>
 
-      <h4 className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
+      <h4 className="mt-2 text-2xl font-bold text-white dark:text-gray-900">
         128
       </h4>
     </div>
 
-    <div className="rounded-2xl border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-[#0F172A] p-5 backdrop-blur-xl
+    <div className="rounded-2xl border border-gray-200 dark:border-white/10 bg-[#0F172A] dark:bg-white p-5 backdrop-blur-xl
     animate-[fadeUp_0.7s_ease-out_0.4s_both]">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-gray-400 dark:text-gray-500">
         Drawdown
       </p>
 
@@ -250,24 +274,28 @@ export default function DashboardPreview() {
   {/* Equity Curve Card */}
 <div
   className="
-  mt-8
-  h-56
-  overflow-hidden
-  rounded-3xl
-  border
-  border-white/10
-  bg-[#0F172A]
-  shadow-[0_20px_60px_rgba(0,0,0,0.25)]
-"
+    mt-8
+    h-56
+    overflow-hidden
+    rounded-3xl
+    border
+    border-white/10
+    dark:border-gray-200
+    bg-[#0F172A]
+    dark:bg-gray-50
+    shadow-[0_20px_60px_rgba(0,0,0,0.25)]
+    transition-colors
+    duration-500
+  "
 >
   {/* Chart Header */}
   <div className="flex items-center justify-between px-6 pt-5">
     <div>
-      <p className="text-sm text-gray-400">
+      <p className="text-sm text-gray-400 dark:text-gray-500">
   Equity Curve
 </p>
 
-<p className="mt-1 text-lg font-semibold text-white">
+<p className="mt-1 text-lg font-semibold text-white dark:text-gray-900">
   Account Growth
 </p>
     </div>
@@ -380,7 +408,9 @@ export default function DashboardPreview() {
     rounded-[28px]
     border
     border-white/10
-    bg-[#0F172A]
+dark:border-gray-200
+bg-[#0F172A]
+dark:bg-gray-50
     shadow-[0_30px_80px_rgba(0,0,0,0.45)]
   "
 >
@@ -413,11 +443,11 @@ export default function DashboardPreview() {
     >
       {/* Pair */}
       <div className="text-left">
-        <p className="font-semibold text-white">
+        <p className="font-semibold text-white dark:text-gray-900">
           GBPJPY
         </p>
 
-        <p className="mt-1 text-sm text-gray-400">
+        <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
           London Session
         </p>
       </div>
@@ -459,11 +489,11 @@ export default function DashboardPreview() {
     >
       {/* Pair */}
       <div className="text-left">
-        <p className="font-semibold text-white">
+        <p className="font-semibold text-white dark:text-gray-900">
           XAUUSD
         </p>
 
-        <p className="mt-1 text-sm text-gray-400">
+        <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
           New York
         </p>
       </div>
@@ -505,11 +535,11 @@ export default function DashboardPreview() {
     >
       {/* Pair */}
       <div className="text-left">
-        <p className="font-semibold text-white">
+        <p className="font-semibold text-white dark:text-gray-900">
           EURUSD
         </p>
 
-        <p className="mt-1 text-sm text-gray-400">
+        <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
           London Session
         </p>
       </div>
@@ -560,6 +590,7 @@ export default function DashboardPreview() {
     border
     border-white/10
     bg-[#0B1220]/95
+dark:bg-white/95
     p-4
     shadow-[0_20px_50px_rgba(0,0,0,0.45)]
     backdrop-blur-xl
@@ -569,7 +600,7 @@ export default function DashboardPreview() {
     lg:block
   "
 >
-  <p className="text-xs font-medium text-gray-400">
+  <p className="text-xs font-medium text-gray-400 dark:text-gray-500">
     Win Rate
   </p>
 
@@ -597,6 +628,7 @@ export default function DashboardPreview() {
     border
     border-white/10
     bg-[#0B1220]/95
+dark:bg-white/95
     p-5
     shadow-[0_20px_50px_rgba(0,0,0,0.45)]
     backdrop-blur-xl
@@ -606,12 +638,12 @@ export default function DashboardPreview() {
     lg:block
   "
 >
-  <p className="text-xs font-medium text-gray-400">
+  <p className="text-xs font-medium text-gray-400 dark:text-gray-500">
     Latest Journal
   </p>
 
   <div className="mt-2 flex items-center justify-between gap-3">
-    <h4 className="text-sm font-semibold text-white">
+    <h4 className="text-sm font-semibold text-white dark:text-gray-900">
       GBPJPY Bias
     </h4>
 
@@ -646,6 +678,7 @@ export default function DashboardPreview() {
     border
     border-white/10
     bg-[#0B1220]/95
+dark:bg-white/95
     p-5
     shadow-[0_20px_50px_rgba(0,0,0,0.45)]
     backdrop-blur-xl
@@ -655,7 +688,7 @@ export default function DashboardPreview() {
     lg:block
   "
 >
-  <p className="text-xs font-medium text-gray-400">
+  <p className="text-xs font-medium text-gray-400 dark:text-gray-500">
     Achievement
   </p>
 
@@ -722,6 +755,7 @@ export default function DashboardPreview() {
     border
     border-white/10
     bg-[#0B1220]/95
+dark:bg-white/95
     p-5
     shadow-[0_20px_50px_rgba(0,0,0,0.45)]
     backdrop-blur-xl
@@ -731,13 +765,14 @@ export default function DashboardPreview() {
     lg:block
   "
 >
-  <p className="text-xs font-medium text-gray-400">
+  <p className="text-xs font-medium text-gray-400 dark:text-gray-500">
     Total P/L
   </p>
 
   <h4 className="mt-2 text-2xl font-bold text-green-400">
     +$4,850
   </h4>
+</div>
 </div>
 
       </div>

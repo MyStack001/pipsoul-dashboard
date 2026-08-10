@@ -22,25 +22,58 @@ export default function SignupPage() {
   const [error, setError] = useState("");
 
   const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    setLoading(true);
-    setError("");
+  setError("");
 
+  // Email validation
+  if (!email.trim()) {
+    setError("Please enter your email address.");
+    return;
+  }
+
+  if (!/\S+@\S+\.\S+/.test(email)) {
+    setError("Please enter a valid email address.");
+    return;
+  }
+
+  // Password validation
+  if (!password) {
+    setError("Please create a password.");
+    return;
+  }
+
+  if (password.length < 6) {
+    setError("Your password must be at least 6 characters long.");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
     const { error } = await supabase.auth.signUp({
-      email,
+      email: email.trim(),
       password,
     });
 
-    setLoading(false);
-
     if (error) {
-      setError(error.message);
+      if (error.message.toLowerCase().includes("already registered")) {
+        setError("An account with this email already exists.");
+      } else {
+        setError("Unable to create your account. Please try again.");
+      }
+
       return;
     }
 
     router.push("/login");
-  };
+  } catch (err) {
+    console.error(err);
+    setError("Something went wrong. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#020817] px-6 py-12 text-white">
@@ -178,25 +211,25 @@ export default function SignupPage() {
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="
-                    w-full
-                    rounded-xl
-                    border
-                    border-white/10
-                    bg-[#08111F]
-                    py-3.5
-                    pl-12
-                    pr-4
-                    text-sm
-                    text-white
-                    placeholder:text-gray-600
-                    outline-none
-                    transition-all
-                    focus:border-cyan-400/50
-                    focus:ring-2
-                    focus:ring-cyan-400/10
-                  "
+                  className={`
+  w-full
+  rounded-xl
+  border
+  bg-[#08111F]
+  py-3.5
+  pl-12
+  pr-4
+  text-sm
+  text-white
+  placeholder:text-gray-600
+  outline-none
+  transition-all
+  border-white/10
+  ${error ? "border-red-400/50" : ""}
+  focus:border-cyan-400/50
+  focus:ring-2
+  focus:ring-cyan-400/10
+`}
                 />
               </div>
             </div>
@@ -229,25 +262,25 @@ export default function SignupPage() {
                   placeholder="Create a password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="
-                    w-full
-                    rounded-xl
-                    border
-                    border-white/10
-                    bg-[#08111F]
-                    py-3.5
-                    pl-12
-                    pr-12
-                    text-sm
-                    text-white
-                    placeholder:text-gray-600
-                    outline-none
-                    transition-all
-                    focus:border-cyan-400/50
-                    focus:ring-2
-                    focus:ring-cyan-400/10
-                  "
+                  className={`
+  w-full
+  rounded-xl
+  border
+  bg-[#08111F]
+  py-3.5
+  pl-12
+  pr-12
+  text-sm
+  text-white
+  placeholder:text-gray-600
+  outline-none
+  transition-all
+  border-white/10
+  ${error ? "border-red-400/50" : ""}
+  focus:border-cyan-400/50
+  focus:ring-2
+  focus:ring-cyan-400/10
+`}
                 />
 
                 <button
@@ -281,21 +314,29 @@ export default function SignupPage() {
 
             {/* Error */}
             {error && (
-              <div
-                className="
-                  rounded-xl
-                  border
-                  border-red-400/20
-                  bg-red-400/5
-                  px-4
-                  py-3
-                  text-sm
-                  text-red-400
-                "
-              >
-                {error}
-              </div>
-            )}
+  <div
+    role="alert"
+    className="
+      flex
+      items-start
+      gap-3
+      rounded-xl
+      border
+      border-red-400/20
+      bg-red-400/5
+      px-4
+      py-3
+      text-sm
+      text-red-400
+    "
+  >
+    <span className="mt-0.5 shrink-0 text-base">
+      !
+    </span>
+
+    <p>{error}</p>
+  </div>
+)}
 
             {/* Submit */}
             <button

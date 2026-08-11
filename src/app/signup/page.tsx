@@ -4,6 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Mail,
   Lock,
@@ -144,22 +145,23 @@ export default function SignupPage() {
             className="inline-flex items-center gap-3"
           >
             <div
-              className="
-                flex
-                h-11
-                w-11
-                items-center
-                justify-center
-                rounded-xl
-                bg-cyan-500
-                text-lg
-                font-bold
-                text-white
-                shadow-[0_0_35px_rgba(6,182,212,0.25)]
-              "
-            >
-              P
-            </div>
+  className="
+    flex
+    h-11
+    w-11
+    items-center
+    justify-center
+  "
+>
+  <Image
+    src="/Logo.png"
+    alt="Pipsoul logo"
+    width={44}
+    height={44}
+    className="h-11 w-11 object-contain"
+    priority
+  />
+</div>
 
             <span
               className="

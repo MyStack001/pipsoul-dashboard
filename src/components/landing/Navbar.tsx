@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Navbar() {
   return (
@@ -29,21 +30,14 @@ export default function Navbar() {
             href="/"
             className="flex items-center gap-3"
           >
-            <div
-              className="
-                flex
-                h-10
-                w-10
-                items-center
-                justify-center
-                rounded-xl
-                bg-cyan-500
-                font-bold
-                text-white
-              "
-            >
-              P
-            </div>
+            <Image
+              src="/Logo.png"
+              alt="Pipsoul"
+              width={44}
+              height={44}
+              className="h-11 w-11 object-contain"
+              priority
+            />
 
             <span
               className="
@@ -88,6 +82,7 @@ export default function Navbar() {
             >
               Preview
             </a>
+
             <a
               href="#how-it-works"
               className="text-gray-600 hover:text-cyan-500 dark:text-gray-300 dark:hover:text-cyan-400 transition-colors"

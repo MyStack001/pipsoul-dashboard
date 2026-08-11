@@ -169,7 +169,7 @@ export default function Sidebar({
           </div>
 
           {/* TRADING ACCOUNT */}
-          <div className="mb-6">
+          <div className="relative mb-6 md:hidden">
             <p className="px-1 mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
               Trading Account
             </p>
@@ -207,18 +207,22 @@ export default function Sidebar({
             </button>
 
             {accountOpen && (
-              <div
-                className="
-                  mt-2
-                  w-full
-                  rounded-xl
-                  border border-gray-200/70 dark:border-white/10
-                  bg-white dark:bg-[#111827]
-                  shadow-xl
-                  overflow-hidden
-                  z-50
-                "
-              >
+  <div
+    className="
+      absolute
+      left-0
+      right-0
+      top-full
+      mt-2
+      w-full
+      rounded-xl
+      border border-gray-200/70 dark:border-white/10
+      bg-white dark:bg-[#111827]
+      shadow-xl
+      overflow-hidden
+      z-50
+    "
+  >
                 {accounts.map((account) => (
                   <button
                     type="button"

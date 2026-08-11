@@ -4,9 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import ConfirmModal from "@/components/ui/ConfirmModal";
-import { Bot } from "lucide-react";
-import { supabase } from "@/lib/supabase";
 import {
+  Bot,
   Sun,
   Moon,
   LayoutDashboard,
@@ -19,6 +18,7 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 import Image from "next/image";
 import { useAccount } from "@/components/AccountProvider";
 import { toast } from "sonner";
@@ -67,11 +67,14 @@ export default function Sidebar({
 
   useEffect(() => {
     const checkTheme = () =>
-      setIsDark(document.documentElement.classList.contains("dark"));
+      setIsDark(
+        document.documentElement.classList.contains("dark")
+      );
 
     checkTheme();
 
     const observer = new MutationObserver(checkTheme);
+
     observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ["class"],
@@ -165,7 +168,10 @@ export default function Sidebar({
               className="rounded-full object-cover"
               priority
             />
-            <h2 className="text-xl font-bold">Pipsoul</h2>
+
+            <h2 className="text-xl font-bold">
+              Pipsoul
+            </h2>
           </div>
 
           {/* TRADING ACCOUNT */}
@@ -201,28 +207,33 @@ export default function Sidebar({
                 className={`
                   w-4 h-4 shrink-0
                   transition-transform
-                  ${accountOpen ? "rotate-180" : ""}
+                  ${
+                    accountOpen
+                      ? "rotate-180"
+                      : ""
+                  }
                 `}
               />
             </button>
 
+            {/* ACCOUNT DROPDOWN */}
             {accountOpen && (
-  <div
-    className="
-      absolute
-      left-0
-      right-0
-      top-full
-      mt-2
-      w-full
-      rounded-xl
-      border border-gray-200/70 dark:border-white/10
-      bg-white dark:bg-[#111827]
-      shadow-xl
-      overflow-hidden
-      z-50
-    "
-  >
+              <div
+                className="
+                  absolute
+                  left-0
+                  right-0
+                  top-full
+                  mt-2
+                  w-full
+                  rounded-xl
+                  border border-gray-200/70 dark:border-white/10
+                  bg-white dark:bg-[#111827]
+                  shadow-xl
+                  overflow-hidden
+                  z-[80]
+                "
+              >
                 {accounts.map((account) => (
                   <button
                     type="button"
@@ -245,7 +256,10 @@ export default function Sidebar({
                     "
                   >
                     <span className="mr-2 w-4">
-                      {account.id === currentAccount?.id ? "✓" : ""}
+                      {account.id ===
+                      currentAccount?.id
+                        ? "✓"
+                        : ""}
                     </span>
 
                     <span className="truncate">
@@ -299,12 +313,276 @@ export default function Sidebar({
                 </button>
               </div>
             )}
+
+            {/* ADD ACCOUNT FLOATING PANEL */}
+            {showAddAccountModal && (
+              <div
+                className="
+                  absolute
+                  left-0
+                  top-full
+                  mt-3
+                  z-[100]
+                  w-[calc(100vw-2rem)]
+                  max-w-[420px]
+                  rounded-2xl
+                  border border-gray-200 dark:border-white/10
+                  bg-white/95 dark:bg-[#111827]/95
+                  backdrop-blur-xl
+                  px-6 py-6
+                  shadow-2xl
+                "
+              >
+                <h2 className="text-xl font-bold text-black dark:text-white">
+                  Add Trading Account
+                </h2>
+
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                  Create a separate account to track your
+                  performance independently.
+                </p>
+
+                <div className="mt-5">
+                  <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Account Name
+                  </label>
+
+                  <input
+                    type="text"
+                    placeholder="e.g. FTMO 100K"
+                    value={newAccountName}
+                    onChange={(e) =>
+                      setNewAccountName(e.target.value)
+                    }
+                    autoFocus
+                    className="
+                      w-full
+                      px-4 py-3
+                      rounded-xl
+                      bg-white dark:bg-[#0f172a]
+                      border border-gray-200 dark:border-white/10
+                      text-black dark:text-white
+                      placeholder:text-gray-400
+                      focus:outline-none
+                      focus:ring-2
+                      focus:ring-cyan-500
+                    "
+                  />
+                </div>
+
+                <div className="mt-6 flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAddAccountModal(false);
+                      setNewAccountName("");
+                    }}
+                    className="
+                      px-4 py-2.5
+                      rounded-xl
+                      border border-gray-200 dark:border-white/10
+                      text-gray-700 dark:text-gray-300
+                      hover:bg-gray-100
+                      dark:hover:bg-white/10
+                      transition
+                    "
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (!newAccountName.trim()) return;
+
+                      const account = await addAccount(
+                        newAccountName.trim()
+                      );
+
+                      if (!account) return;
+
+                      setShowAddAccountModal(false);
+                      setNewAccountName("");
+                    }}
+                    className="
+                      px-4 py-2.5
+                      rounded-xl
+                      bg-cyan-500
+                      hover:bg-cyan-600
+                      text-white
+                      transition
+                    "
+                  >
+                    Add Account
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* MANAGE ACCOUNTS FLOATING PANEL */}
+            {showManageAccountsModal && (
+              <div
+                className="
+                  absolute
+                  left-0
+                  top-full
+                  mt-3
+                  z-[100]
+                  w-[calc(100vw-2rem)]
+                  max-w-lg
+                  max-h-[70vh]
+                  overflow-y-auto
+                  rounded-2xl
+                  border border-gray-200 dark:border-white/10
+                  bg-white/95 dark:bg-[#111827]/95
+                  backdrop-blur-xl
+                  px-6 py-6
+                  shadow-2xl
+                "
+              >
+                <h2 className="text-xl font-bold text-black dark:text-white">
+                  Manage Trading Accounts
+                </h2>
+
+                <div className="mt-5 space-y-3">
+                  {accounts.map((account) => (
+                    <div
+                      key={account.id}
+                      className="
+                        flex items-center justify-between
+                        gap-3
+                        rounded-xl
+                        border border-gray-200 dark:border-white/10
+                        px-4 py-3
+                      "
+                    >
+                      {editingAccountId ===
+                      account.id ? (
+                        <input
+                          autoFocus
+                          value={editingName}
+                          onChange={(e) =>
+                            setEditingName(
+                              e.target.value
+                            )
+                          }
+                          onBlur={async () => {
+                            await renameAccount(
+                              account.id,
+                              editingName
+                            );
+
+                            setEditingAccountId(null);
+                            setEditingName("");
+                          }}
+                          onKeyDown={async (e) => {
+                            if (e.key === "Enter") {
+                              await renameAccount(
+                                account.id,
+                                editingName
+                              );
+
+                              setEditingAccountId(null);
+                              setEditingName("");
+                            }
+
+                            if (e.key === "Escape") {
+                              setEditingAccountId(null);
+                              setEditingName("");
+                            }
+                          }}
+                          className="
+                            flex-1
+                            min-w-0
+                            rounded-lg
+                            border border-gray-200 dark:border-white/10
+                            bg-transparent
+                            px-2 py-1
+                            text-black dark:text-white
+                            focus:outline-none
+                            focus:ring-2
+                            focus:ring-cyan-500
+                          "
+                        />
+                      ) : (
+                        <span className="font-medium text-black dark:text-white truncate">
+                          {account.name}
+                        </span>
+                      )}
+
+                      <div className="flex items-center gap-3 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingAccountId(
+                              account.id
+                            );
+                            setEditingName(account.name);
+                          }}
+                          className="
+                            p-1.5 rounded-lg
+                            text-gray-500
+                            hover:text-cyan-500
+                            hover:bg-cyan-50
+                            dark:hover:bg-white/10
+                            transition
+                          "
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAccountToDelete(
+                              account.id
+                            );
+                            setAccountToDeleteName(
+                              account.name
+                            );
+                          }}
+                          className="
+                            p-1.5 rounded-lg
+                            text-gray-500
+                            hover:text-red-500
+                            hover:bg-red-50
+                            dark:hover:bg-red-500/10
+                            transition
+                          "
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowManageAccountsModal(false)
+                    }
+                    className="
+                      px-5 py-2.5
+                      rounded-xl
+                      border border-gray-200 dark:border-white/10
+                      hover:bg-gray-100
+                      dark:hover:bg-white/10
+                    "
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Navigation */}
+          {/* NAVIGATION */}
           <nav className="flex flex-col gap-2">
             {navItems.map((item) => {
-              const isActive = pathname === item.href;
+              const isActive =
+                pathname === item.href;
 
               return (
                 <Link
@@ -380,374 +658,103 @@ export default function Sidebar({
             "
           >
             <LogOut className="w-5 h-5" />
-            <span className="font-medium">Logout</span>
+            <span className="font-medium">
+              Logout
+            </span>
           </button>
         </div>
       </div>
 
-      {/* ADD ACCOUNT MODAL */}
-      {showAddAccountModal && (
-        <div
-          onClick={() => {
-            setShowAddAccountModal(false);
-            setNewAccountName("");
-          }}
-          className="
-            fixed inset-0
-            z-[100]
-            flex items-center justify-center
-            bg-black/40
-            backdrop-blur-sm
-            px-4
-          "
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="
-              w-full max-w-[420px]
-              rounded-2xl
-              border border-gray-200 dark:border-white/10
-              bg-white/80 dark:bg-[#111827]/90
-              backdrop-blur-xl
-              px-8 py-7
-              shadow-2xl
-            "
-          >
-            <h2 className="text-2xl font-bold text-black dark:text-white">
-              Add Trading Account
-            </h2>
-
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              Create a separate account to track your performance
-              independently.
-            </p>
-
-            <div className="mt-6">
-              <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                Account Name
-              </label>
-
-              <input
-                type="text"
-                placeholder="e.g. FTMO 100K"
-                value={newAccountName}
-                onChange={(e) => setNewAccountName(e.target.value)}
-                className="
-                  w-full
-                  px-4 py-3
-                  rounded-xl
-                  bg-white dark:bg-[#0f172a]
-                  border border-gray-200 dark:border-white/10
-                  text-black dark:text-white
-                  placeholder:text-gray-400
-                  focus:outline-none
-                  focus:ring-2
-                  focus:ring-cyan-500
-                "
-              />
-            </div>
-
-            <div className="mt-8 flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowAddAccountModal(false);
-                  setNewAccountName("");
-                }}
-                className="
-                  px-5 py-2.5
-                  rounded-xl
-                  border border-gray-200 dark:border-white/10
-                  text-gray-700 dark:text-gray-300
-                  hover:bg-gray-100
-                  dark:hover:bg-white/10
-                  transition
-                "
-              >
-                Cancel
-              </button>
-
-              <button
-                type="button"
-                onClick={async () => {
-                  if (!newAccountName.trim()) return;
-
-                  const account = await addAccount(
-                    newAccountName.trim()
-                  );
-
-                  if (!account) return;
-
-                  setShowAddAccountModal(false);
-                  setNewAccountName("");
-                }}
-                className="
-                  px-5 py-2.5
-                  rounded-xl
-                  bg-cyan-500
-                  hover:bg-cyan-600
-                  text-white
-                  transition
-                "
-              >
-                Add Account
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MANAGE ACCOUNTS MODAL */}
-      {showManageAccountsModal && (
-        <div
-          onClick={() => setShowManageAccountsModal(false)}
-          className="
-            fixed inset-0
-            z-[100]
-            flex items-center justify-center
-            bg-black/40
-            backdrop-blur-sm
-            px-4
-          "
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="
-              w-full max-w-lg
-              max-h-[90vh]
-              overflow-y-auto
-              rounded-2xl
-              border border-gray-200 dark:border-white/10
-              bg-white/80 dark:bg-[#111827]/90
-              backdrop-blur-xl
-              px-8 py-7
-              shadow-2xl
-            "
-          >
-            <h2 className="text-2xl font-bold text-black dark:text-white">
-              Manage Trading Accounts
-            </h2>
-
-            <div className="mt-6 space-y-3">
-              {accounts.map((account) => (
-                <div
-                  key={account.id}
-                  className="
-                    flex items-center justify-between
-                    gap-3
-                    rounded-xl
-                    border border-gray-200 dark:border-white/10
-                    px-4 py-3
-                  "
-                >
-                  {editingAccountId === account.id ? (
-                    <input
-                      autoFocus
-                      value={editingName}
-                      onChange={(e) =>
-                        setEditingName(e.target.value)
-                      }
-                      onBlur={async () => {
-                        await renameAccount(
-                          account.id,
-                          editingName
-                        );
-
-                        setEditingAccountId(null);
-                        setEditingName("");
-                      }}
-                      onKeyDown={async (e) => {
-                        if (e.key === "Enter") {
-                          await renameAccount(
-                            account.id,
-                            editingName
-                          );
-
-                          setEditingAccountId(null);
-                          setEditingName("");
-                        }
-
-                        if (e.key === "Escape") {
-                          setEditingAccountId(null);
-                          setEditingName("");
-                        }
-                      }}
-                      className="
-                        flex-1
-                        min-w-0
-                        rounded-lg
-                        border border-gray-200 dark:border-white/10
-                        bg-transparent
-                        px-2 py-1
-                        text-black dark:text-white
-                        focus:outline-none
-                        focus:ring-2
-                        focus:ring-cyan-500
-                      "
-                    />
-                  ) : (
-                    <span className="font-medium text-black dark:text-white truncate">
-                      {account.name}
-                    </span>
-                  )}
-
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEditingAccountId(account.id);
-                        setEditingName(account.name);
-                      }}
-                      className="
-                        p-1.5 rounded-lg
-                        text-gray-500
-                        hover:text-cyan-500
-                        hover:bg-cyan-50
-                        dark:hover:bg-white/10
-                        transition
-                      "
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAccountToDelete(account.id);
-                        setAccountToDeleteName(account.name);
-                      }}
-                      className="
-                        p-1.5 rounded-lg
-                        text-gray-500
-                        hover:text-red-500
-                        hover:bg-red-50
-                        dark:hover:bg-red-500/10
-                        transition
-                      "
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-8 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setShowManageAccountsModal(false)}
-                className="
-                  px-5 py-2.5
-                  rounded-xl
-                  border border-gray-200 dark:border-white/10
-                  hover:bg-gray-100
-                  dark:hover:bg-white/10
-                "
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* DELETE ACCOUNT MODAL */}
+      {/* DELETE ACCOUNT FLOATING PANEL */}
       {accountToDelete && (
         <div
-          onClick={() => {
-            setAccountToDelete(null);
-            setAccountToDeleteName("");
-          }}
           className="
-            fixed inset-0
-            z-[110]
-            flex items-center justify-center
-            bg-black/40
-            backdrop-blur-sm
-            px-4
+            absolute
+            left-1/2
+            top-1/2
+            -translate-x-1/2
+            -translate-y-1/2
+            z-[120]
+            w-[calc(100vw-2rem)]
+            max-w-md
+            rounded-2xl
+            border border-gray-200 dark:border-white/10
+            bg-white/95 dark:bg-[#111827]/95
+            backdrop-blur-xl
+            px-6 py-6
+            shadow-2xl
           "
         >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="
-              w-full max-w-md
-              rounded-2xl
-              border border-gray-200 dark:border-white/10
-              bg-white/80 dark:bg-[#111827]/90
-              backdrop-blur-xl
-              px-8 py-7
-              shadow-2xl
-            "
-          >
-            <h2 className="text-2xl font-bold text-black dark:text-white">
-              Delete Trading Account
-            </h2>
+          <h2 className="text-xl font-bold text-black dark:text-white">
+            Delete Trading Account
+          </h2>
 
-            <p className="mt-4 text-gray-600 dark:text-gray-300">
-              Are you sure you want to delete
-              <span className="font-semibold">
-                {" "}
-                "{accountToDeleteName}"
-              </span>
-              ?
-            </p>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">
+            Are you sure you want to delete
+            <span className="font-semibold">
+              {" "}
+              "{accountToDeleteName}"
+            </span>
+            ?
+          </p>
 
-            <p className="mt-2 text-sm text-red-500">
-              This action cannot be undone.
-            </p>
+          <p className="mt-2 text-sm text-red-500">
+            This action cannot be undone.
+          </p>
 
-            <div className="mt-8 flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setAccountToDelete(null);
-                  setAccountToDeleteName("");
-                }}
-                className="
-                  px-5 py-2.5
-                  rounded-xl
-                  border border-gray-200 dark:border-white/10
-                  hover:bg-gray-100
-                  dark:hover:bg-white/10
-                "
-              >
-                Cancel
-              </button>
+          <div className="mt-6 flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setAccountToDelete(null);
+                setAccountToDeleteName("");
+              }}
+              className="
+                px-4 py-2.5
+                rounded-xl
+                border border-gray-200 dark:border-white/10
+                text-gray-700 dark:text-gray-300
+                hover:bg-gray-100
+                dark:hover:bg-white/10
+                transition
+              "
+            >
+              Cancel
+            </button>
 
-              <button
-                type="button"
-                onClick={async () => {
-                  if (!accountToDelete) return;
+            <button
+              type="button"
+              onClick={async () => {
+                if (!accountToDelete) return;
 
-                  const deleted = await deleteAccount(
-                    accountToDelete
-                  );
+                const deleted = await deleteAccount(
+                  accountToDelete
+                );
 
-                  if (!deleted) return;
+                if (!deleted) return;
 
-                  toast.success(
-                    "Trading account deleted successfully."
-                  );
+                toast.success(
+                  "Trading account deleted successfully."
+                );
 
-                  setAccountToDelete(null);
-                  setAccountToDeleteName("");
-                  setShowManageAccountsModal(false);
-                }}
-                className="
-                  px-5 py-2.5
-                  rounded-xl
-                  bg-red-500
-                  hover:bg-red-600
-                  text-white
-                "
-              >
-                Delete
-              </button>
-            </div>
+                setAccountToDelete(null);
+                setAccountToDeleteName("");
+                setShowManageAccountsModal(false);
+              }}
+              className="
+                px-4 py-2.5
+                rounded-xl
+                bg-red-500
+                hover:bg-red-600
+                text-white
+                transition
+              "
+            >
+              Delete
+            </button>
           </div>
         </div>
       )}
-
       {/* LOGOUT MODAL */}
       <ConfirmModal
         open={showLogoutModal}

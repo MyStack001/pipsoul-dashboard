@@ -84,13 +84,16 @@ export default function SignupPage() {
         min-h-screen
         items-center
         justify-center
-        overflow-hidden
+        overflow-x-hidden
+        overflow-y-auto
         bg-gray-50
-        px-6
-        py-12
+        px-4
+        py-8
         text-gray-900
         transition-colors
         duration-500
+        sm:px-6
+        sm:py-12
         dark:bg-[#020817]
         dark:text-white
       "
@@ -102,13 +105,16 @@ export default function SignupPage() {
           absolute
           left-1/2
           top-1/2
-          h-[500px]
-          w-[500px]
+          h-[360px]
+          w-[360px]
           -translate-x-1/2
           -translate-y-1/2
           rounded-full
           bg-cyan-500/10
-          blur-[140px]
+          blur-[110px]
+          sm:h-[500px]
+          sm:w-[500px]
+          sm:blur-[140px]
         "
       />
 
@@ -117,15 +123,22 @@ export default function SignupPage() {
         href="/"
         className="
           absolute
-          left-6
-          top-6
+          left-4
+          top-4
           inline-flex
+          min-h-10
           items-center
-          gap-2
-          text-sm
+          gap-1.5
+          rounded-lg
+          px-1
+          text-xs
           text-gray-500
           transition-colors
           hover:text-gray-900
+          sm:left-6
+          sm:top-6
+          sm:gap-2
+          sm:text-sm
           dark:text-gray-400
           dark:hover:text-white
         "
@@ -138,36 +151,28 @@ export default function SignupPage() {
       <div className="relative w-full max-w-md">
 
         {/* Brand */}
-        <div className="mb-8 text-center">
-
+        <div className="mb-6 text-center sm:mb-8">
           <Link
             href="/"
-            className="inline-flex items-center gap-3"
+            className="inline-flex items-center gap-2.5 sm:gap-3"
           >
-            <div
-  className="
-    flex
-    h-11
-    w-11
-    items-center
-    justify-center
-  "
->
-  <Image
-    src="/Logo.png"
-    alt="Pipsoul logo"
-    width={44}
-    height={44}
-    className="h-11 w-11 object-contain"
-    priority
-  />
-</div>
+            <div className="flex h-10 w-10 items-center justify-center sm:h-11 sm:w-11">
+              <Image
+                src="/Logo.png"
+                alt="Pipsoul logo"
+                width={44}
+                height={44}
+                className="h-10 w-10 object-contain sm:h-11 sm:w-11"
+                priority
+              />
+            </div>
 
             <span
               className="
-                text-2xl
+                text-[22px]
                 font-bold
                 text-gray-900
+                sm:text-2xl
                 dark:text-white
               "
             >
@@ -177,9 +182,11 @@ export default function SignupPage() {
 
           <p
             className="
-              mt-3
-              text-sm
+              mt-2.5
+              text-xs
               text-gray-500
+              sm:mt-3
+              sm:text-sm
               dark:text-gray-500
             "
           >
@@ -190,30 +197,32 @@ export default function SignupPage() {
         {/* Card */}
         <div
           className="
-            rounded-3xl
+            rounded-2xl
             border
             border-gray-200
             bg-white/90
-            p-7
+            p-5
             shadow-[0_30px_80px_rgba(0,0,0,0.12)]
             backdrop-blur-xl
             transition-all
             duration-500
+            sm:rounded-3xl
+            sm:p-8
             dark:border-white/10
             dark:bg-[#0B1220]/90
             dark:shadow-[0_30px_80px_rgba(0,0,0,0.45)]
-            sm:p-8
           "
         >
 
           {/* Heading */}
-          <div className="mb-7">
+          <div className="mb-6 sm:mb-7">
             <h1
               className="
-                text-2xl
+                text-[22px]
                 font-bold
                 tracking-tight
                 text-gray-900
+                sm:text-2xl
                 dark:text-white
               "
             >
@@ -222,10 +231,11 @@ export default function SignupPage() {
 
             <p
               className="
-                mt-2
+                mt-1.5
                 text-sm
                 leading-6
                 text-gray-500
+                sm:mt-2
                 dark:text-gray-400
               "
             >
@@ -235,7 +245,7 @@ export default function SignupPage() {
 
           <form
             onSubmit={handleSignup}
-            className="space-y-5"
+            className="space-y-4 sm:space-y-5"
           >
 
             {/* Email */}
@@ -275,11 +285,12 @@ export default function SignupPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={`
+                    min-h-[50px]
                     w-full
                     rounded-xl
                     border
                     bg-gray-50
-                    py-3.5
+                    py-3
                     pl-12
                     pr-4
                     text-sm
@@ -338,11 +349,12 @@ export default function SignupPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={`
+                    min-h-[50px]
                     w-full
                     rounded-xl
                     border
                     bg-gray-50
-                    py-3.5
+                    py-3
                     pl-12
                     pr-12
                     text-sm
@@ -364,14 +376,18 @@ export default function SignupPage() {
 
                 <button
                   type="button"
-                  onClick={() =>
-                    setShowPassword(!showPassword)
-                  }
+                  onClick={() => setShowPassword(!showPassword)}
                   className="
                     absolute
-                    right-4
+                    right-2
                     top-1/2
+                    flex
+                    min-h-10
+                    min-w-10
                     -translate-y-1/2
+                    items-center
+                    justify-center
+                    rounded-lg
                     text-gray-400
                     transition-colors
                     hover:text-gray-700
@@ -425,6 +441,7 @@ export default function SignupPage() {
               type="submit"
               disabled={loading}
               className="
+                min-h-[50px]
                 w-full
                 rounded-xl
                 bg-cyan-500
@@ -445,17 +462,18 @@ export default function SignupPage() {
                 ? "Creating account..."
                 : "Create Account"}
             </button>
-
           </form>
 
           {/* Login */}
           <div
             className="
-              mt-7
+              mt-6
               border-t
               border-gray-200
-              pt-6
+              pt-5
               text-center
+              sm:mt-7
+              sm:pt-6
               dark:border-white/10
             "
           >
@@ -485,10 +503,11 @@ export default function SignupPage() {
         {/* Footer */}
         <p
           className="
-            mt-6
+            mt-5
             text-center
             text-xs
             text-gray-400
+            sm:mt-6
             dark:text-gray-600
           "
         >

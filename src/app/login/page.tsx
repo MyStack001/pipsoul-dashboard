@@ -74,13 +74,16 @@ export default function LoginPage() {
         min-h-screen
         items-center
         justify-center
-        overflow-hidden
+        overflow-x-hidden
+        overflow-y-auto
         bg-white
-        px-6
-        py-12
+        px-4
+        py-8
         text-gray-900
         transition-colors
         duration-500
+        sm:px-6
+        sm:py-12
         dark:bg-[#020817]
         dark:text-white
       "
@@ -92,13 +95,16 @@ export default function LoginPage() {
           absolute
           left-1/2
           top-1/2
-          h-[500px]
-          w-[500px]
+          h-[360px]
+          w-[360px]
           -translate-x-1/2
           -translate-y-1/2
           rounded-full
           bg-cyan-400/10
-          blur-[140px]
+          blur-[110px]
+          sm:h-[500px]
+          sm:w-[500px]
+          sm:blur-[140px]
           dark:bg-cyan-500/10
         "
       />
@@ -108,15 +114,22 @@ export default function LoginPage() {
         href="/"
         className="
           absolute
-          left-6
-          top-6
+          left-4
+          top-4
           inline-flex
+          min-h-10
           items-center
-          gap-2
-          text-sm
+          gap-1.5
+          rounded-lg
+          px-1
+          text-xs
           text-gray-500
           transition-colors
           hover:text-gray-900
+          sm:left-6
+          sm:top-6
+          sm:gap-2
+          sm:text-sm
           dark:text-gray-400
           dark:hover:text-white
         "
@@ -129,36 +142,45 @@ export default function LoginPage() {
       <div className="relative w-full max-w-md">
 
         {/* Brand */}
-        <div className="mb-8 text-center">
+        <div className="mb-6 text-center sm:mb-8">
           <Link
             href="/"
-            className="inline-flex items-center gap-3"
+            className="inline-flex items-center gap-2.5 sm:gap-3"
           >
-            <div
-  className="
-    flex
-    h-11
-    w-11
-    items-center
-    justify-center
-  "
->
-  <Image
-    src="/Logo.png"
-    alt="Pipsoul logo"
-    width={44}
-    height={44}
-    className="h-11 w-11 object-contain"
-    priority
-  />
-</div>
+            <div className="flex h-10 w-10 items-center justify-center sm:h-11 sm:w-11">
+              <Image
+                src="/Logo.png"
+                alt="Pipsoul logo"
+                width={44}
+                height={44}
+                className="h-10 w-10 object-contain sm:h-11 sm:w-11"
+                priority
+              />
+            </div>
 
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">
+            <span
+              className="
+                text-[22px]
+                font-bold
+                text-gray-900
+                sm:text-2xl
+                dark:text-white
+              "
+            >
               Pipsoul
             </span>
           </Link>
 
-          <p className="mt-3 text-sm text-gray-500 dark:text-gray-500">
+          <p
+            className="
+              mt-2.5
+              text-xs
+              text-gray-500
+              sm:mt-3
+              sm:text-sm
+              dark:text-gray-500
+            "
+          >
             Trade. Reflect. Improve.
           </p>
         </div>
@@ -166,36 +188,55 @@ export default function LoginPage() {
         {/* Card */}
         <div
           className="
-            rounded-3xl
+            rounded-2xl
             border
             border-gray-200
             bg-white/90
-            p-7
+            p-5
             shadow-[0_30px_80px_rgba(15,23,42,0.10)]
             backdrop-blur-xl
             transition-all
             duration-500
+            sm:rounded-3xl
+            sm:p-8
             dark:border-white/10
             dark:bg-[#0B1220]/90
             dark:shadow-[0_30px_80px_rgba(0,0,0,0.45)]
-            sm:p-8
           "
         >
 
           {/* Heading */}
-          <div className="mb-7">
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <div className="mb-6 sm:mb-7">
+            <h1
+              className="
+                text-[22px]
+                font-bold
+                tracking-tight
+                text-gray-900
+                sm:text-2xl
+                dark:text-white
+              "
+            >
               Welcome back
             </h1>
 
-            <p className="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">
+            <p
+              className="
+                mt-1.5
+                text-sm
+                leading-6
+                text-gray-500
+                sm:mt-2
+                dark:text-gray-400
+              "
+            >
               Log in to continue managing your trading journey.
             </p>
           </div>
 
           <form
             onSubmit={handleLogin}
-            className="space-y-5"
+            className="space-y-4 sm:space-y-5"
           >
 
             {/* Email */}
@@ -235,12 +276,13 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={`
+                    min-h-[50px]
                     w-full
                     rounded-xl
                     border
                     border-gray-200
                     bg-gray-50
-                    py-3.5
+                    py-3
                     pl-12
                     pr-4
                     text-sm
@@ -263,7 +305,7 @@ export default function LoginPage() {
 
             {/* Password */}
             <div>
-              <div className="mb-2 flex items-center justify-between">
+              <div className="mb-2 flex items-center justify-between gap-3">
                 <label
                   htmlFor="password"
                   className="
@@ -279,6 +321,7 @@ export default function LoginPage() {
                 <Link
                   href="/forgot-password"
                   className="
+                    shrink-0
                     text-xs
                     font-medium
                     text-cyan-500
@@ -311,12 +354,13 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={`
+                    min-h-[50px]
                     w-full
                     rounded-xl
                     border
                     border-gray-200
                     bg-gray-50
-                    py-3.5
+                    py-3
                     pl-12
                     pr-12
                     text-sm
@@ -340,9 +384,15 @@ export default function LoginPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="
                     absolute
-                    right-4
+                    right-2
                     top-1/2
+                    flex
+                    min-h-10
+                    min-w-10
                     -translate-y-1/2
+                    items-center
+                    justify-center
+                    rounded-lg
                     text-gray-400
                     transition-colors
                     hover:text-gray-700
@@ -396,6 +446,7 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               className="
+                min-h-[50px]
                 w-full
                 rounded-xl
                 bg-cyan-500
@@ -414,21 +465,28 @@ export default function LoginPage() {
             >
               {loading ? "Logging in..." : "Log In"}
             </button>
-
           </form>
 
           {/* Signup */}
           <div
             className="
-              mt-7
+              mt-6
               border-t
               border-gray-200
-              pt-6
+              pt-5
               text-center
+              sm:mt-7
+              sm:pt-6
               dark:border-white/10
             "
           >
-            <p className="text-sm text-gray-500">
+            <p
+              className="
+                text-sm
+                text-gray-500
+                dark:text-gray-500
+              "
+            >
               Don't have an account?{" "}
               <Link
                 href="/signup"
@@ -446,7 +504,16 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <p className="mt-6 text-center text-xs text-gray-400 dark:text-gray-600">
+        <p
+          className="
+            mt-5
+            text-center
+            text-xs
+            text-gray-400
+            sm:mt-6
+            dark:text-gray-600
+          "
+        >
           Welcome back to your trading workspace.
         </p>
       </div>

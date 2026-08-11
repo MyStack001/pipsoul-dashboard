@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
+
 
 export default function Footer() {
   const scrollToSection = (id: string) => {
@@ -48,33 +50,25 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <button
-              onClick={() =>
-                window.scrollTo({ top: 0, behavior: "smooth" })
-              }
-              className="flex items-center gap-3"
-            >
-              <div
-                className="
-                  flex
-                  h-10
-                  w-10
-                  items-center
-                  justify-center
-                  rounded-xl
-                  bg-cyan-500
-                  text-lg
-                  font-bold
-                  text-white
-                  shadow-[0_0_30px_rgba(6,182,212,0.2)]
-                "
-              >
-                P
-              </div>
+  onClick={() =>
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
+  className="flex items-center gap-3"
+>
+  <div className="flex h-10 w-10 items-center justify-center">
+    <Image
+      src="/Logo.png"
+      alt="Pipsoul logo"
+      width={40}
+      height={40}
+      className="h-10 w-10 object-contain"
+    />
+  </div>
 
-              <span className="text-xl font-bold text-gray-900 dark:text-white">
-                Pipsoul
-              </span>
-            </button>
+  <span className="text-xl font-bold text-gray-900 dark:text-white">
+    Pipsoul
+  </span>
+</button>
 
             <p className="mt-5 max-w-md text-sm leading-6 text-gray-600 dark:text-gray-400">
               Trade. Reflect. Improve.

@@ -15,8 +15,13 @@ import {
   CircleUserRound,
   BookOpen,
   LogOut,
+  ChevronDown,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import Image from "next/image";
+import { useAccount } from "@/components/AccountProvider";
+import { toast } from "sonner";
 
 export default function Sidebar({
   onClose,
@@ -29,16 +34,44 @@ export default function Sidebar({
   const [isDark, setIsDark] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
+  // Trading accounts
+  const {
+    accounts,
+    currentAccount,
+    setCurrentAccount,
+    addAccount,
+    renameAccount,
+    deleteAccount,
+  } = useAccount();
+
+  const [accountOpen, setAccountOpen] = useState(false);
+
+  const [showManageAccountsModal, setShowManageAccountsModal] =
+    useState(false);
+
+  const [showAddAccountModal, setShowAddAccountModal] =
+    useState(false);
+
+  const [newAccountName, setNewAccountName] = useState("");
+
+  const [editingAccountId, setEditingAccountId] =
+    useState<string | null>(null);
+
+  const [editingName, setEditingName] = useState("");
+
+  const [accountToDelete, setAccountToDelete] =
+    useState<string | null>(null);
+
+  const [accountToDeleteName, setAccountToDeleteName] =
+    useState("");
+
   useEffect(() => {
     const checkTheme = () =>
-      setIsDark(
-        document.documentElement.classList.contains("dark")
-      );
+      setIsDark(document.documentElement.classList.contains("dark"));
 
     checkTheme();
 
     const observer = new MutationObserver(checkTheme);
-
     observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ["class"],
@@ -112,24 +145,17 @@ export default function Sidebar({
     <>
       <div
         className="
-          w-60
-          h-full
-          flex
-          flex-col
-          bg-white/40
-          dark:bg-white/5
+          w-60 h-full flex flex-col
+          bg-white/40 dark:bg-white/5
           backdrop-blur-xl
-          border-r
-          border-gray-200/70
-          dark:border-white/10
-          text-black
-          dark:text-white
+          border-r border-gray-200/70 dark:border-white/10
+          text-black dark:text-white
           shadow-sm
         "
       >
         {/* TOP SECTION */}
         <div className="p-4">
-          {/* LOGO */}
+          {/* Logo */}
           <div className="flex items-center gap-3 mb-8">
             <Image
               src="/Logo.png"
@@ -139,13 +165,139 @@ export default function Sidebar({
               className="rounded-full object-cover"
               priority
             />
-
-            <h2 className="text-xl font-bold">
-              Pipsoul
-            </h2>
+            <h2 className="text-xl font-bold">Pipsoul</h2>
           </div>
 
-          {/* NAVIGATION */}
+          {/* TRADING ACCOUNT */}
+          <div className="mb-6">
+            <p className="px-1 mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+              Trading Account
+            </p>
+
+            <button
+              type="button"
+              onClick={() => setAccountOpen(!accountOpen)}
+              className="
+                w-full
+                flex items-center justify-between
+                gap-2
+                px-3 py-2.5
+                rounded-xl
+                bg-white/60 dark:bg-white/10
+                border border-gray-200/70 dark:border-white/10
+                shadow-sm
+                text-sm font-medium
+                text-black dark:text-white
+                hover:bg-cyan-50
+                dark:hover:bg-white/10
+                transition
+              "
+            >
+              <span className="truncate">
+                {currentAccount?.name || "Trading Account"}
+              </span>
+
+              <ChevronDown
+                className={`
+                  w-4 h-4 shrink-0
+                  transition-transform
+                  ${accountOpen ? "rotate-180" : ""}
+                `}
+              />
+            </button>
+
+            {accountOpen && (
+              <div
+                className="
+                  mt-2
+                  w-full
+                  rounded-xl
+                  border border-gray-200/70 dark:border-white/10
+                  bg-white dark:bg-[#111827]
+                  shadow-xl
+                  overflow-hidden
+                  z-50
+                "
+              >
+                {accounts.map((account) => (
+                  <button
+                    type="button"
+                    key={account.id}
+                    onClick={() => {
+                      setCurrentAccount(account);
+                      setAccountOpen(false);
+                    }}
+                    className="
+                      w-full
+                      px-4 py-3
+                      flex items-center
+                      text-left
+                      cursor-pointer
+                      hover:bg-cyan-50
+                      dark:hover:bg-white/10
+                      text-sm
+                      text-black dark:text-white
+                      transition
+                    "
+                  >
+                    <span className="mr-2 w-4">
+                      {account.id === currentAccount?.id ? "✓" : ""}
+                    </span>
+
+                    <span className="truncate">
+                      {account.name}
+                    </span>
+                  </button>
+                ))}
+
+                <div className="border-t border-gray-200 dark:border-white/10" />
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAccountOpen(false);
+                    setShowAddAccountModal(true);
+                  }}
+                  className="
+                    w-full
+                    px-4 py-3
+                    text-left
+                    cursor-pointer
+                    text-cyan-500
+                    hover:bg-cyan-50
+                    dark:hover:bg-white/10
+                    text-sm
+                    transition
+                  "
+                >
+                  + Add Account
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAccountOpen(false);
+                    setShowManageAccountsModal(true);
+                  }}
+                  className="
+                    w-full
+                    px-4 py-3
+                    text-left
+                    cursor-pointer
+                    hover:bg-cyan-50
+                    dark:hover:bg-white/10
+                    text-sm
+                    text-black dark:text-white
+                    transition
+                  "
+                >
+                  ⚙ Manage Accounts
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Navigation */}
           <nav className="flex flex-col gap-2">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
@@ -156,43 +308,18 @@ export default function Sidebar({
                   href={item.href}
                   onClick={() => onClose?.()}
                   className={`
-                    flex
-                    items-center
-                    gap-3
-                    px-3
-                    py-2.5
-                    rounded-xl
-                    transition-all
-                    duration-200
-
+                    flex items-center gap-3 px-3 py-2 rounded-lg
+                    transition-all duration-200
                     ${
                       isActive
-                        ? `
-                          bg-cyan-100/80
-                          dark:bg-cyan-500/15
-                          border
-                          border-cyan-300
-                          dark:border-cyan-500/30
-                          shadow-sm
-                          text-black
-                          dark:text-white
-                          font-semibold
-                        `
-                        : `
-                          text-gray-700
-                          dark:text-gray-300
-                          hover:bg-cyan-50
-                          dark:hover:bg-white/10
-                          hover:text-black
-                          dark:hover:text-white
-                          hover:shadow-sm
-                        `
+                        ? "bg-cyan-100/80 border border-cyan-300 shadow-sm text-black font-semibold"
+                        : "text-gray-700 dark:text-gray-300 hover:bg-cyan-50 hover:text-black hover:shadow-sm"
                     }
+                    dark:hover:bg-white/10 dark:hover:text-white
                   `}
                 >
-                  <item.icon className="w-5 h-5 shrink-0" />
-
-                  <span>{item.name}</span>
+                  <item.icon className="w-5 h-5" />
+                  {item.name}
                 </Link>
               );
             })}
@@ -202,33 +329,20 @@ export default function Sidebar({
         {/* BOTTOM SECTION */}
         <div
           className="
-            mt-auto
-            p-4
-            border-t
-            border-gray-200/70
-            dark:border-white/10
+            mt-auto p-4
+            border-t border-gray-200/70 dark:border-white/10
             space-y-3
           "
         >
-          {/* THEME TOGGLE */}
           <button
             onClick={toggleTheme}
             className="
-              flex
-              items-center
-              justify-between
-              w-full
-              px-3
-              py-2.5
-              rounded-xl
-              bg-white/60
-              dark:bg-white/10
-              border
-              border-gray-200/70
-              dark:border-white/10
+              flex items-center justify-between
+              w-full px-3 py-2 rounded-lg
+              bg-white/60 dark:bg-white/10
+              border border-gray-200/70 dark:border-white/10
               shadow-sm
-              transition-all
-              duration-300
+              transition-all duration-300
               hover:scale-[1.02]
               hover:shadow-md
               active:scale-95
@@ -247,42 +361,390 @@ export default function Sidebar({
             </span>
           </button>
 
-          {/* LOGOUT */}
           <button
             onClick={() => setShowLogoutModal(true)}
             className="
-              flex
-              items-center
-              gap-3
-              w-full
-              px-3
-              py-2.5
-              rounded-xl
-              border
-              border-red-200
-              dark:border-red-500/20
-              bg-red-50
-              dark:bg-red-500/10
-              text-red-600
-              dark:text-red-400
-              transition-all
-              duration-300
-              hover:bg-red-100
-              dark:hover:bg-red-500/20
+              flex items-center gap-3
+              w-full px-3 py-2 rounded-lg
+              border border-red-200 dark:border-red-500/20
+              bg-red-50 dark:bg-red-500/10
+              text-red-600 dark:text-red-400
+              transition-all duration-300
+              hover:bg-red-100 dark:hover:bg-red-500/20
               hover:scale-[1.02]
               active:scale-95
             "
           >
-            <LogOut className="w-5 h-5 shrink-0" />
-
-            <span className="font-medium">
-              Logout
-            </span>
+            <LogOut className="w-5 h-5" />
+            <span className="font-medium">Logout</span>
           </button>
         </div>
       </div>
 
-      {/* LOGOUT CONFIRMATION */}
+      {/* ADD ACCOUNT MODAL */}
+      {showAddAccountModal && (
+        <div
+          onClick={() => {
+            setShowAddAccountModal(false);
+            setNewAccountName("");
+          }}
+          className="
+            fixed inset-0
+            z-[100]
+            flex items-center justify-center
+            bg-black/40
+            backdrop-blur-sm
+            px-4
+          "
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="
+              w-full max-w-[420px]
+              rounded-2xl
+              border border-gray-200 dark:border-white/10
+              bg-white/80 dark:bg-[#111827]/90
+              backdrop-blur-xl
+              px-8 py-7
+              shadow-2xl
+            "
+          >
+            <h2 className="text-2xl font-bold text-black dark:text-white">
+              Add Trading Account
+            </h2>
+
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              Create a separate account to track your performance
+              independently.
+            </p>
+
+            <div className="mt-6">
+              <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                Account Name
+              </label>
+
+              <input
+                type="text"
+                placeholder="e.g. FTMO 100K"
+                value={newAccountName}
+                onChange={(e) => setNewAccountName(e.target.value)}
+                className="
+                  w-full
+                  px-4 py-3
+                  rounded-xl
+                  bg-white dark:bg-[#0f172a]
+                  border border-gray-200 dark:border-white/10
+                  text-black dark:text-white
+                  placeholder:text-gray-400
+                  focus:outline-none
+                  focus:ring-2
+                  focus:ring-cyan-500
+                "
+              />
+            </div>
+
+            <div className="mt-8 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAddAccountModal(false);
+                  setNewAccountName("");
+                }}
+                className="
+                  px-5 py-2.5
+                  rounded-xl
+                  border border-gray-200 dark:border-white/10
+                  text-gray-700 dark:text-gray-300
+                  hover:bg-gray-100
+                  dark:hover:bg-white/10
+                  transition
+                "
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!newAccountName.trim()) return;
+
+                  const account = await addAccount(
+                    newAccountName.trim()
+                  );
+
+                  if (!account) return;
+
+                  setShowAddAccountModal(false);
+                  setNewAccountName("");
+                }}
+                className="
+                  px-5 py-2.5
+                  rounded-xl
+                  bg-cyan-500
+                  hover:bg-cyan-600
+                  text-white
+                  transition
+                "
+              >
+                Add Account
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MANAGE ACCOUNTS MODAL */}
+      {showManageAccountsModal && (
+        <div
+          onClick={() => setShowManageAccountsModal(false)}
+          className="
+            fixed inset-0
+            z-[100]
+            flex items-center justify-center
+            bg-black/40
+            backdrop-blur-sm
+            px-4
+          "
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="
+              w-full max-w-lg
+              max-h-[90vh]
+              overflow-y-auto
+              rounded-2xl
+              border border-gray-200 dark:border-white/10
+              bg-white/80 dark:bg-[#111827]/90
+              backdrop-blur-xl
+              px-8 py-7
+              shadow-2xl
+            "
+          >
+            <h2 className="text-2xl font-bold text-black dark:text-white">
+              Manage Trading Accounts
+            </h2>
+
+            <div className="mt-6 space-y-3">
+              {accounts.map((account) => (
+                <div
+                  key={account.id}
+                  className="
+                    flex items-center justify-between
+                    gap-3
+                    rounded-xl
+                    border border-gray-200 dark:border-white/10
+                    px-4 py-3
+                  "
+                >
+                  {editingAccountId === account.id ? (
+                    <input
+                      autoFocus
+                      value={editingName}
+                      onChange={(e) =>
+                        setEditingName(e.target.value)
+                      }
+                      onBlur={async () => {
+                        await renameAccount(
+                          account.id,
+                          editingName
+                        );
+
+                        setEditingAccountId(null);
+                        setEditingName("");
+                      }}
+                      onKeyDown={async (e) => {
+                        if (e.key === "Enter") {
+                          await renameAccount(
+                            account.id,
+                            editingName
+                          );
+
+                          setEditingAccountId(null);
+                          setEditingName("");
+                        }
+
+                        if (e.key === "Escape") {
+                          setEditingAccountId(null);
+                          setEditingName("");
+                        }
+                      }}
+                      className="
+                        flex-1
+                        min-w-0
+                        rounded-lg
+                        border border-gray-200 dark:border-white/10
+                        bg-transparent
+                        px-2 py-1
+                        text-black dark:text-white
+                        focus:outline-none
+                        focus:ring-2
+                        focus:ring-cyan-500
+                      "
+                    />
+                  ) : (
+                    <span className="font-medium text-black dark:text-white truncate">
+                      {account.name}
+                    </span>
+                  )}
+
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingAccountId(account.id);
+                        setEditingName(account.name);
+                      }}
+                      className="
+                        p-1.5 rounded-lg
+                        text-gray-500
+                        hover:text-cyan-500
+                        hover:bg-cyan-50
+                        dark:hover:bg-white/10
+                        transition
+                      "
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAccountToDelete(account.id);
+                        setAccountToDeleteName(account.name);
+                      }}
+                      className="
+                        p-1.5 rounded-lg
+                        text-gray-500
+                        hover:text-red-500
+                        hover:bg-red-50
+                        dark:hover:bg-red-500/10
+                        transition
+                      "
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowManageAccountsModal(false)}
+                className="
+                  px-5 py-2.5
+                  rounded-xl
+                  border border-gray-200 dark:border-white/10
+                  hover:bg-gray-100
+                  dark:hover:bg-white/10
+                "
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DELETE ACCOUNT MODAL */}
+      {accountToDelete && (
+        <div
+          onClick={() => {
+            setAccountToDelete(null);
+            setAccountToDeleteName("");
+          }}
+          className="
+            fixed inset-0
+            z-[110]
+            flex items-center justify-center
+            bg-black/40
+            backdrop-blur-sm
+            px-4
+          "
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="
+              w-full max-w-md
+              rounded-2xl
+              border border-gray-200 dark:border-white/10
+              bg-white/80 dark:bg-[#111827]/90
+              backdrop-blur-xl
+              px-8 py-7
+              shadow-2xl
+            "
+          >
+            <h2 className="text-2xl font-bold text-black dark:text-white">
+              Delete Trading Account
+            </h2>
+
+            <p className="mt-4 text-gray-600 dark:text-gray-300">
+              Are you sure you want to delete
+              <span className="font-semibold">
+                {" "}
+                "{accountToDeleteName}"
+              </span>
+              ?
+            </p>
+
+            <p className="mt-2 text-sm text-red-500">
+              This action cannot be undone.
+            </p>
+
+            <div className="mt-8 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setAccountToDelete(null);
+                  setAccountToDeleteName("");
+                }}
+                className="
+                  px-5 py-2.5
+                  rounded-xl
+                  border border-gray-200 dark:border-white/10
+                  hover:bg-gray-100
+                  dark:hover:bg-white/10
+                "
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!accountToDelete) return;
+
+                  const deleted = await deleteAccount(
+                    accountToDelete
+                  );
+
+                  if (!deleted) return;
+
+                  toast.success(
+                    "Trading account deleted successfully."
+                  );
+
+                  setAccountToDelete(null);
+                  setAccountToDeleteName("");
+                  setShowManageAccountsModal(false);
+                }}
+                className="
+                  px-5 py-2.5
+                  rounded-xl
+                  bg-red-500
+                  hover:bg-red-600
+                  text-white
+                "
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* LOGOUT MODAL */}
       <ConfirmModal
         open={showLogoutModal}
         title="Sign Out of Pipsoul?"

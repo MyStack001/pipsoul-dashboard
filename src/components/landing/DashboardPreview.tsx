@@ -36,7 +36,8 @@ export default function DashboardPreview() {
         relative
         scroll-mt-24
         overflow-hidden
-        bg-[#0B1120]
+        bg-white
+        dark:bg-[#0B1120]
         py-16
         sm:py-20
         lg:py-28

@@ -78,10 +78,12 @@ export default function HowItWorks() {
         overflow-hidden
         bg-white
         dark:bg-[#020817]
-        px-6
-        py-28
+        px-4
+        py-20
         transition-colors
         duration-500
+        sm:px-6
+        sm:py-24
       "
     >
       {/* Background glow */}
@@ -90,13 +92,17 @@ export default function HowItWorks() {
           pointer-events-none
           absolute
           left-1/2
-          top-10
-          h-[420px]
-          w-[720px]
+          top-8
+          h-[320px]
+          w-[520px]
           -translate-x-1/2
           rounded-full
           bg-cyan-500/10
-          blur-[150px]
+          blur-[120px]
+          sm:top-10
+          sm:h-[420px]
+          sm:w-[720px]
+          sm:blur-[150px]
         "
       />
 
@@ -117,18 +123,61 @@ export default function HowItWorks() {
             }
           `}
         >
-          <span className="inline-flex items-center rounded-full border border-cyan-400/20 bg-cyan-400/5 px-4 py-2 text-xs font-medium text-cyan-400">
+          <span
+            className="
+              inline-flex
+              items-center
+              rounded-full
+              border
+              border-cyan-400/20
+              bg-cyan-400/5
+              px-3.5
+              py-1.5
+              text-xs
+              font-medium
+              text-cyan-400
+              sm:px-4
+              sm:py-2
+            "
+          >
             How it works
           </span>
 
-          <h2 className="mt-6 text-4xl font-bold tracking-tight text-gray-900 dark:text-white md:text-5xl">
+          <h2
+            className="
+              mt-5
+              text-3xl
+              font-bold
+              leading-tight
+              tracking-tight
+              text-gray-900
+              sm:mt-6
+              sm:text-4xl
+              md:text-5xl
+              dark:text-white
+            "
+          >
             Turn every trade into{" "}
             <span className="text-cyan-400">
               progress
             </span>
           </h2>
 
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-gray-600 dark:text-gray-400 md:text-lg">
+          <p
+            className="
+              mx-auto
+              mt-4
+              max-w-2xl
+              text-sm
+              leading-6
+              text-gray-600
+              sm:mt-5
+              sm:text-base
+              sm:leading-7
+              md:text-lg
+              dark:text-gray-400
+            "
+          >
             Pipsoul gives you a simple workflow for recording your
             trades, understanding your decisions, and improving with
             every session.
@@ -136,12 +185,27 @@ export default function HowItWorks() {
         </div>
 
         {/* Steps */}
-        <div className="relative mt-20">
+        <div className="relative mt-12 sm:mt-16 lg:mt-20">
 
           {/* Connecting line */}
-          <div className="absolute left-[12.5%] right-[12.5%] top-10 hidden h-px bg-gradient-to-r from-cyan-400/20 via-gray-300 dark:via-white/10 to-green-400/20 lg:block" />
+          <div
+            className="
+              absolute
+              left-[12.5%]
+              right-[12.5%]
+              top-10
+              hidden
+              h-px
+              bg-gradient-to-r
+              from-cyan-400/20
+              via-gray-300
+              to-green-400/20
+              lg:block
+              dark:via-white/10
+            "
+          />
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
             {steps.map((step, index) => {
               const Icon = step.icon;
 
@@ -168,8 +232,8 @@ export default function HowItWorks() {
                     <div
                       className={`
                         flex
-                        h-20
-                        w-20
+                        h-16
+                        w-16
                         items-center
                         justify-center
                         rounded-full
@@ -180,6 +244,8 @@ export default function HowItWorks() {
                         transition-all
                         duration-500
                         group-hover:scale-110
+                        sm:h-20
+                        sm:w-20
                         ${
                           step.accent === "cyan"
                             ? "border-cyan-400/30 text-cyan-400 group-hover:border-cyan-400/60 group-hover:shadow-[0_0_35px_rgba(6,182,212,0.18)]"
@@ -191,21 +257,21 @@ export default function HowItWorks() {
                         }
                       `}
                     >
-                      <Icon className="h-7 w-7" />
+                      <Icon className="h-6 w-6 sm:h-7 sm:w-7" />
                     </div>
                   </div>
 
                   {/* Card */}
                   <div
                     className="
-                      mt-6
+                      mt-5
                       rounded-3xl
                       border
                       border-gray-200
                       dark:border-white/10
                       bg-gray-50
                       dark:bg-[#0B1220]/80
-                      p-7
+                      p-6
                       text-center
                       backdrop-blur-xl
                       transition-all
@@ -215,13 +281,17 @@ export default function HowItWorks() {
                       dark:group-hover:border-white/20
                       group-hover:bg-white
                       dark:group-hover:bg-[#0F172A]
+                      sm:mt-6
+                      sm:p-7
                     "
                   >
                     <span
                       className={`
-                        text-xs
+                        text-[11px]
                         font-semibold
-                        tracking-[0.2em]
+                        tracking-[0.18em]
+                        sm:text-xs
+                        sm:tracking-[0.2em]
                         ${
                           step.accent === "cyan"
                             ? "text-cyan-400"
@@ -236,11 +306,30 @@ export default function HowItWorks() {
                       STEP {step.number}
                     </span>
 
-                    <h3 className="mt-4 text-xl font-semibold text-gray-900 dark:text-white">
+                    <h3
+                      className="
+                        mt-3
+                        text-lg
+                        font-semibold
+                        text-gray-900
+                        sm:mt-4
+                        sm:text-xl
+                        dark:text-white
+                      "
+                    >
                       {step.title}
                     </h3>
 
-                    <p className="mt-3 text-sm leading-6 text-gray-600 dark:text-gray-400">
+                    <p
+                      className="
+                        mt-2.5
+                        text-sm
+                        leading-6
+                        text-gray-600
+                        sm:mt-3
+                        dark:text-gray-400
+                      "
+                    >
                       {step.description}
                     </p>
                   </div>
@@ -253,11 +342,12 @@ export default function HowItWorks() {
         {/* Bottom statement */}
         <div
           className={`
-            mt-16
+            mt-12
             text-center
             transition-all
             delay-500
             duration-1000
+            sm:mt-16
             ${
               isVisible
                 ? "translate-y-0 opacity-100"
@@ -265,7 +355,18 @@ export default function HowItWorks() {
             }
           `}
         >
-          <p className="text-sm text-gray-500 dark:text-gray-500 md:text-base">
+          <p
+            className="
+              mx-auto
+              max-w-xl
+              text-sm
+              leading-6
+              text-gray-500
+              sm:text-base
+              sm:leading-7
+              dark:text-gray-500
+            "
+          >
             One trade at a time. One insight at a time.{" "}
             <span className="text-cyan-400">
               Better trading starts with better reflection.

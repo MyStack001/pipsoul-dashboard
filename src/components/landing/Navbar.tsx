@@ -6,7 +6,7 @@ import Image from "next/image";
 export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full">
-      <div className="mx-auto max-w-7xl px-5 pt-5">
+      <div className="mx-auto max-w-7xl px-3 sm:px-5 pt-3 sm:pt-5">
 
         <nav
           className="
@@ -20,28 +20,37 @@ export default function Navbar() {
             bg-white/75
             dark:bg-[#0B1120]/75
             backdrop-blur-xl
-            px-6
-            py-4
+            px-3
+            sm:px-6
+            py-3
+            sm:py-4
           "
         >
 
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center gap-3"
+            className="flex items-center gap-2 sm:gap-3 shrink-0"
           >
             <Image
               src="/Logo.png"
               alt="Pipsoul"
               width={44}
               height={44}
-              className="h-11 w-11 object-contain"
+              className="
+                h-9
+                w-9
+                sm:h-11
+                sm:w-11
+                object-contain
+              "
               priority
             />
 
             <span
               className="
-                text-xl
+                text-lg
+                sm:text-xl
                 font-bold
                 text-gray-900
                 dark:text-white
@@ -92,14 +101,17 @@ export default function Navbar() {
           </div>
 
           {/* Right Side */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
 
             <Link
               href="/login"
               className="
                 rounded-xl
-                px-4
+                px-2.5
+                sm:px-4
                 py-2
+                text-sm
+                sm:text-base
                 font-medium
                 text-gray-700
                 dark:text-gray-300
@@ -116,12 +128,17 @@ export default function Navbar() {
               className="
                 rounded-xl
                 bg-cyan-500
-                px-5
-                py-2.5
+                px-3.5
+                sm:px-5
+                py-2
+                sm:py-2.5
+                text-sm
+                sm:text-base
                 font-semibold
                 text-white
                 hover:bg-cyan-600
                 transition-colors
+                whitespace-nowrap
               "
             >
               Get Started

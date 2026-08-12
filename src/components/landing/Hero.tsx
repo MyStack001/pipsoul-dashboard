@@ -9,15 +9,66 @@ export default function Hero() {
       {/* Background Glow */}
       <div className="absolute inset-0 -z-10">
 
-        <div className="absolute top-20 left-10 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />
+        <div
+          className="
+            absolute
+            top-20
+            left-10
+            h-48
+            w-48
+            sm:h-72
+            sm:w-72
+            rounded-full
+            bg-cyan-500/10
+            blur-3xl
+          "
+        />
 
-        <div className="absolute right-0 top-40 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
+        <div
+          className="
+            absolute
+            right-0
+            top-40
+            h-64
+            w-64
+            sm:h-96
+            sm:w-96
+            rounded-full
+            bg-blue-500/10
+            blur-3xl
+          "
+        />
 
-        <div className="absolute bottom-0 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-cyan-400/10 blur-3xl" />
+        <div
+          className="
+            absolute
+            bottom-0
+            left-1/2
+            h-64
+            w-64
+            sm:h-80
+            sm:w-80
+            -translate-x-1/2
+            rounded-full
+            bg-cyan-400/10
+            blur-3xl
+          "
+        />
 
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 pt-20 pb-24">
+      <div
+        className="
+          mx-auto
+          max-w-7xl
+          px-4
+          sm:px-6
+          pt-14
+          sm:pt-20
+          pb-16
+          sm:pb-24
+        "
+      >
 
         {/* Heading */}
         <div className="mx-auto max-w-4xl text-center">
@@ -30,9 +81,12 @@ export default function Hero() {
               border
               border-cyan-500/20
               bg-cyan-500/10
-              px-4
-              py-2
-              text-sm
+              px-3
+              sm:px-4
+              py-1.5
+              sm:py-2
+              text-xs
+              sm:text-sm
               font-medium
               text-cyan-600
               dark:text-cyan-400
@@ -43,10 +97,13 @@ export default function Hero() {
 
           <h1
             className="
-              mt-8
-              text-5xl
+              mt-6
+              sm:mt-8
+              text-4xl
+              sm:text-5xl
               font-extrabold
               tracking-tight
+              leading-[1.1]
               text-gray-900
               dark:text-white
               md:text-7xl
@@ -60,10 +117,13 @@ export default function Hero() {
           <p
             className="
               mx-auto
-              mt-8
+              mt-6
+              sm:mt-8
               max-w-2xl
-              text-lg
-              leading-8
+              text-base
+              sm:text-lg
+              leading-7
+              sm:leading-8
               text-gray-600
               dark:text-gray-300
             "
@@ -74,16 +134,31 @@ export default function Hero() {
           </p>
 
           {/* Buttons */}
-
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          <div
+            className="
+              mt-8
+              sm:mt-10
+              flex
+              flex-col
+              sm:flex-row
+              items-center
+              justify-center
+              gap-3
+              sm:gap-4
+            "
+          >
 
             <Link
               href="/signup"
               className="
+                w-full
+                sm:w-auto
                 rounded-xl
                 bg-cyan-500
                 px-7
-                py-4
+                py-3.5
+                sm:py-4
+                text-center
                 font-semibold
                 text-white
                 transition-all
@@ -99,6 +174,8 @@ export default function Hero() {
             <Link
               href="/login"
               className="
+                w-full
+                sm:w-auto
                 rounded-xl
                 border
                 border-gray-300
@@ -106,7 +183,9 @@ export default function Hero() {
                 bg-white/70
                 dark:bg-white/5
                 px-7
-                py-4
+                py-3.5
+                sm:py-4
+                text-center
                 font-semibold
                 text-gray-800
                 dark:text-white

@@ -90,10 +90,12 @@ export default function Features() {
         scroll-mt-24
         overflow-hidden
         bg-white
-        px-6
-        py-28
+        px-4
+        py-20
         transition-colors
         duration-500
+        sm:px-6
+        sm:py-24
         dark:bg-[#020817]
       "
     >
@@ -103,13 +105,17 @@ export default function Features() {
           pointer-events-none
           absolute
           left-1/2
-          top-20
-          h-[420px]
-          w-[700px]
+          top-16
+          h-[320px]
+          w-[520px]
           -translate-x-1/2
           rounded-full
           bg-cyan-500/10
-          blur-[140px]
+          blur-[120px]
+          sm:top-20
+          sm:h-[420px]
+          sm:w-[700px]
+          sm:blur-[140px]
         "
       />
 
@@ -138,11 +144,13 @@ export default function Features() {
               border
               border-cyan-400/20
               bg-cyan-400/5
-              px-4
-              py-2
+              px-3.5
+              py-1.5
               text-xs
               font-medium
               text-cyan-400
+              sm:px-4
+              sm:py-2
             "
           >
             Everything in one place
@@ -150,11 +158,14 @@ export default function Features() {
 
           <h2
             className="
-              mt-6
-              text-4xl
+              mt-5
+              text-3xl
               font-bold
+              leading-tight
               tracking-tight
               text-gray-900
+              sm:mt-6
+              sm:text-4xl
               md:text-5xl
               dark:text-white
             "
@@ -167,10 +178,15 @@ export default function Features() {
 
           <p
             className="
-              mt-5
-              text-base
-              leading-7
+              mx-auto
+              mt-4
+              max-w-xl
+              text-sm
+              leading-6
               text-gray-600
+              sm:mt-5
+              sm:text-base
+              sm:leading-7
               md:text-lg
               dark:text-gray-400
             "
@@ -181,7 +197,19 @@ export default function Features() {
         </div>
 
         {/* Feature Grid */}
-        <div className="mt-16 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          className="
+            mt-12
+            grid
+            grid-cols-1
+            gap-4
+            sm:mt-14
+            sm:gap-5
+            md:grid-cols-2
+            lg:mt-16
+            lg:grid-cols-3
+          "
+        >
           {features.map((feature, index) => {
             const Icon = feature.icon;
 
@@ -196,7 +224,7 @@ export default function Features() {
                   border
                   border-gray-200
                   bg-white/80
-                  p-7
+                  p-6
                   shadow-sm
                   backdrop-blur-xl
                   transition-all
@@ -204,6 +232,7 @@ export default function Features() {
                   hover:-translate-y-2
                   hover:border-gray-300
                   hover:bg-white
+                  sm:p-7
                   dark:border-white/10
                   dark:bg-[#0B1220]/80
                   dark:hover:border-white/20
@@ -250,8 +279,8 @@ export default function Features() {
                   className={`
                     relative
                     flex
-                    h-12
-                    w-12
+                    h-11
+                    w-11
                     items-center
                     justify-center
                     rounded-2xl
@@ -259,6 +288,8 @@ export default function Features() {
                     transition-transform
                     duration-500
                     group-hover:scale-110
+                    sm:h-12
+                    sm:w-12
                     ${
                       feature.accent === "cyan"
                         ? "border-cyan-400/20 bg-cyan-400/10 text-cyan-400"
@@ -274,12 +305,13 @@ export default function Features() {
                 </div>
 
                 {/* Content */}
-                <div className="relative mt-6">
+                <div className="relative mt-5 sm:mt-6">
                   <h3
                     className="
-                      text-xl
+                      text-lg
                       font-semibold
                       text-gray-900
+                      sm:text-xl
                       dark:text-white
                     "
                   >
@@ -288,10 +320,11 @@ export default function Features() {
 
                   <p
                     className="
-                      mt-3
+                      mt-2.5
                       text-sm
                       leading-6
                       text-gray-600
+                      sm:mt-3
                       dark:text-gray-400
                     "
                   >
@@ -304,13 +337,15 @@ export default function Features() {
                   className={`
                     absolute
                     bottom-0
-                    left-7
-                    right-7
+                    left-6
+                    right-6
                     h-px
                     opacity-0
                     transition-opacity
                     duration-500
                     group-hover:opacity-100
+                    sm:left-7
+                    sm:right-7
                     ${
                       feature.accent === "cyan"
                         ? "bg-cyan-400/50"

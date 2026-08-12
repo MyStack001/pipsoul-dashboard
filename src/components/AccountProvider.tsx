@@ -33,9 +33,10 @@ type AccountContextType = {
   deleteAccount: (id: string) => Promise<boolean>;
 };
 
-const AccountContext = createContext<AccountContextType | undefined>(
-  undefined
-);
+const AccountContext =
+  createContext<AccountContextType | undefined>(
+    undefined
+  );
 
 export function AccountProvider({
   children,
@@ -44,156 +45,335 @@ export function AccountProvider({
 }) {
   const { session } = useAuth();
 
-  const [accounts, setAccounts] = useState<TradingAccount[]>([]);
-  const [currentAccount, setCurrentAccount] =
+  const [accounts, setAccounts] =
+    useState<TradingAccount[]>([]);
+
+  const [currentAccount, setCurrentAccountState] =
     useState<TradingAccount | null>(null);
 
+  // =========================
+  // ACCOUNT STORAGE KEY
+  // =========================
+
+  const getStorageKey = (userId: string) =>
+    `pipsoul-current-account-${userId}`;
+
+  // =========================
+  // SELECT ACCOUNT
+  // =========================
+
+  const setCurrentAccount = (
+    account: TradingAccount
+  ) => {
+    setCurrentAccountState(account);
+
+    if (session?.user?.id) {
+      localStorage.setItem(
+        getStorageKey(session.user.id),
+        account.id
+      );
+    }
+  };
+
+  // =========================
+  // LOAD ACCOUNTS
+  // =========================
+
   async function refreshAccounts() {
-    if (!session?.user) return;
+    if (!session?.user?.id) {
+      setAccounts([]);
+      setCurrentAccountState(null);
+      return;
+    }
+
+    const userId = session.user.id;
 
     const { data, error } = await supabase
       .from("accounts")
       .select("*")
-      .eq("user_id", session.user.id)
+      .eq("user_id", userId)
       .order("created_at");
 
     if (error) {
-      console.error(error);
+      console.error(
+        "ACCOUNT FETCH ERROR:",
+        error.message
+      );
       return;
     }
 
-    setAccounts(data ?? []);
+    const loadedAccounts =
+      (data ?? []) as TradingAccount[];
 
-    if (!currentAccount && data?.length) {
-      setCurrentAccount(data[0]);
+    setAccounts(loadedAccounts);
+
+    if (loadedAccounts.length === 0) {
+      setCurrentAccountState(null);
+      return;
     }
-  }
 
-async function addAccount(name: string) {
-  if (!session?.user) return null;
-  const trimmedName = name.trim();
+    // =========================
+    // RESTORE SAVED ACCOUNT
+    // =========================
 
-  const existing = accounts.find(
-    (account) =>
-      account.name.toLowerCase() === trimmedName.toLowerCase()
-  );
+    const savedAccountId =
+      localStorage.getItem(
+        getStorageKey(userId)
+      );
 
-  if (existing) {
-    toast.error("Account already exists", {
-  description: "Choose a different account name.",
-});
+    const savedAccount = savedAccountId
+      ? loadedAccounts.find(
+          (account) =>
+            account.id === savedAccountId
+        )
+      : null;
 
-return null;
-  }
+    if (savedAccount) {
+      setCurrentAccountState(savedAccount);
+      return;
+    }
 
-  const { data, error } = await supabase
-    .from("accounts")
-    .insert({
-      user_id: session.user.id,
-      name: trimmedName,
-    })
-    .select()
-    .single();
+    // =========================
+    // DEFAULT TO FIRST ACCOUNT
+    // =========================
 
-  if (error) {
-    console.error(error);
-    return null;
-  }
-
-  await refreshAccounts();
-
-  setCurrentAccount(data);
-
-  return data;
-}
-
-async function renameAccount(id: string, name: string) {
-  if (!session?.user) return;
-
-  const trimmedName = name.trim();
-
-  if (!trimmedName) return;
-
-  const { error } = await supabase
-    .from("accounts")
-    .update({
-      name: trimmedName,
-    })
-    .eq("id", id)
-    .eq("user_id", session.user.id);
-
-  if (error) {
-  console.error(error);
-  return;
-}
-
-await refreshAccounts();
-
-if (currentAccount?.id === id) {
-  setCurrentAccount({
-    ...currentAccount,
-    name: trimmedName,
-  });
-}
-
-toast.success("Account renamed successfully.");
-}
-
-async function deleteAccount(id: string): Promise<boolean> {
-  if (!session?.user) return false;
-
-  // Don't allow deleting the last account
-  if (accounts.length <= 1) {
-  toast.error("You must have at least one trading account.");
-  return false;
-}
-const { count } = await supabase
-  .from("trades")
-  .select("*", {
-    count: "exact",
-    head: true,
-  })
-  .eq("account_id", id);
-
-if ((count ?? 0) > 0) {
-  toast.error(
-    "This account contains trades. Move or delete them before deleting the account."
-  );
-  return false;
-}
-  const { error } = await supabase
-    .from("accounts")
-    .delete()
-    .eq("id", id)
-    .eq("user_id", session.user.id);
-
-  if (error) {
-    console.error(error);
-    return false;
-  }
-
-  await refreshAccounts();
-
-  // If the deleted account was selected,
-  // switch to another remaining account.
-  if (currentAccount?.id === id) {
-    const remainingAccounts = accounts.filter(
-      (account) => account.id !== id
+    setCurrentAccountState(
+      loadedAccounts[0]
     );
 
-    if (remainingAccounts.length > 0) {
-      setCurrentAccount(remainingAccounts[0]);
-    } else {
-      setCurrentAccount(null);
-    }
+    localStorage.setItem(
+      getStorageKey(userId),
+      loadedAccounts[0].id
+    );
   }
 
-  return true;
-}
+  // =========================
+  // ADD ACCOUNT
+  // =========================
+
+  async function addAccount(name: string) {
+    if (!session?.user?.id) return null;
+
+    const trimmedName = name.trim();
+
+    if (!trimmedName) {
+      toast.error(
+        "Please enter an account name."
+      );
+      return null;
+    }
+
+    const existing = accounts.find(
+      (account) =>
+        account.name.toLowerCase() ===
+        trimmedName.toLowerCase()
+    );
+
+    if (existing) {
+      toast.error("Account already exists", {
+        description:
+          "Choose a different account name.",
+      });
+
+      return null;
+    }
+
+    const { data, error } =
+      await supabase
+        .from("accounts")
+        .insert({
+          user_id: session.user.id,
+          name: trimmedName,
+        })
+        .select()
+        .single();
+
+    if (error) {
+      console.error(
+        "ADD ACCOUNT ERROR:",
+        error.message
+      );
+
+      toast.error(error.message);
+
+      return null;
+    }
+
+    await refreshAccounts();
+
+    setCurrentAccount(data);
+
+    return data;
+  }
+
+  // =========================
+  // RENAME ACCOUNT
+  // =========================
+
+  async function renameAccount(
+    id: string,
+    name: string
+  ) {
+    if (!session?.user?.id) return;
+
+    const trimmedName = name.trim();
+
+    if (!trimmedName) {
+      toast.error(
+        "Account name cannot be empty."
+      );
+      return;
+    }
+
+    const duplicate = accounts.find(
+      (account) =>
+        account.id !== id &&
+        account.name.toLowerCase() ===
+          trimmedName.toLowerCase()
+    );
+
+    if (duplicate) {
+      toast.error("Account already exists", {
+        description:
+          "Choose a different account name.",
+      });
+      return;
+    }
+
+    const { error } = await supabase
+      .from("accounts")
+      .update({
+        name: trimmedName,
+      })
+      .eq("id", id)
+      .eq("user_id", session.user.id);
+
+    if (error) {
+      console.error(
+        "RENAME ACCOUNT ERROR:",
+        error.message
+      );
+
+      toast.error(error.message);
+
+      return;
+    }
+
+    await refreshAccounts();
+
+    if (currentAccount?.id === id) {
+      setCurrentAccountState({
+        ...currentAccount,
+        name: trimmedName,
+      });
+    }
+
+    toast.success(
+      "Account renamed successfully."
+    );
+  }
+
+  // =========================
+  // DELETE ACCOUNT
+  // =========================
+
+  async function deleteAccount(
+    id: string
+  ): Promise<boolean> {
+    if (!session?.user?.id) return false;
+
+    // Don't allow deleting the last account
+    if (accounts.length <= 1) {
+      toast.error(
+        "You must have at least one trading account."
+      );
+
+      return false;
+    }
+
+    // Check for trades
+    const { count } = await supabase
+      .from("trades")
+      .select("*", {
+        count: "exact",
+        head: true,
+      })
+      .eq("account_id", id);
+
+    if ((count ?? 0) > 0) {
+      toast.error(
+        "This account contains trades. Move or delete them before deleting the account."
+      );
+
+      return false;
+    }
+
+    const { error } = await supabase
+      .from("accounts")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", session.user.id);
+
+    if (error) {
+      console.error(
+        "DELETE ACCOUNT ERROR:",
+        error.message
+      );
+
+      toast.error(error.message);
+
+      return false;
+    }
+
+    // Remove saved selection
+    const storageKey =
+      getStorageKey(session.user.id);
+
+    const savedAccountId =
+      localStorage.getItem(storageKey);
+
+    if (savedAccountId === id) {
+      localStorage.removeItem(storageKey);
+    }
+
+    await refreshAccounts();
+
+    // If deleted account was selected,
+    // select another remaining account.
+    if (currentAccount?.id === id) {
+      const remainingAccounts =
+        accounts.filter(
+          (account) =>
+            account.id !== id
+        );
+
+      if (remainingAccounts.length > 0) {
+        setCurrentAccount(
+          remainingAccounts[0]
+        );
+      } else {
+        setCurrentAccountState(null);
+      }
+    }
+
+    toast.success(
+      "Account deleted successfully."
+    );
+
+    return true;
+  }
+
+  // =========================
+  // INITIAL LOAD
+  // =========================
 
   useEffect(() => {
     refreshAccounts();
-  }, [session]);
+  }, [session?.user?.id]);
+
+  // =========================
+  // CONTEXT
+  // =========================
 
   return (
     <AccountContext.Provider
@@ -212,8 +392,13 @@ if ((count ?? 0) > 0) {
   );
 }
 
+// =========================
+// HOOK
+// =========================
+
 export function useAccount() {
-  const context = useContext(AccountContext);
+  const context =
+    useContext(AccountContext);
 
   if (!context) {
     throw new Error(

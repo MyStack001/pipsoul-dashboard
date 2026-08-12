@@ -7,6 +7,7 @@ import { ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { useTradesStore } from "@/hooks/useTradesStore";
+import { useAccount } from "@/components/AccountProvider";
 
 const EquityChart = dynamic(
   () => import("@/components/charts/EquityChart"),
@@ -18,30 +19,56 @@ const TradesTable = dynamic(
   { ssr: false }
 );
 
-
 export default function DashboardPage() {
   const { session, loading } = useAuth();
   const router = useRouter();
-const { trades } = useTradesStore();
+
+  const { trades } = useTradesStore();
+  const { currentAccount } = useAccount();
 
   const [pair, setPair] = useState("ALL");
   const [open, setOpen] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // --------------------------------------------------
+  // ACCOUNT-SPECIFIC TRADES
+  // --------------------------------------------------
+
+  const accountTrades = useMemo(() => {
+    if (!Array.isArray(trades)) return [];
+
+    if (!currentAccount) return [];
+
+    return trades.filter(
+      (trade) => trade.account_id === currentAccount.id
+    );
+  }, [trades, currentAccount]);
+
+useEffect(() => {
+  setPair("ALL");
+}, [currentAccount?.id]);
+  // --------------------------------------------------
+  // PAIRS FOR CURRENT ACCOUNT
+  // --------------------------------------------------
+
   const pairs = useMemo(() => {
-  if (!Array.isArray(trades)) return ["ALL"];
+    if (!Array.isArray(accountTrades)) return ["ALL"];
 
-  const uniquePairs = Array.from(
-    new Set(
-      trades
-        .map((t) => t.pair)
-        .filter(Boolean)
-    )
-  );
+    const uniquePairs = Array.from(
+      new Set(
+        accountTrades
+          .map((t) => t.pair)
+          .filter(Boolean)
+      )
+    );
 
-  return ["ALL", ...uniquePairs];
-}, [trades]);
+    return ["ALL", ...uniquePairs];
+  }, [accountTrades]);
+
+  // --------------------------------------------------
+  // STATS
+  // --------------------------------------------------
 
   const [stats, setStats] = useState({
     totalProfit: 0,
@@ -50,11 +77,19 @@ const { trades } = useTradesStore();
     maxDrawdown: 0,
   });
 
+  // --------------------------------------------------
+  // AUTH REDIRECT
+  // --------------------------------------------------
+
   useEffect(() => {
     if (!loading && !session) {
       router.push("/login");
     }
   }, [session, loading, router]);
+
+  // --------------------------------------------------
+  // CLOSE DROPDOWN WHEN CLICKING OUTSIDE
+  // --------------------------------------------------
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -72,6 +107,20 @@ const { trades } = useTradesStore();
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // --------------------------------------------------
+  // RESET PAIR IF CURRENT PAIR DOESN'T EXIST
+  // --------------------------------------------------
+
+  useEffect(() => {
+    if (pair !== "ALL" && !pairs.includes(pair)) {
+      setPair("ALL");
+    }
+  }, [pairs, pair]);
+
+  // --------------------------------------------------
+  // LOADING
+  // --------------------------------------------------
+
   if (loading) {
     return (
       <div className="p-6 text-black dark:text-white">
@@ -83,10 +132,9 @@ const { trades } = useTradesStore();
   if (!session) return null;
 
   return (
-    
     <div className="space-y-6">
 
-
+      {/* HEADER */}
 
       <div>
         <h1 className="text-2xl font-semibold text-black dark:text-white">
@@ -100,11 +148,24 @@ const { trades } = useTradesStore();
         <p className="text-xs text-cyan-600 dark:text-cyan-400 mt-1">
           Logged in as: {session.user.email}
         </p>
+
+        {currentAccount && (
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            Account:{" "}
+            <span className="font-medium text-black dark:text-white">
+              {currentAccount.name}
+            </span>
+          </p>
+        )}
       </div>
+
+      {/* KPI */}
 
       <KPI stats={stats} />
 
-        <div ref={dropdownRef} className="relative w-fit">
+      {/* PAIR FILTER */}
+
+      <div ref={dropdownRef} className="relative w-fit">
 
         <button
           onClick={() => setOpen(!open)}
@@ -128,20 +189,20 @@ const { trades } = useTradesStore();
         </button>
 
         <div
-  className={`
-    absolute mt-2 w-full z-50
-    bg-white dark:bg-[#111827]
-    border border-gray-200/70 dark:border-white/10
-    rounded-lg shadow-lg
-    max-h-64
-    overflow-y-auto
-    ${
-      open
-        ? "opacity-100 scale-100"
-        : "opacity-0 scale-95 pointer-events-none"
-    }
-  `}
->
+          className={`
+            absolute mt-2 w-full z-50
+            bg-white dark:bg-[#111827]
+            border border-gray-200/70 dark:border-white/10
+            rounded-lg shadow-lg
+            max-h-64
+            overflow-y-auto
+            ${
+              open
+                ? "opacity-100 scale-100"
+                : "opacity-0 scale-95 pointer-events-none"
+            }
+          `}
+        >
           {pairs.map((p) => (
             <div
               key={p}
@@ -161,15 +222,21 @@ const { trades } = useTradesStore();
         </div>
       </div>
 
-<EquityChart
-  pair={pair}
-  trades={trades}
-  onStats={setStats}
-/>
-  <TradesTable
-  pair={pair}
-  trades={trades}
-/>
+      {/* EQUITY CHART */}
+
+      <EquityChart
+        pair={pair}
+        trades={accountTrades}
+        onStats={setStats}
+      />
+
+      {/* TRADES TABLE */}
+
+      <TradesTable
+        pair={pair}
+        trades={accountTrades}
+      />
+
     </div>
   );
 }

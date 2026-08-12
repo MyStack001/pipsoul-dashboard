@@ -1,12 +1,15 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTradesStore } from "@/hooks/useTradesStore";
 import EquityChart from "@/components/charts/EquityChart";
 import PageSection from "@/components/PageSection";
 import AnimatedCard from "@/components/AnimatedCard";
 
 export default function AnalyticsPage() {
+  const [search, setSearch] = useState("");
+const [sortOrder, setSortOrder] =
+  useState<"asc" | "desc">("desc");
   const { trades } = useTradesStore();
 
   // ========================
@@ -89,15 +92,25 @@ export default function AnalyticsPage() {
       const profit = Number(trade.profit || 0);
 
       if (!acc[pair]) {
-        acc[pair] = {
-          pair,
-          totalTrades: 0,
-          wins: 0,
-          totalProfit: 0,
-          bestTrade: -Infinity,
-          worstTrade: Infinity,
-        };
-      }
+  acc[pair] = {
+    pair,
+    totalTrades: 0,
+    wins: 0,
+    totalProfit: 0,
+    bestTrade: -Infinity,
+    worstTrade: Infinity,
+    latestTradeDate: trade.tradeDate || null,
+  };
+}
+
+if (
+  trade.tradeDate &&
+  (!acc[pair].latestTradeDate ||
+    new Date(trade.tradeDate).getTime() >
+      new Date(acc[pair].latestTradeDate).getTime())
+) {
+  acc[pair].latestTradeDate = trade.tradeDate;
+}
 
       acc[pair].totalTrades += 1;
       acc[pair].totalProfit += profit;
@@ -122,6 +135,27 @@ export default function AnalyticsPage() {
     }));
   }, [trades]);
 
+  const filteredPairStats = useMemo(() => {
+  const searched = pairStats.filter((p: any) =>
+    p.pair
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
+  return [...searched].sort((a: any, b: any) => {
+    const aDate = new Date(
+      a.latestTradeDate || 0
+    ).getTime();
+
+    const bDate = new Date(
+      b.latestTradeDate || 0
+    ).getTime();
+
+    return sortOrder === "asc"
+      ? aDate - bDate
+      : bDate - aDate;
+  });
+}, [pairStats, search, sortOrder]);
   // ========================
   // UI
   // ========================
@@ -181,9 +215,75 @@ export default function AnalyticsPage() {
       {/* PAIR TABLE */}
   
   <div className="rounded-2xl p-5 bg-white/60 dark:bg-white/5 border border-gray-200/70 dark:border-white/10">
-        <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">
-  Pair Performance
-</h2>
+        <div
+  className="
+    mb-4
+    flex
+    flex-col
+    gap-3
+    sm:flex-row
+    sm:items-center
+    sm:justify-between
+  "
+>
+  <h2 className="text-lg font-semibold text-black dark:text-white">
+    Pair Performance
+  </h2>
+
+  <button
+    onClick={() =>
+      setSortOrder(
+        sortOrder === "asc"
+          ? "desc"
+          : "asc"
+      )
+    }
+    className="
+      min-h-[44px]
+      w-full
+      rounded-lg
+      bg-cyan-500
+      px-4
+      py-2
+      text-sm
+      font-medium
+      text-white
+      transition-colors
+      hover:bg-cyan-400
+      sm:w-auto
+    "
+  >
+    {sortOrder === "desc"
+      ? "Newest First"
+      : "Oldest First"}
+  </button>
+</div>
+
+<input
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  placeholder="Search pair..."
+  className="
+    mb-5
+    min-h-[46px]
+    w-full
+    rounded-lg
+    border
+    border-gray-200
+    bg-white
+    p-3
+    text-sm
+    text-black
+    outline-none
+    transition-all
+    focus:border-cyan-400/50
+    focus:ring-2
+    focus:ring-cyan-400/10
+    dark:border-white/10
+    dark:bg-[#111827]
+    dark:text-white
+  "
+/>
 
         <div className="overflow-x-auto rounded-xl">
           <table className="w-full min-w-[900px] text-sm border-collapse">
@@ -201,7 +301,7 @@ export default function AnalyticsPage() {
             </thead>
 
             <tbody>
-              {pairStats.map((p: any) => (
+              {filteredPairStats.map((p: any) => (
                 <tr
   key={p.pair}
   className="border-b border-gray-200 dark:border-white/10"

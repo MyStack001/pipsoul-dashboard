@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Hand, Flame } from "lucide-react";
 
 export default function DashboardPreview() {
   const previewRef = useRef<HTMLElement | null>(null);
@@ -242,7 +243,8 @@ export default function DashboardPreview() {
                   {/* Greeting */}
                   <div className="mb-6 sm:mb-8">
                     <h3 className="text-xl font-bold text-white sm:text-2xl lg:text-3xl dark:text-gray-900">
-                      Good afternoon, Trader 👋
+                      Good afternoon, Trader{" "}
+<Hand className="inline-block h-5 w-5 text-cyan-400 sm:h-6 sm:w-6" />
                     </h3>
 
                     <p className="mt-2 text-sm text-gray-400 dark:text-gray-500 sm:text-base">
@@ -744,10 +746,10 @@ export default function DashboardPreview() {
               Achievement
             </p>
 
-            <h4 className="mt-2 text-sm font-semibold text-cyan-400">
-              🔥 Consistency Streak
-            </h4>
-
+            <h4 className="mt-2 flex items-center gap-1.5 text-sm font-semibold text-cyan-400">
+  <Flame className="h-4 w-4" />
+  Consistency Streak
+</h4>
             <div className="mt-4 flex items-center gap-3">
               <div className="relative h-12 w-12">
                 <svg

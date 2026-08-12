@@ -15,15 +15,16 @@ import { toast } from "sonner";
 import { ChevronDown } from "lucide-react";
 import { unlockAchievement } from "@/lib/achievements";
 import { createNotification } from "@/lib/notifications";
+import { useAccount } from "@/components/AccountProvider";
 
 
 export default function JournalClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
-
+ 
   const tradeId = searchParams.get("id");
   const { session, loading: authLoading } = useAuth();
-
+ const { currentAccount } = useAccount();
   const [trade, setTrade] = useState<Trade | null>(null);
   const [journals, setJournals] = useState<any[]>([]);
   const [journal, setJournal] = useState<JournalEntry | null>(null);
@@ -82,6 +83,13 @@ useEffect(() => {
         return;
       }
 
+      if (!currentAccount?.id) {
+  console.log("No current account selected");
+  setJournals([]);
+  setLoading(false);
+  return;
+}
+
       console.log("Session found:", session.user.id);
 
       // Your existing code continues here...
@@ -100,6 +108,7 @@ useEffect(() => {
     )
   `)
   .eq("user_id", session.user.id)
+  .eq("account_id", currentAccount?.id)
   .order("updated_at", { ascending: false });
 
  console.log("Journals returned:", journalsData);
@@ -125,10 +134,12 @@ if (journalsError) {
         // LOAD TRADE
         // =========================
         const { data: tradeData, error: tradeError } = await supabase
-          .from("trades")
-          .select("*")
-          .eq("id", tradeId)
-          .maybeSingle();
+  .from("trades")
+  .select("*")
+  .eq("id", tradeId)
+  .eq("user_id", session.user.id)
+  .eq("account_id", currentAccount.id)
+  .maybeSingle();
 
         if (!tradeError) {
           setTrade(tradeData);
@@ -138,15 +149,17 @@ if (journalsError) {
         // LOAD JOURNAL
         // =========================
         const { data: journalData } = await supabase
-          .from("journals")
-          .select("*")
-          .eq("trade_id", tradeId)
-          .eq("user_id", session.user.id)
-          .maybeSingle();
+  .from("journals")
+  .select("*")
+  .eq("trade_id", tradeId)
+  .eq("user_id", session.user.id)
+  .eq("account_id", currentAccount.id)
+  .maybeSingle();
 
         setJournal(
           journalData || {
             tradeId,
+            accountId: currentAccount.id,
             pair: tradeData?.pair || "Unknown",
             reason: "",
             confluence: "",
@@ -166,7 +179,7 @@ if (journalsError) {
     };
 
     load();
-  }, [tradeId, session?.user?.id, authLoading]);
+  }, [tradeId, session?.user?.id, currentAccount?.id, authLoading]);
 
   // =========================
   // UPLOAD IMAGE
@@ -221,7 +234,14 @@ if (journalsError) {
   // SAVE JOURNAL
   // =========================
   const saveJournal = async () => {
-    if (!journal || !tradeId || !session?.user?.id) return;
+  if (
+    !journal ||
+    !tradeId ||
+    !session?.user?.id ||
+    !currentAccount?.id
+  ) {
+    return;
+  }
 
     const { error } = await supabase
       .from("journals")
@@ -229,6 +249,7 @@ if (journalsError) {
         {
           trade_id: tradeId,
           user_id: session.user.id,
+          account_id: currentAccount.id,
           pair: trade?.pair || journal.pair,
           reason: journal.reason,
           confluence: journal.confluence,
@@ -313,13 +334,14 @@ if (journalsError) {
 
     // 🔥 First 5 Trades Journaled
     const { data: firstFiveTrades } = await supabase
-      .from("trades")
-      .select("id")
-      .eq("user_id", session.user.id)
-      .order("created_at", {
-        ascending: true,
-      })
-      .limit(5);
+  .from("trades")
+  .select("id")
+  .eq("user_id", session.user.id)
+  .eq("account_id", currentAccount.id)
+  .order("created_at", {
+    ascending: true,
+  })
+  .limit(5);
 
     if (firstFiveTrades && firstFiveTrades.length === 5) {
       const tradeIds = firstFiveTrades.map((t) => t.id);

@@ -1,5 +1,6 @@
 export type JournalEntry = {
   tradeId: string;
+  accountId: string;
   pair: string;
 
   reason: string;

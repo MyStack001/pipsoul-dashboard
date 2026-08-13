@@ -8,9 +8,13 @@ import AnimatedCard from "@/components/AnimatedCard";
 
 export default function AnalyticsPage() {
   const [search, setSearch] = useState("");
+  const [pairCurrentPage, setPairCurrentPage] = useState(1);
+
+const pairItemsPerPage = 5;
 const [sortOrder, setSortOrder] =
   useState<"asc" | "desc">("desc");
   const { trades } = useTradesStore();
+
 
   // ========================
   // BASIC STATS
@@ -156,6 +160,20 @@ if (
       : bDate - aDate;
   });
 }, [pairStats, search, sortOrder]);
+const pairTotalPages = Math.ceil(
+  filteredPairStats.length / pairItemsPerPage
+);
+
+const paginatedPairStats = useMemo(() => {
+  const start =
+    (pairCurrentPage - 1) * pairItemsPerPage;
+
+  return filteredPairStats.slice(
+    start,
+    start + pairItemsPerPage
+  );
+}, [filteredPairStats, pairCurrentPage]);
+
   // ========================
   // UI
   // ========================
@@ -212,129 +230,497 @@ if (
       
   <EquityChart trades={trades} />
 
-      {/* PAIR TABLE */}
   
-  <div className="rounded-2xl p-5 bg-white/60 dark:bg-white/5 border border-gray-200/70 dark:border-white/10">
-        <div
-  className="
-    mb-4
-    flex
-    flex-col
-    gap-3
-    sm:flex-row
-    sm:items-center
-    sm:justify-between
-  "
->
-  <h2 className="text-lg font-semibold text-black dark:text-white">
-    Pair Performance
-  </h2>
+  {/* PAIR TABLE */}
 
-  <button
-    onClick={() =>
-      setSortOrder(
-        sortOrder === "asc"
-          ? "desc"
-          : "asc"
-      )
-    }
+<div className="rounded-2xl p-5 bg-white/60 dark:bg-white/5 border border-gray-200/70 dark:border-white/10">
+  
+  {/* HEADER */}
+  <div
     className="
-      min-h-[44px]
-      w-full
-      rounded-lg
-      bg-cyan-500
-      px-4
-      py-2
-      text-sm
-      font-medium
-      text-white
-      transition-colors
-      hover:bg-cyan-400
-      sm:w-auto
+      mb-4
+      flex
+      flex-col
+      gap-3
+      sm:flex-row
+      sm:items-center
+      sm:justify-between
     "
   >
-    {sortOrder === "desc"
-      ? "Newest First"
-      : "Oldest First"}
-  </button>
+    <h2 className="text-lg font-semibold text-black dark:text-white">
+      Pair Performance
+    </h2>
+
+    <button
+      onClick={() =>
+        setSortOrder(
+          sortOrder === "asc"
+            ? "desc"
+            : "asc"
+        )
+      }
+      className="
+        min-h-[44px]
+        w-full
+        rounded-lg
+        bg-cyan-500
+        px-4
+        py-2
+        text-sm
+        font-medium
+        text-white
+        transition-colors
+        hover:bg-cyan-400
+        sm:w-auto
+      "
+    >
+      {sortOrder === "desc"
+        ? "Newest First"
+        : "Oldest First"}
+    </button>
+  </div>
+
+  {/* SEARCH */}
+  <input
+    value={search}
+    onChange={(e) => {
+      setSearch(e.target.value);
+      setPairCurrentPage(1);
+    }}
+    placeholder="Search pair..."
+    className="
+      mb-5
+      min-h-[46px]
+      w-full
+      rounded-lg
+      border
+      border-gray-200
+      bg-white
+      p-3
+      text-sm
+      text-black
+      outline-none
+      transition-all
+      focus:border-cyan-400/50
+      focus:ring-2
+      focus:ring-cyan-400/10
+      dark:border-white/10
+      dark:bg-[#111827]
+      dark:text-white
+    "
+  />
+
+  {/* ========================= */}
+  {/* MOBILE PAIR CARDS */}
+  {/* ========================= */}
+
+  <div className="space-y-3 md:hidden">
+    {paginatedPairStats.map((p: any) => (
+      <div
+        key={p.pair}
+        className="
+          rounded-xl
+          border
+          border-gray-200/70
+          bg-white/70
+          p-4
+          shadow-sm
+          dark:border-white/10
+          dark:bg-[#111827]/70
+        "
+      >
+        {/* Top row */}
+        <div
+          className="
+            flex
+            items-start
+            justify-between
+            gap-3
+          "
+        >
+          <div className="min-w-0">
+            <p
+              className="
+                truncate
+                text-base
+                font-semibold
+                text-gray-900
+                dark:text-white
+              "
+            >
+              {p.pair}
+            </p>
+
+            <p
+              className="
+                mt-0.5
+                text-xs
+                text-gray-500
+                dark:text-gray-400
+              "
+            >
+              {p.totalTrades}{" "}
+              {p.totalTrades === 1
+                ? "trade"
+                : "trades"}
+            </p>
+          </div>
+
+          <span
+            className="
+              shrink-0
+              rounded-full
+              bg-cyan-500/10
+              px-2.5
+              py-1
+              text-xs
+              font-semibold
+              text-cyan-500
+            "
+          >
+            {p.winRate}%
+          </span>
+        </div>
+
+        {/* Profit */}
+        <div
+          className="
+            mt-4
+            flex
+            items-center
+            justify-between
+            rounded-lg
+            bg-gray-50
+            px-3
+            py-2.5
+            dark:bg-white/5
+          "
+        >
+          <span
+            className="
+              text-xs
+              text-gray-500
+              dark:text-gray-400
+            "
+          >
+            Total Profit
+          </span>
+
+          <span
+            className={`
+              text-base
+              font-bold
+              ${
+                Number(p.totalProfit) >= 0
+                  ? "text-green-500"
+                  : "text-red-500"
+              }
+            `}
+          >
+            ${p.totalProfit.toFixed(2)}
+          </span>
+        </div>
+
+        {/* Pair details */}
+        <div
+          className="
+            mt-4
+            grid
+            grid-cols-2
+            gap-4
+          "
+        >
+          <div>
+            <p
+              className="
+                text-[11px]
+                text-gray-400
+                dark:text-gray-500
+              "
+            >
+              Win Rate
+            </p>
+
+            <p
+              className="
+                mt-1
+                text-sm
+                font-semibold
+                text-cyan-500
+              "
+            >
+              {p.winRate}%
+            </p>
+          </div>
+
+          <div>
+            <p
+              className="
+                text-[11px]
+                text-gray-400
+                dark:text-gray-500
+              "
+            >
+              Average
+            </p>
+
+            <p
+              className="
+                mt-1
+                truncate
+                text-sm
+                font-medium
+                text-gray-900
+                dark:text-white
+              "
+            >
+              ${p.avgProfit}
+            </p>
+          </div>
+
+          <div>
+            <p
+              className="
+                text-[11px]
+                text-gray-400
+                dark:text-gray-500
+              "
+            >
+              Best
+            </p>
+
+            <p
+              className="
+                mt-1
+                truncate
+                text-sm
+                font-semibold
+                text-green-500
+              "
+            >
+              ${p.bestTrade.toFixed(2)}
+            </p>
+          </div>
+
+          <div>
+            <p
+              className="
+                text-[11px]
+                text-gray-400
+                dark:text-gray-500
+              "
+            >
+              Worst
+            </p>
+
+            <p
+              className="
+                mt-1
+                truncate
+                text-sm
+                font-semibold
+                text-red-500
+              "
+            >
+              ${p.worstTrade.toFixed(2)}
+            </p>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  {/* ========================= */}
+  {/* DESKTOP TABLE */}
+  {/* ========================= */}
+
+  <div className="hidden overflow-x-auto rounded-xl md:block">
+    <table className="w-full min-w-[900px] border-collapse text-sm">
+      <thead>
+        <tr className="border-b border-gray-200 dark:border-white/10">
+          <th className="whitespace-nowrap px-4 py-3 text-left text-gray-900 dark:text-white">
+            Pair
+          </th>
+
+          <th className="whitespace-nowrap px-4 py-3 text-left text-gray-900 dark:text-white">
+            Trades
+          </th>
+
+          <th className="whitespace-nowrap px-4 py-3 text-left text-gray-900 dark:text-white">
+            Win %
+          </th>
+
+          <th className="whitespace-nowrap px-4 py-3 text-left text-gray-900 dark:text-white">
+            Profit
+          </th>
+
+          <th className="whitespace-nowrap px-4 py-3 text-left text-gray-900 dark:text-white">
+            Avg
+          </th>
+
+          <th className="whitespace-nowrap px-4 py-3 text-left text-gray-900 dark:text-white">
+            Best
+          </th>
+
+          <th className="whitespace-nowrap px-4 py-3 text-left text-gray-900 dark:text-white">
+            Worst
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {paginatedPairStats.map((p: any) => (
+          <tr
+            key={p.pair}
+            className="border-b border-gray-200 dark:border-white/10"
+          >
+            <td className="whitespace-nowrap px-4 py-3 font-medium text-gray-900 dark:text-white">
+              {p.pair}
+            </td>
+
+            <td className="whitespace-nowrap px-4 py-3 text-gray-900 dark:text-white">
+              {p.totalTrades}
+            </td>
+
+            <td className="whitespace-nowrap px-4 py-3 font-medium text-cyan-500">
+              {p.winRate}%
+            </td>
+
+            <td
+              className={`whitespace-nowrap px-4 py-3 font-semibold ${
+                Number(p.totalProfit) >= 0
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
+            >
+              ${p.totalProfit.toFixed(2)}
+            </td>
+
+            <td className="whitespace-nowrap px-4 py-3 text-gray-900 dark:text-white">
+              ${p.avgProfit}
+            </td>
+
+            <td className="whitespace-nowrap px-4 py-3 font-semibold text-green-500">
+              ${p.bestTrade.toFixed(2)}
+            </td>
+
+            <td className="whitespace-nowrap px-4 py-3 font-semibold text-red-500">
+              ${p.worstTrade.toFixed(2)}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  {/* EMPTY STATE */}
+
+  {paginatedPairStats.length === 0 && (
+    <p className="mt-5 text-center text-sm text-gray-500">
+      No pairs found
+    </p>
+  )}
+
+  {/* PAGINATION */}
+
+  {pairTotalPages > 1 && (
+    <div
+      className="
+        mt-6
+        flex
+        items-center
+        justify-center
+        gap-2
+        sm:gap-4
+      "
+    >
+      <button
+        disabled={pairCurrentPage === 1}
+        onClick={() =>
+          setPairCurrentPage((page) =>
+            Math.max(1, page - 1)
+          )
+        }
+        className="
+          min-h-[42px]
+          rounded-xl
+          border
+          border-gray-300
+          bg-gray-100
+          px-3
+          py-2
+          text-sm
+          font-medium
+          text-gray-800
+          transition-all
+          hover:bg-gray-200
+          disabled:cursor-not-allowed
+          disabled:opacity-40
+          sm:px-4
+          dark:border-white/20
+          dark:bg-white/10
+          dark:text-white
+          dark:hover:bg-white/20
+        "
+      >
+        Previous
+      </button>
+
+      <span
+        className="
+          whitespace-nowrap
+          text-xs
+          font-medium
+          text-gray-700
+          sm:text-sm
+          dark:text-gray-300
+        "
+      >
+        Page {pairCurrentPage} of{" "}
+        {pairTotalPages}
+      </span>
+
+      <button
+        disabled={
+          pairCurrentPage === pairTotalPages
+        }
+        onClick={() =>
+          setPairCurrentPage((page) =>
+            Math.min(
+              pairTotalPages,
+              page + 1
+            )
+          )
+        }
+        className="
+          min-h-[42px]
+          rounded-xl
+          border
+          border-gray-300
+          bg-gray-100
+          px-3
+          py-2
+          text-sm
+          font-medium
+          text-gray-800
+          transition-all
+          hover:bg-gray-200
+          disabled:cursor-not-allowed
+          disabled:opacity-40
+          sm:px-4
+          dark:border-white/20
+          dark:bg-white/10
+          dark:text-white
+          dark:hover:bg-white/20
+        "
+      >
+        Next
+      </button>
+    </div>
+  )}
+
 </div>
-
-<input
-  value={search}
-  onChange={(e) => setSearch(e.target.value)}
-  placeholder="Search pair..."
-  className="
-    mb-5
-    min-h-[46px]
-    w-full
-    rounded-lg
-    border
-    border-gray-200
-    bg-white
-    p-3
-    text-sm
-    text-black
-    outline-none
-    transition-all
-    focus:border-cyan-400/50
-    focus:ring-2
-    focus:ring-cyan-400/10
-    dark:border-white/10
-    dark:bg-[#111827]
-    dark:text-white
-  "
-/>
-
-        <div className="overflow-x-auto rounded-xl">
-          <table className="w-full min-w-[900px] text-sm border-collapse">
-            <thead>
-              <tr className="border-b border-gray-200 dark:border-white/10">
-                <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">Pair</th>
-                <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">Trades</th>
-                <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">Win %</th>
-
-                <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">Profit</th>
-                <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">Avg</th>
-                <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">Best</th>
-                <th className="px-4 py-3 whitespace-nowrap text-left text-gray-900 dark:text-white">Worst</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {filteredPairStats.map((p: any) => (
-                <tr
-  key={p.pair}
-  className="border-b border-gray-200 dark:border-white/10"
->
-                  <td className="px-4 py-3 whitespace-nowrap font-medium text-gray-900 dark:text-white">
-  {p.pair}
-</td>
-                  <td className="px-4 py-3 whitespace-nowrap text-gray-900 dark:text-white">
-  {p.totalTrades}
-</td>
-
-                  <td className="px-4 py-3 whitespace-nowrap font-medium text-cyan-500">{p.winRate}%</td>
-                  <td
-  className={`px-4 py-3 whitespace-nowrap font-semibold ${
-    Number(p.totalProfit) >= 0
-      ? "text-green-500"
-      : "text-red-500"
-  }`}
->
-  ${p.totalProfit.toFixed(2)}
-</td>
-                  <td className="px-4 py-3 whitespace-nowrap text-gray-900 dark:text-white">
-  {p.avgProfit}
-</td>
-                  <td className="px-4 py-3 whitespace-nowrap font-semibold text-green-500">${p.bestTrade.toFixed(2)}</td>
-                  <td className="px-4 py-3 whitespace-nowrap font-semibold text-red-500">${p.worstTrade.toFixed(2)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        </div>
-      
+      //////////////////
 
      
     </div>

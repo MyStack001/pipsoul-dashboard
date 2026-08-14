@@ -15,6 +15,9 @@ export default function ThemeClient({
     if (saved === "dark") {
       setDark(true);
       document.documentElement.classList.add("dark");
+    } else {
+      setDark(false);
+      document.documentElement.classList.remove("dark");
     }
   }, []);
 
@@ -32,9 +35,5 @@ export default function ThemeClient({
     }
   };
 
-  return (
-    <div>
-      {children}
-    </div>
-  );
+  return <div>{children}</div>;
 }

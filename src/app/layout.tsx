@@ -12,7 +12,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function () {
+                try {
+                  var theme = localStorage.getItem("theme");
+
+                  if (theme === "dark") {
+                    document.documentElement.classList.add("dark");
+                  } else if (theme === "light") {
+                    document.documentElement.classList.remove("dark");
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+
       <body
         className="
           min-h-screen
@@ -29,22 +49,21 @@ export default function RootLayout({
       >
         <AuthProvider>
           <AccountProvider>
-  <ProfileProvider>
-    <NotificationProvider>
-      <ThemeClient>
-      
-          {children}
-        
-      </ThemeClient>
-    </NotificationProvider>
-  </ProfileProvider>
-  </AccountProvider>
-</AuthProvider>
+            <ProfileProvider>
+              <NotificationProvider>
+                <ThemeClient>
+                  {children}
+                </ThemeClient>
+              </NotificationProvider>
+            </ProfileProvider>
+          </AccountProvider>
+        </AuthProvider>
+
         <Toaster
-  richColors
-  position="top-right"
-  theme="system"
-/>
+          richColors
+          position="top-right"
+          theme="system"
+        />
       </body>
     </html>
   );

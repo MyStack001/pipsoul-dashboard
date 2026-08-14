@@ -416,12 +416,20 @@ toast.success("Trade added successfully!");
         type="submit"
         disabled={loading}
         className="
-          px-5 py-3 rounded-lg
-          bg-cyan-500 hover:bg-cyan-600
-          text-white font-medium
-          transition-all duration-200
-          hover:shadow-lg
-        "
+  min-h-[48px]
+  w-full
+  rounded-lg
+  bg-cyan-500
+  px-5
+  py-3
+  text-sm
+  font-semibold
+  text-white
+  transition-all
+  duration-200
+  hover:bg-cyan-600
+  hover:shadow-lg
+"
       >
         {loading
           ? "Saving..."

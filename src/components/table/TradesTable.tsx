@@ -180,19 +180,21 @@ export default function TradesTable({
               )
             }
             className="
-              min-h-[44px]
-              w-full
-              rounded-lg
-              bg-cyan-500
-              px-4
-              py-2
-              text-sm
-              font-medium
-              text-white
-              transition-colors
-              hover:bg-cyan-400
-              sm:w-auto
-            "
+  min-h-[48px]
+  w-full
+  rounded-lg
+  bg-cyan-500
+  px-5
+  py-3
+  text-sm
+  font-semibold
+  text-white
+  transition-all
+  duration-200
+  hover:bg-cyan-600
+  hover:shadow-lg
+  sm:w-auto
+"
           >
             {sortOrder === "desc"
               ? "Newest First"

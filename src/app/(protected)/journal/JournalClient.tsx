@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useRef } from "react";
-import { ClipboardPenLine, Brain, Images, } from "lucide-react";
+import { ClipboardPenLine, Brain, Images, Calendar, ChevronDown, } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -12,7 +12,6 @@ import { Trade } from "@/types/trade";
 import { JournalEntry } from "@/types/journal";
 
 import { toast } from "sonner";
-import { ChevronDown } from "lucide-react";
 import { unlockAchievement } from "@/lib/achievements";
 import { createNotification } from "@/lib/notifications";
 import { useAccount } from "@/components/AccountProvider";
@@ -39,7 +38,7 @@ const [biasFilter, setBiasFilter] = useState("ALL");
 const [dateFilter, setDateFilter] = useState("");
 
 const [tradeFilterOpen, setTradeFilterOpen] = useState(false);
-
+const dateFilterRef = useRef<HTMLInputElement>(null);
 const tradeFilterRef = useRef<HTMLDivElement>(null);
 
 useEffect(() => {
@@ -467,33 +466,33 @@ useEffect(() => {
     All Journals
   </h1>
 
-    <div className="flex flex-col md:flex-row gap-4">
+    <div className="flex flex-col md:flex-row gap-4 w-full">
 
   {/* Search */}
   <input
-    type="text"
-    placeholder="Search by pair..."
-    value={search}
-    onChange={(e) => {
-      setSearch(e.target.value);
-      setCurrentPage(1);
-    }}
-    className="
-      flex-1
-      rounded-xl
-      border
-      border-gray-200
-      dark:border-white/10
-      bg-white
-      dark:bg-[#111827]
-      px-4
-      py-3
-      text-black
-      dark:text-white
-      placeholder:text-gray-400
-    "
-  />
-
+  type="text"
+  placeholder="Search by pair..."
+  value={search}
+  onChange={(e) => {
+    setSearch(e.target.value);
+    setCurrentPage(1);
+  }}
+  className="
+    w-full
+    flex-1
+    rounded-xl
+    border
+    border-gray-200
+    dark:border-white/10
+    bg-white
+    dark:bg-[#111827]
+    px-4
+    py-3
+    text-black
+    dark:text-white
+    placeholder:text-gray-400
+  "
+/>
   {/* BUY / SELL */}
   <div ref={tradeFilterRef} className="relative w-fit">
 
@@ -558,8 +557,12 @@ useEffect(() => {
   </div>
 </div>
 
-  {/* Date */}
+  
+{/* DATE FILTER */}
+{/* DATE FILTER */}
+<div className="relative">
   <input
+    ref={dateFilterRef}
     type="date"
     value={dateFilter}
     onChange={(e) => {
@@ -567,6 +570,7 @@ useEffect(() => {
       setCurrentPage(1);
     }}
     className="
+      w-full
       rounded-xl
       border
       border-gray-200
@@ -575,13 +579,66 @@ useEffect(() => {
       dark:bg-[#111827]
       px-4
       py-3
+      pr-12
+      appearance-none
       text-black
       dark:text-white
       [color-scheme:light]
       dark:[color-scheme:dark]
+      [&::-webkit-calendar-picker-indicator]:opacity-0
+      [&::-webkit-calendar-picker-indicator]:absolute
+      [&::-webkit-calendar-picker-indicator]:right-0
+      [&::-webkit-calendar-picker-indicator]:w-12
+      [&::-webkit-calendar-picker-indicator]:h-full
+      [&::-webkit-calendar-picker-indicator]:cursor-pointer
     "
   />
 
+  <button
+    type="button"
+    onClick={(e) => {
+      e.preventDefault();
+
+      const input = dateFilterRef.current;
+
+      if (!input) return;
+
+      try {
+        if ("showPicker" in HTMLInputElement.prototype) {
+          input.showPicker();
+        } else {
+          input.focus();
+          input.click();
+        }
+      } catch {
+        input.focus();
+        input.click();
+      }
+    }}
+    className="
+      absolute
+      right-3
+      top-1/2
+      -translate-y-1/2
+      z-10
+      flex
+      items-center
+      justify-center
+      w-8
+      h-8
+      text-gray-500
+      dark:text-gray-400
+      hover:text-cyan-500
+      dark:hover:text-cyan-400
+      transition-colors
+      cursor-pointer
+    "
+    aria-label="Open calendar"
+  >
+    <Calendar className="w-5 h-5" />
+  </button>
+</div>
+  
 </div>
 
         {!loading && journals.length === 0 ? (

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Calendar } from "lucide-react";
 import { createNotification } from "@/lib/notifications";
 import { toast } from "sonner";
 import { unlockAchievement } from "@/lib/achievements";
@@ -31,7 +31,7 @@ export default function AddTradeForm() {
   const [profit, setProfit] =
     useState("");
 const [tradeDate, setTradeDate] = useState("");
-
+const tradeDateRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] =
     useState(false);
@@ -342,16 +342,74 @@ toast.success("Trade added successfully!");
         }
         className={inputStyles}
       />
-      <input
-  type="date"
-  value={tradeDate}
-  onChange={(e) => setTradeDate(e.target.value)}
-  className={`
-    ${inputStyles}
-    [color-scheme:light] dark:[color-scheme:dark]
-    
-  `}
-/>
+     
+{/* TRADE DATE */}
+<div className="relative">
+  <input
+    ref={tradeDateRef}
+    type="date"
+    value={tradeDate}
+    onChange={(e) => setTradeDate(e.target.value)}
+    className={`
+      ${inputStyles}
+      w-full
+      pr-12
+      appearance-none
+      [color-scheme:light]
+      dark:[color-scheme:dark]
+      [&::-webkit-calendar-picker-indicator]:opacity-0
+      [&::-webkit-calendar-picker-indicator]:absolute
+      [&::-webkit-calendar-picker-indicator]:right-0
+      [&::-webkit-calendar-picker-indicator]:w-12
+      [&::-webkit-calendar-picker-indicator]:h-full
+      [&::-webkit-calendar-picker-indicator]:cursor-pointer
+    `}
+  />
+
+  <button
+    type="button"
+    onClick={(e) => {
+      e.preventDefault();
+
+      const input = tradeDateRef.current;
+
+      if (!input) return;
+
+      try {
+        if ("showPicker" in HTMLInputElement.prototype) {
+          input.showPicker();
+        } else {
+          input.focus();
+          input.click();
+        }
+      } catch {
+        input.focus();
+        input.click();
+      }
+    }}
+    className="
+      absolute
+      right-3
+      top-1/2
+      -translate-y-1/2
+      z-10
+      flex
+      items-center
+      justify-center
+      w-8
+      h-8
+      text-gray-500
+      dark:text-gray-400
+      hover:text-cyan-500
+      dark:hover:text-cyan-400
+      transition-colors
+      cursor-pointer
+    "
+    aria-label="Open calendar"
+  >
+    <Calendar className="w-5 h-5" />
+  </button>
+</div>
 
       {/* BUTTON */}
       <button

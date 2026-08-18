@@ -609,61 +609,129 @@ export default function Sidebar({
           </nav>
         </div>
 
-        {/* BOTTOM SECTION */}
-        <div
-          className="
-            mt-auto p-4
-            border-t border-gray-200/70 dark:border-white/10
-            space-y-3
-          "
-        >
-          <button
-            onClick={toggleTheme}
-            className="
-              flex items-center justify-between
-              w-full px-3 py-2 rounded-lg
-              bg-white/60 dark:bg-white/10
-              border border-gray-200/70 dark:border-white/10
-              shadow-sm
-              transition-all duration-300
-              hover:scale-[1.02]
-              hover:shadow-md
-              active:scale-95
-            "
-          >
-            <span className="font-medium">
-              {isDark ? "Light Mode" : "Dark Mode"}
-            </span>
+       {/* BOTTOM SECTION */}
+<div
+  className="
+    mt-auto p-4
+    border-t border-gray-200/70 dark:border-white/10
+  "
+>
+  <div className="space-y-2">
 
-            <span className="text-cyan-500 dark:text-cyan-400">
-              {isDark ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
-            </span>
-          </button>
+   {/* THEME TOGGLE */}
+<button
+  type="button"
+  onClick={toggleTheme}
+  className="
+    group
+    w-full
+    flex items-center justify-between
+    px-3 py-2.5
+    rounded-xl
+    bg-white/50 dark:bg-white/[0.04]
+    border border-gray-200/70 dark:border-white/10
+    hover:bg-white/80 dark:hover:bg-white/[0.08]
+    transition-all duration-200
+  "
+>
+  <div className="flex items-center gap-3">
+    <div
+      className="
+        flex items-center justify-center
+        w-8 h-8
+        rounded-lg
+        bg-cyan-50 dark:bg-cyan-500/10
+        text-cyan-500 dark:text-cyan-400
+        transition
+      "
+    >
+      {isDark ? (
+        <Moon className="w-4 h-4" />
+      ) : (
+        <Sun className="w-4 h-4" />
+      )}
+    </div>
 
-          <button
-            onClick={() => setShowLogoutModal(true)}
-            className="
-              flex items-center gap-3
-              w-full px-3 py-2 rounded-lg
-              border border-red-200 dark:border-red-500/20
-              bg-red-50 dark:bg-red-500/10
-              text-red-600 dark:text-red-400
-              transition-all duration-300
-              hover:bg-red-100 dark:hover:bg-red-500/20
-              hover:scale-[1.02]
-              active:scale-95
-            "
-          >
-            <LogOut className="w-5 h-5" />
-            <span className="font-medium">
-              Logout
-            </span>
-          </button>
-        </div>
+    <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+      {isDark ? "Dark Mode" : "Light Mode"}
+    </span>
+  </div>
+
+  {/* SWITCH */}
+  <div
+    className={`
+      relative
+      w-11 h-6
+      rounded-full
+      transition-colors duration-200
+      ${
+        isDark
+          ? "bg-cyan-500"
+          : "bg-gray-300 dark:bg-gray-700"
+      }
+    `}
+  >
+    <span
+      className={`
+        absolute
+        top-0.5
+        left-0.5
+        w-5 h-5
+        rounded-full
+        bg-white
+        shadow-md
+        transition-transform duration-200
+        ${
+          isDark
+            ? "translate-x-5"
+            : "translate-x-0"
+        }
+      `}
+    />
+  </div>
+</button>
+
+    {/* LOGOUT */}
+    <button
+      type="button"
+      onClick={() => setShowLogoutModal(true)}
+      className="
+        group
+        w-full
+        flex items-center gap-3
+        px-3 py-2.5
+        rounded-xl
+        text-gray-600 dark:text-gray-400
+        hover:bg-red-50
+        dark:hover:bg-red-500/10
+        hover:text-red-600
+        dark:hover:text-red-400
+        transition-all duration-200
+      "
+    >
+      <div
+        className="
+          flex items-center justify-center
+          w-8 h-8
+          rounded-lg
+          bg-gray-100 dark:bg-white/5
+          text-gray-500 dark:text-gray-400
+          group-hover:bg-red-100
+          dark:group-hover:bg-red-500/10
+          group-hover:text-red-500
+          transition
+        "
+      >
+        <LogOut className="w-4 h-4" />
+      </div>
+
+      <span className="text-sm font-medium">
+        Logout
+      </span>
+    </button>
+
+  </div>
+</div>
       </div>
 
       {/* DELETE ACCOUNT CONFIRMATION MODAL */}

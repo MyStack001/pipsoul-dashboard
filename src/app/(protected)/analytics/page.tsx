@@ -300,7 +300,6 @@ const paginatedPairStats = useMemo(() => {
       text-sm
       text-black
       outline-none
-      transition-all
       focus:border-cyan-400/50
       focus:ring-2
       focus:ring-cyan-400/10
@@ -652,7 +651,6 @@ const paginatedPairStats = useMemo(() => {
           text-sm
           font-medium
           text-gray-800
-          transition-all
           hover:bg-gray-200
           disabled:cursor-not-allowed
           disabled:opacity-40
@@ -703,7 +701,6 @@ const paginatedPairStats = useMemo(() => {
           text-sm
           font-medium
           text-gray-800
-          transition-all
           hover:bg-gray-200
           disabled:cursor-not-allowed
           disabled:opacity-40
@@ -790,8 +787,6 @@ function StatCard({
     bg-white/60
     dark:bg-[#111827]
     backdrop-blur-xl
-    transition-shadow
-    duration-300
     hover:border-cyan-400/40
     hover:shadow-lg
 "

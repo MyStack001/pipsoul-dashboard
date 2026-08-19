@@ -36,8 +36,6 @@ export default function RootLayout({
       <body
         className="
           min-h-screen
-          transition-colors
-          duration-300
           bg-gradient-to-br
           from-gray-100
           via-white

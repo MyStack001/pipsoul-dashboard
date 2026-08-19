@@ -155,26 +155,30 @@ export default function Topbar({
           {/* GREETING */}
           <div className="min-w-0">
             <h2
-              className="
-                text-sm
-                sm:text-lg
-                font-semibold
-                text-black
-                dark:text-white
-                flex
-                items-center
-                gap-1.5
-                sm:gap-2
-                whitespace-nowrap
-              "
-            >
-              <span className="truncate">
-                {greeting},{" "}
-                {profile?.name ?? "Trader"}
-              </span>
+  className="
+    flex
+    min-w-0
+    items-center
+    gap-1.5
+    whitespace-nowrap
+    text-sm
+    font-semibold
+    text-black
+    dark:text-white
+    sm:gap-2
+    sm:text-lg
+  "
+>
+  <span className="shrink-0">
+    {greeting},
+  </span>
 
-              <Hand className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-500 shrink-0" />
-            </h2>
+  <span className="min-w-0 truncate">
+    {profile?.name ?? "Trader"}
+  </span>
+
+  <Hand className="h-4 w-4 shrink-0 text-cyan-500 sm:h-5 sm:w-5" />
+</h2>
 
             {/* Hide subtitle on very small screens */}
             <p

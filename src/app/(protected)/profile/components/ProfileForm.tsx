@@ -179,7 +179,7 @@ const ProfileForm = forwardRef<
               text-sm
               text-black
               outline-none
-              transition-all
+              transition-none
               placeholder:text-gray-400
               focus:ring-2
               focus:ring-cyan-500
@@ -303,7 +303,7 @@ const ProfileForm = forwardRef<
               text-sm
               text-black
               outline-none
-              transition-all
+              transition-none
               placeholder:text-gray-400
               focus:ring-2
               focus:ring-cyan-500

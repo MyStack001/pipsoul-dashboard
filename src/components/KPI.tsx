@@ -72,8 +72,7 @@ function Card({
         text-black
         shadow-lg
         backdrop-blur-lg
-        transition-all
-        duration-300
+        transition-none
         dark:border-white/10
         dark:bg-white/5
         dark:text-white

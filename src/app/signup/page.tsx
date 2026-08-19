@@ -151,48 +151,53 @@ export default function SignupPage() {
       <div className="relative w-full max-w-md">
 
         {/* Brand */}
-        <div className="mb-6 text-center sm:mb-8">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2.5 sm:gap-3"
-          >
-            <div className="flex h-10 w-10 items-center justify-center sm:h-11 sm:w-11">
-              <Image
-                src="/Logo.png"
-                alt="Pipsoul logo"
-                width={44}
-                height={44}
-                className="h-10 w-10 object-contain sm:h-11 sm:w-11"
-                priority
-              />
-            </div>
+        {/* Brand */}
+<div className="mb-6 text-center sm:mb-8">
+  <div className="flex justify-center">
+    <Link
+      href="/"
+      className="inline-flex items-center gap-1.5 sm:gap-2"
+    >
+      <div className="flex h-10 w-8 shrink-0 items-center justify-center sm:h-11 sm:w-9">
+        <Image
+          src="/Logo.png"
+          alt="Pipsoul logo"
+          width={44}
+          height={44}
+          className="h-10 w-10 object-contain sm:h-11 sm:w-11"
+          priority
+        />
+      </div>
 
-            <span
-              className="
-                text-[22px]
-                font-bold
-                text-gray-900
-                sm:text-2xl
-                dark:text-white
-              "
-            >
-              Pipsoul
-            </span>
-          </Link>
+      <span
+        className="
+          text-[22px]
+          font-bold
+          leading-none
+          text-gray-900
+          sm:text-2xl
+          dark:text-white
+        "
+      >
+        Pipsoul
+      </span>
+    </Link>
+  </div>
 
-          <p
-            className="
-              mt-2.5
-              text-xs
-              text-gray-500
-              sm:mt-3
-              sm:text-sm
-              dark:text-gray-500
-            "
-          >
-            Trade. Reflect. Improve.
-          </p>
-        </div>
+  <p
+    className="
+      mt-2.5
+      text-center
+      text-xs
+      text-gray-500
+      sm:mt-3
+      sm:text-sm
+      dark:text-gray-500
+    "
+  >
+    Trade. Journal. Reflect. Improve.
+  </p>
+</div>
 
         {/* Card */}
         <div

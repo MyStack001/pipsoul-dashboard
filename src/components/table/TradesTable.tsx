@@ -222,7 +222,7 @@ export default function TradesTable({
             text-sm
             text-black
             outline-none
-            transition-all
+            transition-none
             focus:border-cyan-400/50
             focus:ring-2
             focus:ring-cyan-400/10
@@ -707,7 +707,6 @@ export default function TradesTable({
                 text-sm
                 font-medium
                 text-gray-800
-                transition-all
                 hover:bg-gray-200
                 disabled:cursor-not-allowed
                 disabled:opacity-40
@@ -757,7 +756,6 @@ export default function TradesTable({
                 text-sm
                 font-medium
                 text-gray-800
-                transition-all
                 hover:bg-gray-200
                 disabled:cursor-not-allowed
                 disabled:opacity-40

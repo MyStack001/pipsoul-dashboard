@@ -153,7 +153,7 @@ export default function Topbar({
           </button>
 
           {/* GREETING */}
-          <div className="min-w-0">
+         <div className="min-w-0 max-w-[calc(100vw-120px)] sm:max-w-[420px] md:max-w-[500px]">
             <h2
   className="
     flex

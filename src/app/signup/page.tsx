@@ -151,36 +151,25 @@ export default function SignupPage() {
       <div className="relative w-full max-w-md">
 
         {/* Brand */}
-        {/* Brand */}
 <div className="mb-6 text-center sm:mb-8">
   <div className="flex justify-center">
     <Link
       href="/"
-      className="inline-flex items-center gap-1.5 sm:gap-2"
+      className="inline-flex items-center rounded-xl"
     >
-      <div className="flex h-10 w-8 shrink-0 items-center justify-center sm:h-11 sm:w-9">
-        <Image
-          src="/Logo.png"
-          alt="Pipsoul logo"
-          width={44}
-          height={44}
-          className="h-10 w-10 object-contain sm:h-11 sm:w-11"
-          priority
-        />
-      </div>
-
-      <span
+      <Image
+        src="/Logo.png"
+        alt="Pipsoul"
+        width={220}
+        height={48}
         className="
-          text-[22px]
-          font-bold
-          leading-none
-          text-gray-900
-          sm:text-2xl
-          dark:text-white
+          w-[150px]
+          sm:w-[180px]
+          h-auto
+          object-contain
         "
-      >
-        Pipsoul
-      </span>
+        priority
+      />
     </Link>
   </div>
 

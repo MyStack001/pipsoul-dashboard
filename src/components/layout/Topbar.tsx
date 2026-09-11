@@ -111,6 +111,7 @@ export default function Topbar({
 
       <div
         className="
+        relative
           h-16
           w-full
           backdrop-blur-xl
@@ -153,7 +154,7 @@ export default function Topbar({
           </button>
 
           {/* GREETING */}
-         <div className="min-w-0 max-w-[calc(100vw-150px)] sm:max-w-[420px] md:max-w-[500px]">
+        <div className="min-w-0 w-full max-w-[calc(100vw-150px)] sm:max-w-[320px] md:max-w-[360px]">
             <h2
   className="
     flex
@@ -199,7 +200,7 @@ export default function Topbar({
             DESKTOP TRADING ACCOUNT
         ========================== */}
 
-        <div className="relative hidden md:flex flex-col items-center">
+       <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center">
           <span className="text-xs text-gray-500 dark:text-gray-400">
             Trading Account
           </span>

@@ -167,7 +167,7 @@ export default function Topbar({
     text-black
     dark:text-white
     sm:gap-2
-    sm:text-xl
+    sm:text-lg
   "
 >
   <span className="shrink-0">

@@ -173,9 +173,9 @@ export default function Topbar({
     {greeting},
   </span>
 
-  <span className="min-w-0 truncate">
-    {profile?.name ?? "Trader"}
-  </span>
+  <span className="min-w-0 max-w-[55px] truncate sm:max-w-none">
+  {profile?.name ?? "Trader"}
+</span>
 
   <Hand className="h-3.5 w-3.5 shrink-0 text-cyan-500 sm:h-5 sm:w-5" />
 </h2>

@@ -178,7 +178,7 @@ export default function Topbar({
   {profile?.name ?? "Trader"}
 </span>
 
-  <Hand className="h-3.5 w-3.5 shrink-0 text-cyan-500 sm:h-5 sm:w-5" />
+  <Hand className="h-5 w-5 shrink-0 text-cyan-500 sm:h-5 sm:w-5" />
 </h2>
 
             {/* Hide subtitle on very small screens */}
@@ -359,7 +359,7 @@ export default function Topbar({
             RIGHT SIDE
         ========================== */}
 
-        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+        <div className="flex items-center gap-3 sm:gap-4 shrink-0">
           <Notifications />
 
           {/* NAME - HIDDEN ON MOBILE */}

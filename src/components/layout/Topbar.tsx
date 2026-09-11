@@ -131,7 +131,7 @@ export default function Topbar({
             LEFT SIDE
         ========================== */}
 
-        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
           {/* MOBILE MENU */}
           <button
             onClick={onMenuClick}
@@ -153,7 +153,7 @@ export default function Topbar({
           </button>
 
           {/* GREETING */}
-         <div className="min-w-0 max-w-[calc(100vw-120px)] sm:max-w-[420px] md:max-w-[500px]">
+         <div className="min-w-0 max-w-[calc(100vw-150px)] sm:max-w-[420px] md:max-w-[500px]">
             <h2
   className="
     flex

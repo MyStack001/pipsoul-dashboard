@@ -159,22 +159,27 @@ export default function Sidebar({
       >
         {/* TOP SECTION */}
         <div className="p-4">
-          {/* Logo */}
-          <div className="flex items-center gap-3 mb-8">
-            <Image
-              src="/Logo.png"
-              alt="Pipsoul Logo"
-              width={40}
-              height={40}
-              className="rounded-full object-cover"
-              priority
-            />
-
-            <h2 className="text-xl font-bold">
-              Pipsoul
-            </h2>
-          </div>
-
+         {/* Logo */}
+<div className="mb-8">
+  <Link
+    href="/dashboard"
+    className="inline-flex items-center rounded-xl"
+    onClick={() => onClose?.()}
+  >
+    <Image
+      src="/Logo.png"
+      alt="Pipsoul"
+      width={220}
+      height={48}
+      className="
+        w-[150px]
+        h-auto
+        object-contain
+      "
+      priority
+    />
+  </Link>
+</div>
           {/* TRADING ACCOUNT */}
           <div className="relative mb-6 md:hidden">
             <p className="px-1 mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">

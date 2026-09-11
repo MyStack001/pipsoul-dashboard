@@ -159,9 +159,9 @@ export default function Topbar({
     flex
     min-w-0
     items-center
-    gap-1.5
+    gap-1
     whitespace-nowrap
-    text-sm
+    text-xs
     font-semibold
     text-black
     dark:text-white
@@ -177,7 +177,7 @@ export default function Topbar({
     {profile?.name ?? "Trader"}
   </span>
 
-  <Hand className="h-4 w-4 shrink-0 text-cyan-500 sm:h-5 sm:w-5" />
+  <Hand className="h-3.5 w-3.5 shrink-0 text-cyan-500 sm:h-5 sm:w-5" />
 </h2>
 
             {/* Hide subtitle on very small screens */}

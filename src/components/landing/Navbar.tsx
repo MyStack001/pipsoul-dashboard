@@ -27,39 +27,25 @@ export default function Navbar() {
           "
         >
 
-          {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 sm:gap-3 shrink-0"
-          >
-            <Image
-              src="/Logo.png"
-              alt="Pipsoul"
-              width={44}
-              height={44}
-              className="
-                h-9
-                w-9
-                sm:h-11
-                sm:w-11
-                object-contain
-              "
-              priority
-            />
-
-            <span
-              className="
-                text-lg
-                sm:text-xl
-                font-bold
-                text-gray-900
-                dark:text-white
-              "
-            >
-              Pipsoul
-            </span>
-          </Link>
-
+         {/* Logo */}
+<Link
+  href="/"
+  className="flex items-center shrink-0"
+>
+  <Image
+    src="/Logo.png"
+    alt="Pipsoul"
+    width={220}
+    height={74}
+    className="
+      w-[150px]
+      sm:w-[180px]
+      h-auto
+      object-contain
+    "
+    priority
+  />
+</Link>
           {/* Desktop Links */}
           <div
             className="

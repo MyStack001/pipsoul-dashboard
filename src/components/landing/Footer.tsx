@@ -71,35 +71,34 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <button
-              type="button"
-              onClick={() =>
-                window.scrollTo({
-                  top: 0,
-                  behavior: "smooth",
-                })
-              }
-              className="
-                flex
-                items-center
-                gap-3
-                rounded-xl
-                text-left
-              "
-            >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center">
-                <Image
-                  src="/Logo.png"
-                  alt="Pipsoul logo"
-                  width={40}
-                  height={40}
-                  className="h-10 w-10 object-contain"
-                />
-              </div>
-
-              <span className="text-xl font-bold text-gray-900 dark:text-white">
-                Pipsoul
-              </span>
-            </button>
+  type="button"
+  onClick={() =>
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+  }
+  className="
+    flex
+    items-center
+    rounded-xl
+    text-left
+  "
+>
+  <Image
+    src="/Logo.png"
+    alt="Pipsoul"
+    width={220}
+    height={48}
+    className="
+      w-[150px]
+      sm:w-[180px]
+      h-auto
+      object-contain
+  "
+    priority
+  />
+</button>
 
             <p
               className="

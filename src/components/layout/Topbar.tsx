@@ -162,7 +162,7 @@ export default function Topbar({
     items-center
     gap-1
     whitespace-nowrap
-    text-sm
+    text-xs
     font-semibold
     text-black
     dark:text-white

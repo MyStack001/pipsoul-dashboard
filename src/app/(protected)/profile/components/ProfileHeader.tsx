@@ -3,12 +3,14 @@
 import {
   useMemo,
   useRef,
+  useState,
   type ChangeEvent,
   type Dispatch,
   type SetStateAction,
 } from "react";
 import type { Profile } from "../page";
-import { Camera } from "lucide-react";
+import { Camera, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 
 type ProfileHeaderProps = {
@@ -25,6 +27,10 @@ export default function ProfileHeader({
   onEditProfile,
 }: ProfileHeaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [showDeleteModal, setShowDeleteModal] =
+  useState(false);
+const [isDeleting, setIsDeleting] = useState(false);
 
   async function uploadAvatar(
     event: ChangeEvent<HTMLInputElement>
@@ -43,7 +49,9 @@ export default function ProfileHeader({
       });
 
     if (uploadError) {
-      alert(uploadError.message);
+      toast.error("Failed to upload profile picture", {
+  description: uploadError.message,
+});
       return;
     }
 
@@ -61,7 +69,9 @@ export default function ProfileHeader({
       .eq("id", profile.id);
 
     if (error) {
-      alert(error.message);
+      toast.error("Failed to update profile", {
+  description: error.message,
+});
       return;
     }
 
@@ -72,7 +82,68 @@ export default function ProfileHeader({
 
     event.target.value = "";
 
-    alert("Profile picture updated successfully!");
+    toast.success("Profile picture updated", {
+  description:
+    "Your profile picture has been updated successfully.",
+});
+  }
+
+async function deleteAvatar() {
+    if (!profile.avatar_url) return;
+
+    setIsDeleting(true);
+
+    try {
+      const avatarPath =
+        profile.avatar_url.split("/avatars/")[1];
+
+      if (avatarPath) {
+        const { error: storageError } =
+          await supabase.storage
+            .from("avatars")
+            .remove([avatarPath]);
+
+        if (storageError) {
+          toast.error("Failed to delete profile picture", {
+            description: storageError.message,
+          });
+          return;
+        }
+      }
+
+      const { error: databaseError } = await supabase
+        .from("users")
+        .update({
+          avatar_url: null,
+        })
+        .eq("id", profile.id);
+
+      if (databaseError) {
+        toast.error("Failed to update profile", {
+          description: databaseError.message,
+        });
+        return;
+      }
+
+      setProfile({
+        ...profile,
+        avatar_url: null,
+      });
+
+      toast.success("Profile picture deleted", {
+        description:
+          "Your profile picture has been removed successfully.",
+      });
+    } catch (error) {
+      console.error("Delete avatar error:", error);
+
+      toast.error("Something went wrong", {
+        description:
+          "We couldn't delete your profile picture. Please try again.",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
   }
 
   const initials = useMemo(() => {
@@ -154,31 +225,93 @@ export default function ProfileHeader({
               )}
             </div>
 
-            <button
-              onClick={() =>
-                fileInputRef.current?.click()
-              }
-              className="
-                absolute
-                -bottom-1
-                -right-1
-                flex
-                h-9
-                w-9
-                items-center
-                justify-center
-                rounded-full
-                bg-cyan-500
-                text-white
-                shadow-lg
-                transition
-                hover:bg-cyan-600
-                active:scale-95
-              "
-              aria-label="Change profile picture"
-            >
-              <Camera size={18} />
-            </button>
+            {profile.avatar_url ? (
+  <div
+    className="
+      absolute
+      -bottom-1
+      -right-1
+      flex
+      items-center
+      gap-1.5
+    "
+  >
+    {/* Change Picture */}
+    <button
+      type="button"
+      onClick={() =>
+        fileInputRef.current?.click()
+      }
+      className="
+        flex
+        h-9
+        w-9
+        items-center
+        justify-center
+        rounded-full
+        bg-cyan-500
+        text-white
+        shadow-lg
+        transition
+        hover:bg-cyan-600
+        active:scale-95
+      "
+      aria-label="Change profile picture"
+    >
+      <Camera size={18} />
+    </button>
+
+    {/* Delete Picture */}
+    <button
+      type="button"
+      onClick={deleteAvatar}
+      className="
+        flex
+        h-9
+        w-9
+        items-center
+        justify-center
+        rounded-full
+        bg-red-500
+        text-white
+        shadow-lg
+        transition
+        hover:bg-red-600
+        active:scale-95
+      "
+      aria-label="Delete profile picture"
+    >
+      <Trash2 size={17} />
+    </button>
+  </div>
+) : (
+  <button
+    type="button"
+    onClick={() =>
+      fileInputRef.current?.click()
+    }
+    className="
+      absolute
+      -bottom-1
+      -right-1
+      flex
+      h-9
+      w-9
+      items-center
+      justify-center
+      rounded-full
+      bg-cyan-500
+      text-white
+      shadow-lg
+      transition
+      hover:bg-cyan-600
+      active:scale-95
+    "
+    aria-label="Add profile picture"
+  >
+    <Camera size={18} />
+  </button>
+)}
 
             <input
               ref={fileInputRef}
